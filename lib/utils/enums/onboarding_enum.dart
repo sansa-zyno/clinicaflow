@@ -1,0 +1,1 @@
+enum OnboardingState {first, second, third, end}
