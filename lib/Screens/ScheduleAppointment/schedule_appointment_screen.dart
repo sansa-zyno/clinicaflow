@@ -19,15 +19,14 @@ import '../../data_layer/services/appointment_service/appointment_service.dart';
 import 'doctor_dropDown.dart';
 import 'package:flutter/services.dart';
 
-class AddPersonalDetailsScreen extends StatefulWidget {
-  const AddPersonalDetailsScreen({super.key});
+class ScheduleAppointmentScreen extends StatefulWidget {
+  const ScheduleAppointmentScreen({super.key});
 
   @override
-  State<AddPersonalDetailsScreen> createState() =>
-      _AddPersonalDetailsScreenState();
+  State<ScheduleAppointmentScreen> createState() => _ScheduleAppointmentScreenState();
 }
 
-class _AddPersonalDetailsScreenState extends State<AddPersonalDetailsScreen> {
+class _ScheduleAppointmentScreenState extends State<ScheduleAppointmentScreen> {
   TextEditingController mobileNumberController = TextEditingController();
   TextEditingController firstNameController = TextEditingController();
   TextEditingController ageController = TextEditingController();
@@ -134,9 +133,7 @@ class _AddPersonalDetailsScreenState extends State<AddPersonalDetailsScreen> {
   int calculateAge(DateTime birthDate) {
     DateTime currentDate = DateTime.now();
     int age = currentDate.year - birthDate.year;
-    if (currentDate.month < birthDate.month ||
-        (currentDate.month == birthDate.month &&
-            currentDate.day < birthDate.day)) {
+    if (currentDate.month < birthDate.month || (currentDate.month == birthDate.month && currentDate.day < birthDate.day)) {
       age--;
     }
     return age;
@@ -184,8 +181,7 @@ class _AddPersonalDetailsScreenState extends State<AddPersonalDetailsScreen> {
     if (number.isNotEmpty) {
       if (_isDuplicateNumber(number)) {
         setState(() {
-          duplicatePatients =
-              allPatients.where((element) => element.mobile == number).toList();
+          duplicatePatients = allPatients.where((element) => element.mobile == number).toList();
           showDuplicateNumberMessage = true;
           // showInvalidNumberMessage = false;
         });
@@ -236,21 +232,20 @@ class _AddPersonalDetailsScreenState extends State<AddPersonalDetailsScreen> {
         'timeSlot': _selectedTimeSlot,
         'reason': appointmentBriefController.text,
         'virtualConsultation': '$isVirtual',
-        'patientId': (patientId == null || patientId == '-1')
+        'patientId': (patientId == null || patientId == '-1') //New patient with new number or New patient on Existing number
             ? ''
-            : selectedPatientOption?.id,
+            : selectedPatientOption?.id, //Existing patient with Existing number
         'doctorId': selectedDoctor!['_id'],
-        'doctorName':
-            '${selectedDoctor!['firstName']} ${selectedDoctor!['lastName']}',
-        'clinicPatientId': (patientId == null || patientId == '-1')
+        'doctorName': '${selectedDoctor!['firstName']} ${selectedDoctor!['lastName']}',
+        'clinicPatientId': (patientId == null || patientId == '-1') //New patient with new number or New patient on Existing number
             ? ''
-            : selectedPatientOption?.patientId
+            : selectedPatientOption?.patientId //Existing patient with Existing number
       };
-      AppointmentCubit appointmentCubit =
-          BlocProvider.of<AppointmentCubit>(context);
+      AppointmentCubit appointmentCubit = BlocProvider.of<AppointmentCubit>(context);
       await appointmentCubit.createAppointment(map);
-      if (appointmentCubit.state.state ==
-          AppointmentStates.appointmentsCreated) {
+      if (appointmentCubit.state.state == AppointmentStates.appointmentsCreated) {
+        appointmentCubit.fetchAppointments(status: 'Upcoming');
+        map['patientId'] = appointmentCubit.state.patientId;
         //saveMobileNumber(mobileNumberController.text);
         mobileNumberController.text = '';
         firstNameController.text = '';
@@ -263,8 +258,7 @@ class _AddPersonalDetailsScreenState extends State<AddPersonalDetailsScreen> {
         _selectedTimeSlot = null;
         isVirtual = false;
         context.pushNamed(AppRoutes.appointmentSuccess.name, extra: map);
-      } else if (appointmentCubit.state.state ==
-          AppointmentStates.creatingAppointmentsFailed) {
+      } else if (appointmentCubit.state.state == AppointmentStates.creatingAppointmentsFailed) {
         showSnackbar('Error scheduling appointment', context);
       }
     }
@@ -289,7 +283,7 @@ class _AddPersonalDetailsScreenState extends State<AddPersonalDetailsScreen> {
           icon: const Icon(Icons.arrow_back),
         ),
         automaticallyImplyLeading: false,
-        actions: [
+        /*actions: [
           IconButton(
             onPressed: () {},
             icon: const Icon(Icons.calendar_today_outlined),
@@ -298,7 +292,7 @@ class _AddPersonalDetailsScreenState extends State<AddPersonalDetailsScreen> {
             onPressed: () {},
             icon: const Icon(Icons.notifications),
           )
-        ],
+        ],*/
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -308,14 +302,11 @@ class _AddPersonalDetailsScreenState extends State<AddPersonalDetailsScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               CustomTextField(
+                height: 52,
                 controller: mobileNumberController,
                 hintText: AppText.mobileNo,
                 keyBoardType: TextInputType.phone,
-                inputFormatters: [
-                  LengthLimitingTextInputFormatter(10),
-                  FilteringTextInputFormatter.digitsOnly
-                ],
-                height: 52,
+                inputFormatters: [LengthLimitingTextInputFormatter(10), FilteringTextInputFormatter.digitsOnly],
                 onChanged: (value) {
                   _checkDuplicateNumber();
                 },
@@ -335,9 +326,7 @@ class _AddPersonalDetailsScreenState extends State<AddPersonalDetailsScreen> {
                           offset: const Offset(0, 1),
                         ),
                       ],
-                      borderRadius: const BorderRadius.only(
-                          bottomLeft: Radius.circular(8),
-                          bottomRight: Radius.circular(8))),
+                      borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(8), bottomRight: Radius.circular(8))),
                   child: ListView.builder(
                     itemCount: duplicatePatients.length + 1,
                     itemBuilder: (context, index) {
@@ -345,20 +334,14 @@ class _AddPersonalDetailsScreenState extends State<AddPersonalDetailsScreen> {
                       if (index < duplicatePatients.length) {
                         item = duplicatePatients[index];
                       } else {
-                        item = PatientOverviewModel(
-                            id: '-1',
-                            firstName: 'Add New Patient',
-                            lastName: '');
+                        item = PatientOverviewModel(id: '-1', firstName: 'Add New Patient', lastName: '');
                       }
                       return GestureDetector(
                         onTap: () async {
                           if (index < duplicatePatients.length) {
                             selectedPatientOption = duplicatePatients[index];
-                            PatientByIdModel patientDetails =
-                                await PatientService()
-                                    .getPatientById(selectedPatientOption!.id!);
-                            firstNameController.text =
-                                '${patientDetails.firstName} ${patientDetails.lastName}';
+                            PatientByIdModel patientDetails = await PatientService().getPatientById(selectedPatientOption!.id!);
+                            firstNameController.text = '${patientDetails.firstName} ${patientDetails.lastName}';
                             ageController.text = '${patientDetails.age}';
                             _dob = patientDetails.birthday;
                             genderText = patientDetails.gender;
@@ -366,21 +349,15 @@ class _AddPersonalDetailsScreenState extends State<AddPersonalDetailsScreen> {
                             setState(() {});
                           } else {
                             setState(() {
-                              selectedPatientOption = PatientOverviewModel(
-                                  id: '-1',
-                                  firstName: 'Add New Patient',
-                                  lastName: '');
+                              selectedPatientOption = PatientOverviewModel(id: '-1', firstName: 'Add New Patient', lastName: '');
                               showDuplicateNumberMessage = false;
                             });
                           }
                         },
                         child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 7, vertical: 12),
+                          padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: (selectedPatientOption?.id ?? '0') == item.id
-                                ? Colors.grey.withOpacity(0.2)
-                                : Colors.white,
+                            color: (selectedPatientOption?.id ?? '0') == item.id ? Colors.grey.withOpacity(0.2) : Colors.white,
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -410,16 +387,17 @@ class _AddPersonalDetailsScreenState extends State<AddPersonalDetailsScreen> {
                 AppText.personalDetails,
                 style: GoogleFonts.urbanist(
                   textStyle: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 15,
-                      color: Color(0xff605C72)),
+                    fontWeight: FontWeight.w600,
+                    fontSize: 15,
+                    color: Color(0xff605C72),
+                  ),
                 ),
               ),
               const SizedBox(height: 10),
               CustomTextField(
+                height: 52,
                 controller: firstNameController,
                 hintText: AppText.name,
-                height: 52,
               ),
               const SizedBox(height: 10),
               Row(
@@ -438,10 +416,10 @@ class _AddPersonalDetailsScreenState extends State<AddPersonalDetailsScreen> {
                   ),
                   Expanded(
                       child: CustomTextField(
+                    height: 52,
                     controller: ageController,
                     hintText: AppText.age,
                     readOnly: true,
-                    height: 52,
                     width: MediaQuery.of(context).size.width * 0.45,
                   )),
                 ],
@@ -476,14 +454,11 @@ class _AddPersonalDetailsScreenState extends State<AddPersonalDetailsScreen> {
                   // const SizedBox(width: 18),
                   Text(
                     'Virtual Consultation',
-                    style: GoogleFonts.urbanist(
+                    style: GoogleFonts.roboto(
                       textStyle: const TextStyle(
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                          height: 1.25,
-                          letterSpacing: 0.16,
-                          color: Color(0xff0C091F)),
+                        fontWeight: FontWeight.w400,
+                        fontSize: 14,
+                      ),
                     ),
                   ),
                 ],
@@ -546,15 +521,11 @@ class _AddPersonalDetailsScreenState extends State<AddPersonalDetailsScreen> {
                         :*/
                         InkWell(
                             onTap: () async {
-                              if (selectedDoctor != null &&
-                                  _appointmentDate != null) {
+                              if (selectedDoctor != null && _appointmentDate != null) {
                                 await showModalBottomSheet(
                                     context: context,
                                     builder: (ctx) => TimeSlotGridView(
-                                        availableTimeSlots:
-                                            List<Map<String, dynamic>>.from(
-                                                selectedDoctor![
-                                                    'availableTimeSlot']),
+                                        availableTimeSlots: List<Map<String, dynamic>>.from(selectedDoctor!['availableTimeSlot']),
                                         appointmentDate: _appointmentDate,
                                         onSelected: (timeSlot) {
                                           setState(() {
@@ -571,21 +542,17 @@ class _AddPersonalDetailsScreenState extends State<AddPersonalDetailsScreen> {
                               child: Padding(
                                 padding: const EdgeInsets.all(10.0),
                                 child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
                                       _selectedTimeSlot ?? "Select Time Slot",
                                       style: TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w500,
-                                        color: _selectedTimeSlot == null
-                                            ? Colors.grey
-                                            : Colors.black,
+                                        color: _selectedTimeSlot == null ? Colors.grey : Colors.black,
                                       ),
                                     ),
-                                    const Icon(
-                                        Icons.keyboard_arrow_down_outlined)
+                                    const Icon(Icons.keyboard_arrow_down_outlined)
                                   ],
                                 ),
                               ),
@@ -596,17 +563,16 @@ class _AddPersonalDetailsScreenState extends State<AddPersonalDetailsScreen> {
 
               const SizedBox(height: 10),
               CustomTextField(
+                height: 52,
                 controller: appointmentBriefController,
                 hintText: 'Appointment Brief',
-                height: 52,
               ),
               const Text(
                 'This field is optional.',
                 style: TextStyle(fontSize: 11, color: Colors.grey),
               ),
               const SizedBox(height: 16),
-              BlocBuilder<AppointmentCubit, AppointmentState>(
-                  builder: (context, data) {
+              BlocBuilder<AppointmentCubit, AppointmentState>(builder: (context, data) {
                 return data.state == AppointmentStates.creatingAppointments
                     ? const Center(
                         child: CircularProgressIndicator(
@@ -614,12 +580,10 @@ class _AddPersonalDetailsScreenState extends State<AddPersonalDetailsScreen> {
                         ),
                       )
                     : Container(
-                        height: 60,
+                        height: 58,
                         margin: const EdgeInsets.only(left: 24, right: 24),
                         decoration: BoxDecoration(
-                          color: _isFormComplete()
-                              ? const Color(0xFF32856E)
-                              : const Color(0xFFFFFFFF),
+                          color: _isFormComplete() ? const Color(0xFF32856E) : const Color(0xFFF7F7F7),
                           borderRadius: BorderRadius.circular(7),
                         ),
                         child: Center(
@@ -628,10 +592,8 @@ class _AddPersonalDetailsScreenState extends State<AddPersonalDetailsScreen> {
                             child: Text(
                               'Schedule Appointment',
                               style: TextStyle(
-                                color: _isFormComplete()
-                                    ? const Color(0xFFFFFFFF)
-                                    : const Color(0xFF9E9E9E),
-                                fontSize: 16,
+                                color: _isFormComplete() ? const Color(0xFFFFFFFF) : const Color(0xFF9E9E9E),
+                                fontSize: 14,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),

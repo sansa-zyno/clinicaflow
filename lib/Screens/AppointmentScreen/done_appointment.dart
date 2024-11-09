@@ -17,14 +17,9 @@ class DoneAppoint extends StatelessWidget {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
 
-    return BlocBuilder<AppointmentDataCubit, AppointmentDataState>(
-        builder: (context, state) {
-      var appointment = state.appointments?.isNotEmpty == true
-          ? state.appointments!.last
-          : null;
-      final int? slotNumber = state.appointments != null
-          ? state.appointments!.indexOf(appointment!) + 1
-          : null;
+    return BlocBuilder<AppointmentDataCubit, AppointmentDataState>(builder: (context, state) {
+      var appointment = state.appointments?.isNotEmpty == true ? state.appointments!.last : null;
+      final int? slotNumber = state.appointments != null ? state.appointments!.indexOf(appointment!) + 1 : null;
       return Expanded(
         child: ListView(
           shrinkWrap: true,
@@ -54,7 +49,7 @@ class DoneAppoint extends StatelessWidget {
                   const SizedBox(height: 40),
                   if (appointment != null) ...[
                     HexagonWidget.pointy(
-                      color: AppColors.blueColor,
+                      color: AppColors.blueViolet,
                       cornerRadius: 2,
                       width: screenWidth * 0.2,
                       child: HexagonWidget.pointy(
@@ -62,7 +57,7 @@ class DoneAppoint extends StatelessWidget {
                         width: screenWidth * 0.19,
                         child: HexagonWidget.pointy(
                           width: screenWidth * 0.17,
-                          color: AppColors.blueColor,
+                          color: AppColors.blueViolet,
                           elevation: 5,
                           child: Text(
                             '10',
@@ -109,9 +104,7 @@ class DoneAppoint extends StatelessWidget {
                                       ),
                                     ),
                                     Text(
-                                      appointment.isVirtualConsultation
-                                          ? 'Virtual'
-                                          : 'Physical',
+                                      appointment.isVirtualConsultation ? 'Virtual' : 'Physical',
                                       style: const TextStyle(
                                         color: AppColors.greenColor,
                                         fontSize: 13,

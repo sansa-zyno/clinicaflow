@@ -41,19 +41,14 @@ class _ClinicSettingsState extends State<ClinicSettings> with AppBarMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(context,
-          title: "Clinic Settings",
-          automaticallyImplyLeading: true,
-          showDefaultActions: true),
+      appBar: buildAppBar(context, title: "Clinic Settings", automaticallyImplyLeading: true, showDefaultActions: false),
       body: SingleChildScrollView(
         child: Column(
           children: [
             Container(
               padding: EdgeInsets.all(15),
               margin: EdgeInsets.symmetric(horizontal: 15),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  color: AppColors.grey5),
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(15), color: AppColors.grey5),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -62,33 +57,23 @@ class _ClinicSettingsState extends State<ClinicSettings> with AppBarMixin {
                       const CircleAvatar(
                         backgroundColor: Colors.white,
                         radius: 20,
-                        backgroundImage:
-                            AssetImage('assets/homeimages/image 6 (3).png'),
+                        backgroundImage: AssetImage('assets/homeimages/image 6 (3).png'),
                       ),
                       SizedBox(
                         width: 8,
                       ),
                       Text(
                         widget.selectedClinic['clinicName'] ?? '',
-                        style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.eerieBlack),
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.eerieBlack),
                       ),
                       Spacer(),
                       widget.selectedClinic['_id'] == activeClinicId
                           ? Container(
                               padding: EdgeInsets.all(5),
-                              decoration: BoxDecoration(
-                                  color: AppColors.whiteSmoke3,
-                                  borderRadius: BorderRadius.circular(5)),
+                              decoration: BoxDecoration(color: AppColors.whiteSmoke3, borderRadius: BorderRadius.circular(5)),
                               child: const Text(
                                 'Current',
-                                style: TextStyle(
-                                    fontSize: 12,
-                                    fontStyle: FontStyle.italic,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColors.lightTeal),
+                                style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic, fontWeight: FontWeight.w700, color: AppColors.lightTeal),
                               ),
                             )
                           : Container()
@@ -99,10 +84,7 @@ class _ClinicSettingsState extends State<ClinicSettings> with AppBarMixin {
                   ),
                   Text(
                     '${userModel?.firstName ?? ''} ${userModel?.lastName ?? ''}',
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.eerieBlack),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: AppColors.eerieBlack),
                   ),
                   /* SizedBox(
                                   height: 5,
@@ -117,10 +99,7 @@ class _ClinicSettingsState extends State<ClinicSettings> with AppBarMixin {
 
                   Text(
                     userModel?.email ?? '',
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.grey6),
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.grey6),
                   )
                 ],
               ),
@@ -142,8 +121,7 @@ class _ClinicSettingsState extends State<ClinicSettings> with AppBarMixin {
             TextListTile(
                 text: 'Clinic details',
                 onTap: () {
-                  context.pushNamed(AppRoutes.clinicDetails.name,
-                      extra: widget.selectedClinic);
+                  context.pushNamed(AppRoutes.clinicDetails.name, extra: widget.selectedClinic);
                 }).pOnly(bottom: 5),
 
             /*//? CLINIC SETTINGS
@@ -174,8 +152,7 @@ class _ClinicSettingsState extends State<ClinicSettings> with AppBarMixin {
                   context.pushNamed(AppRoutes.prescriptionSettings.name);
                 }).pOnly(bottom: 5),
 
-            TextListTile(text: 'Archive Clinic', onTap: () {})
-                .pOnly(bottom: 12),
+            TextListTile(text: 'Archive Clinic', onTap: () {}).pOnly(bottom: 12),
             //? NOTIFICAITON SETTINGS
             // TextListTile(
             //     text: 'Notifications settings',
@@ -209,10 +186,7 @@ class _ClinicSettingsState extends State<ClinicSettings> with AppBarMixin {
                     onTap: () {},
                     child: Text(
                       'Copyright 2024 HealTether. All Rights Reserved.',
-                      style: GoogleFonts.montserrat(
-                          color: Colors.grey,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500),
+                      style: GoogleFonts.montserrat(color: Colors.grey, fontSize: 12, fontWeight: FontWeight.w500),
                     ),
                   ),
                 ],

@@ -13,8 +13,8 @@ import 'package:healtether_clinic_app/business_logic/cubits/drug_cubit/drug_pres
 import 'package:healtether_clinic_app/business_logic/cubits/home_page_bottom_nav_cubit/home_page_bottom_nav_cubit.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/is_edit_cubit/is_edit_cubit.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/lab_test_cubit/lab_test_cubit.dart';
-import 'package:healtether_clinic_app/business_logic/cubits/medications_cubit/medications_cubit.dart';
-import 'package:healtether_clinic_app/business_logic/cubits/past_history_cubit/past_history_cubit.dart';
+import 'package:healtether_clinic_app/business_logic/cubits/messaging/whatsapp/whatsapp_messaging_cubit.dart';
+import 'package:healtether_clinic_app/business_logic/cubits/past_medical_history_cubit/past_medical_history_cubit.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/patient_detail/patient_detail_cubit.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/patient_records_cubit/patient_records_cubit.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/payment_cubit/payment_cubit.dart';
@@ -44,7 +44,6 @@ void main() async {
         BlocProvider(create: (context) => AppointmentBloc(AnalyticsService())),
         BlocProvider(create: (context) => HomePageBottomNavCubit()),
         BlocProvider(create: (context) => AppointmentCubit()),
-        BlocProvider(create: (context) => PastHistoryCubit()),
         BlocProvider(create: (context) => AllergyCubit()),
         BlocProvider(create: (context) => DrugPrescriptionCubit()),
         BlocProvider(create: (context) => VitalsCubit()),
@@ -61,8 +60,8 @@ void main() async {
         BlocProvider(create: (context) => AgeRatioCubit(AnalyticsService())),
         BlocProvider(create: (context) => PatientDetailCubit(PatientService())),
         BlocProvider(create: (context) => SymptomsAndDiagnosisCubit()),
-        BlocProvider(create: (context) => MedicationCubit()),
-
+        BlocProvider(create: (context) => PastMedicalHistoryCubit()),
+        BlocProvider(create: (context) => WhatsappMessagingCubit()),
         //? would be here
       ],
       child: MyApp(routerConfig: routerConfig),
@@ -79,6 +78,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+          scaffoldBackgroundColor: Colors.white,
+          appBarTheme: const AppBarTheme(backgroundColor: Colors.white, surfaceTintColor: Colors.white),
+          bottomSheetTheme: const BottomSheetThemeData(backgroundColor: Colors.white, surfaceTintColor: Colors.white),
           textTheme: GoogleFonts.poppinsTextTheme(),
           // switchTheme: SwitchThemeData(),
           timePickerTheme: const TimePickerThemeData(

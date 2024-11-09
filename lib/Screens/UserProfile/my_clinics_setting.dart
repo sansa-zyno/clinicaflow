@@ -35,18 +35,14 @@ class _MyClinicsSettingState extends State<MyClinicsSetting> with AppBarMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: buildAppBar(context,
-          title: "Clinic Settings",
-          automaticallyImplyLeading: true,
-          showDefaultActions: true),
+      appBar: buildAppBar(context, title: "Clinic Settings", automaticallyImplyLeading: true, showDefaultActions: false),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15),
         child: Column(
           children: [
             Container(
-              height: 50,
-              color: const Color(0xffF5F5F5),
+              height: 52,
+              color: AppColors.whiteSmoke,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: Row(children: [
@@ -77,16 +73,12 @@ class _MyClinicsSettingState extends State<MyClinicsSetting> with AppBarMixin {
                         itemCount: userModel?.linkedClinics.length ?? 0,
                         itemBuilder: (ctx, index) => InkWell(
                               onTap: () {
-                                context.pushNamed(AppRoutes.clinicSettings.name,
-                                    extra: userModel!.linkedClinics[index]
-                                        ['clinic']);
+                                context.pushNamed(AppRoutes.clinicSettings.name, extra: userModel!.linkedClinics[index]['clinic']);
                               },
                               child: Container(
                                 padding: EdgeInsets.all(15),
                                 margin: EdgeInsets.only(bottom: 8),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(15),
-                                    color: AppColors.grey5),
+                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(15), color: AppColors.grey5),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -95,44 +87,27 @@ class _MyClinicsSettingState extends State<MyClinicsSetting> with AppBarMixin {
                                         const CircleAvatar(
                                           backgroundColor: Colors.white,
                                           radius: 20,
-                                          backgroundImage: AssetImage(
-                                              'assets/homeimages/image 6 (3).png'),
+                                          backgroundImage: AssetImage('assets/homeimages/image 6 (3).png'),
                                         ),
                                         SizedBox(
                                           width: 8,
                                         ),
                                         Text(
-                                          userModel?.linkedClinics[index]
-                                                  ['clinic']['clinicName'] ??
-                                              '',
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w700,
-                                              color: AppColors.eerieBlack),
+                                          userModel?.linkedClinics[index]['clinic']['clinicName'] ?? '',
+                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.eerieBlack),
                                         ),
                                         Spacer(),
-                                        (userModel?.linkedClinics[index]
-                                                        ['clinic']['_id'] ??
-                                                    -1) ==
-                                                activeClinicId
+                                        (userModel?.linkedClinics[index]['clinic']['_id'] ?? -1) == activeClinicId
                                             ? Container(
                                                 padding: EdgeInsets.all(5),
-                                                decoration: BoxDecoration(
-                                                    color:
-                                                        AppColors.whiteSmoke3,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            5)),
+                                                decoration: BoxDecoration(color: AppColors.whiteSmoke3, borderRadius: BorderRadius.circular(5)),
                                                 child: const Text(
                                                   'Current',
                                                   style: TextStyle(
                                                       fontSize: 12,
-                                                      fontStyle:
-                                                          FontStyle.italic,
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                      color:
-                                                          AppColors.lightTeal),
+                                                      fontStyle: FontStyle.italic,
+                                                      fontWeight: FontWeight.w700,
+                                                      color: AppColors.lightTeal),
                                                 ),
                                               )
                                             : Container()
@@ -143,10 +118,7 @@ class _MyClinicsSettingState extends State<MyClinicsSetting> with AppBarMixin {
                                     ),
                                     Text(
                                       '${userModel?.firstName ?? ''} ${userModel?.lastName ?? ''}',
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w500,
-                                          color: AppColors.eerieBlack),
+                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: AppColors.eerieBlack),
                                     ),
                                     /* SizedBox(
                                   height: 5,
@@ -160,10 +132,7 @@ class _MyClinicsSettingState extends State<MyClinicsSetting> with AppBarMixin {
                                 ),*/
                                     Text(
                                       userModel?.email ?? '',
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: AppColors.grey),
+                                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.grey),
                                     )
                                   ],
                                 ),
@@ -185,8 +154,8 @@ class _MyClinicsSettingState extends State<MyClinicsSetting> with AppBarMixin {
                   child: const Text(
                     'Add New Clinic',
                     style: TextStyle(
-                      color: Color(0xFFFFFFFF),
-                      fontSize: 16,
+                      color: Colors.white,
+                      fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
                   ),

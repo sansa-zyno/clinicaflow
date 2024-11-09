@@ -7,7 +7,6 @@ import 'package:healtether_clinic_app/Screens/ManageStaff/payment_detail_screen.
 import 'package:healtether_clinic_app/Screens/patients_records/patients_records.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/is_edit_cubit/is_edit_cubit.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/patient_records_cubit/patient_records_cubit.dart';
-import 'package:healtether_clinic_app/business_logic/cubits/staff_cubit/staff_cubit.dart';
 import 'package:healtether_clinic_app/data_layer/models/patient_records_model/post/documents_patient_model.dart';
 import 'package:healtether_clinic_app/data_layer/models/staff_model/create_staff_model.dart';
 import 'package:healtether_clinic_app/data_layer/models/patient_records_model/post/address_patient_model.dart';
@@ -77,10 +76,10 @@ class _DocumentScreenState extends State<DocumentScreen> {
                 ),
               ),
             ),
-            IconButton(
+            /*IconButton(
               onPressed: () {},
               icon: const Icon(Icons.more_vert),
-            ),
+            ),*/
           ],
         ),
         body: BlocBuilder<PatientRecordsCubit, PatientRecordsState>(builder: (context, state) {
@@ -157,10 +156,10 @@ class _DocumentScreenState extends State<DocumentScreen> {
                             },
                             child: const Row(
                               children: [
-                                Icon(Icons.add, color: AppColors.blueColor),
+                                Icon(Icons.add, color: AppColors.blueViolet),
                                 Text(
                                   AppText.addAnotherID,
-                                  style: TextStyle(color: AppColors.blueColor),
+                                  style: TextStyle(color: AppColors.blueViolet),
                                 ),
                               ],
                             ),
@@ -170,7 +169,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
                             child: Container(
                               height: 2,
                               width: screenSize.width * 0.6,
-                              color: AppColors.blueColor,
+                              color: AppColors.blueViolet,
                             ),
                           ),
                           const SizedBox(height: 10),
@@ -195,11 +194,6 @@ class _DocumentScreenState extends State<DocumentScreen> {
 
                               if (result != null) {
                                 PlatformFile file = result.files.first;
-
-                                print(file.bytes);
-                                print(file.size);
-                                print(file.extension);
-                                print(file.path);
                                 setState(() {
                                   if (!docs.contains(file.name)) {
                                     docs.add(file.name);
@@ -337,9 +331,9 @@ class _DocumentScreenState extends State<DocumentScreen> {
                   }
 
                   if (widget.forStaff == true) {
-                    widget.createStaff?.documentType = idProofText ?? widget.createStaff?.documentType;
-                    widget.createStaff?.documentNumber = idController.text.isNotEmpty ? idController.text : widget.createStaff?.documentNumber;
-                    widget.createStaff?.documents = staffDocs ?? widget.createStaff?.documents;
+                    widget.createStaff?.documentType = idProofText;
+                    widget.createStaff?.documentNumber = idController.text;
+                    widget.createStaff?.documents = staffDocs;
                     Navigator.push(
                       context,
                       MaterialPageRoute(

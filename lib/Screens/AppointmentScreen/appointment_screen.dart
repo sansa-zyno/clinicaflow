@@ -1,20 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import 'package:healtether_clinic_app/Screens/AppointmentScreen/widgets/info_card_screen.dart';
 import 'package:healtether_clinic_app/Screens/Models/schedule_date.dart';
-
-import 'package:healtether_clinic_app/Screens/ScheduleAppointment/add_personl_detail_screen.dart';
-
 import 'package:healtether_clinic_app/business_logic/cubits/appointment_cubit/appointment_cubit.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/home_page_bottom_nav_cubit/home_page_bottom_nav_cubit.dart';
-import 'package:healtether_clinic_app/data_layer/sample_objects/sample_objects.dart';
 import 'package:healtether_clinic_app/constants/constants.dart';
-import 'package:healtether_clinic_app/utils/enums/route_enums.dart';
+import 'package:healtether_clinic_app/utils/enums/bloc_enums.dart';
 import 'package:healtether_clinic_app/utils/helper_functions/log.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class AppointmentScreen extends StatefulWidget {
   const AppointmentScreen({super.key});
@@ -25,15 +18,13 @@ class AppointmentScreen extends StatefulWidget {
 
 class AppointmentScreenState extends State<AppointmentScreen> {
   String selectedDate = 'Upcoming';
-  bool isLoading = false;
-  // late AppointmentProvider appointmentProvider;
 
   @override
   void initState() {
     super.initState();
 
     context.read<HomePageBottomNavCubit>().onPageChanged(1);
-    context.read<AppointmentCubit>().fetchAppointments();
+    context.read<AppointmentCubit>().fetchAppointments(status: selectedDate);
     log("Initstate called");
   }
 
@@ -47,12 +38,10 @@ class AppointmentScreenState extends State<AppointmentScreen> {
         surfaceTintColor: AppColors.whiteColor,
         title: Text(
           'Appointments',
-          style:
-              GoogleFonts.urbanist(fontWeight: FontWeight.w500, fontSize: 20),
+          style: GoogleFonts.urbanist(fontWeight: FontWeight.w500, fontSize: 20),
         ),
       ),
-      body: BlocBuilder<AppointmentCubit, AppointmentState>(
-          builder: (context, state) {
+      body: BlocBuilder<AppointmentCubit, AppointmentState>(builder: (context, state) {
         return SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(4.0),
@@ -78,8 +67,7 @@ class AppointmentScreenState extends State<AppointmentScreen> {
                                   fontWeight: FontWeight.w400,
                                 ),
                                 suffixIcon: ScheduleSearchBox(),
-                                prefixIcon: const Icon(Icons.search,
-                                    color: Color(0xff413D56)),
+                                prefixIcon: const Icon(Icons.search, color: Color(0xff413D56)),
                                 border: InputBorder.none,
                               ),
                             ),
@@ -104,6 +92,7 @@ class AppointmentScreenState extends State<AppointmentScreen> {
                             setState(() {
                               selectedDate = 'Upcoming';
                             });
+                            context.read<AppointmentCubit>().fetchAppointments(status: selectedDate);
                           },
                           text: 'Upcoming',
                         ),
@@ -113,6 +102,7 @@ class AppointmentScreenState extends State<AppointmentScreen> {
                             setState(() {
                               selectedDate = 'Cancelled';
                             });
+                            context.read<AppointmentCubit>().fetchAppointments(status: selectedDate);
                           },
                           text: 'Cancelled',
                         ),
@@ -122,6 +112,7 @@ class AppointmentScreenState extends State<AppointmentScreen> {
                             setState(() {
                               selectedDate = 'Completed';
                             });
+                            context.read<AppointmentCubit>().fetchAppointments(status: selectedDate);
                           },
                           text: 'Completed',
                         ),
@@ -131,6 +122,7 @@ class AppointmentScreenState extends State<AppointmentScreen> {
                             setState(() {
                               selectedDate = 'No show';
                             });
+                            context.read<AppointmentCubit>().fetchAppointments(status: selectedDate);
                           },
                           text: 'No show',
                         ),
@@ -140,6 +132,7 @@ class AppointmentScreenState extends State<AppointmentScreen> {
                             setState(() {
                               selectedDate = 'Rescheduled';
                             });
+                            context.read<AppointmentCubit>().fetchAppointments(status: selectedDate);
                           },
                           text: 'Rescheduled',
                         ),
@@ -149,6 +142,7 @@ class AppointmentScreenState extends State<AppointmentScreen> {
                             setState(() {
                               selectedDate = 'All';
                             });
+                            context.read<AppointmentCubit>().fetchAppointments(status: selectedDate);
                           },
                           text: 'All',
                         ),
@@ -185,14 +179,21 @@ class AppointmentScreenState extends State<AppointmentScreen> {
                           ),
                         ],
                       ),
-                      isLoading
-                          ? const Center(
-                              child: CircularProgressIndicator(),
-                            )
-                          : InfoCard(
-                              appointment:
-                                  SampleObjects.appointmentResponseObject,
-                            ),
+                      if (state.state == AppointmentStates.fetchingAppointments)
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height / 2,
+                          child: const Center(child: CircularProgressIndicator()),
+                        ),
+
+                      if (state.appointments?.isEmpty == true)
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height / 2,
+                          child: const Center(child: Text('No appointments found.')),
+                        ),
+                      if (state.appointments?.isNotEmpty == true)
+                        InfoCard(
+                          appointments: state.appointments!,
+                        ),
                       // SizedBox(
                       //   height: 12,
                       // ),
@@ -216,24 +217,6 @@ class AppointmentScreenState extends State<AppointmentScreen> {
           ),
         );
       }),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          context.pushNamed(AppRoutes.addPersonalDetails.name);
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(builder: (context) {
-          //     // return const AddAppointScreen();
-          //     return const AddPersonalDetailsScreen();
-          //   }),
-          // );
-        },
-        backgroundColor: const Color(0xff32856E),
-        shape: const CircleBorder(),
-        child: Icon(
-          MdiIcons.accountMultiplePlus,
-          color: Colors.white,
-        ),
-      ),
     );
   }
 }
@@ -263,9 +246,7 @@ class DateCards extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: isSelected
-                    ? const Color(0xff6CEBC6)
-                    : const Color(0xffF5F5F5),
+                color: isSelected ? const Color(0xff6CEBC6) : const Color(0xffF5F5F5),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Center(
@@ -274,11 +255,8 @@ class DateCards extends StatelessWidget {
                   style: GoogleFonts.urbanist(
                     textStyle: TextStyle(
                       fontSize: 15,
-                      fontWeight:
-                          isSelected ? FontWeight.w600 : FontWeight.w600,
-                      color: isSelected
-                          ? const Color(0xff0C091F)
-                          : const Color(0xff928F9E),
+                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.w600,
+                      color: isSelected ? const Color(0xff0C091F) : const Color(0xff928F9E),
                       fontFamily: GoogleFonts.montserrat().fontFamily,
                     ),
                   ),

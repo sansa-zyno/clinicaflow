@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 // import 'package:healtether_clinic_app/Screens/HomeScreen/page_view_screen.dart';
 import 'package:healtether_clinic_app/business_logic/blocs/login_bloc/login_bloc.dart';
+import 'package:healtether_clinic_app/constants/app_colors.dart';
 // import 'package:healtether_clinic_app/widgets/CustomTextField.dart';
 import 'package:healtether_clinic_app/widgets/customButton.dart';
 import 'package:healtether_clinic_app/utils/enums/route_enums.dart';
@@ -38,8 +39,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return BlocListener<LoginBloc, LoginState>(
       // bloc: bloc,
-      listenWhen: (previous, current) =>
-          current is LoginActionState ? true : false,
+      listenWhen: (previous, current) => current is LoginActionState ? true : false,
       listener: (context, state) {
         if (state is LoginFailState) {
           showSnackbar(state.error, context);
@@ -70,31 +70,29 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const Text(
                     "Enter your mobile number *",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
                   ),
                   const SizedBox(
                     height: 8,
                   ),
                   CustomTextField(
+                    height: 52,
                     hintText: "Mobile number",
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 16),
-                    inputFormatters: [
-                      LengthLimitingTextInputFormatter(10),
-                      FilteringTextInputFormatter.digitsOnly
-                    ],
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
+                    inputFormatters: [LengthLimitingTextInputFormatter(10), FilteringTextInputFormatter.digitsOnly],
                     controller: _mobileController,
-                    validator: (number) => (number!.isEmpty)
-                        ? "The mobile number is incorrect, please try again!"
-                        : null,
+                    validator: (number) => (number!.isEmpty) ? "The mobile number is incorrect, please try again!" : null,
                     keyBoardType: TextInputType.number,
+                    onChanged: (x) {
+                      setState(() {});
+                    },
                   ),
                   const SizedBox(
                     height: 16,
                   ),
                   const Text(
                     "Password *",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
                   ),
                   const SizedBox(
                     height: 8,
@@ -102,11 +100,8 @@ class _LoginPageState extends State<LoginPage> {
                   CustomTextField(
                     hintText: "Password",
                     controller: _passwordController,
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 16),
-                    validator: (password) => (password!.isEmpty)
-                        ? "Please enter the password"
-                        : null,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
+                    validator: (password) => (password!.isEmpty) ? "Please enter the password" : null,
                     obscureText: !isPasswordVisible,
                     suffixIcon: InkWell(
                       onTap: () {
@@ -115,11 +110,12 @@ class _LoginPageState extends State<LoginPage> {
                         });
                       },
                       child: Icon(
-                        isPasswordVisible
-                            ? Icons.visibility
-                            : Icons.visibility_off,
+                        isPasswordVisible ? Icons.visibility : Icons.visibility_off,
                       ),
                     ),
+                    onChanged: (x) {
+                      setState(() {});
+                    },
                   ),
                   const SizedBox(
                     height: 30,
@@ -131,18 +127,14 @@ class _LoginPageState extends State<LoginPage> {
                         children: [
                           const Text(
                             "By continuing, you agree to our ",
-                            style: TextStyle(
-                                fontSize: 13, fontWeight: FontWeight.w400),
+                            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w400),
                           ),
                           GestureDetector(
                               onTap: () {},
                               child: const Text(
                                 "Terms & Conditions",
                                 style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w400,
-                                    color: Color(0xff5351C7),
-                                    decoration: TextDecoration.underline),
+                                    fontSize: 13, fontWeight: FontWeight.w400, color: AppColors.blueViolet, decoration: TextDecoration.underline),
                               ))
                         ],
                       )),
@@ -153,11 +145,12 @@ class _LoginPageState extends State<LoginPage> {
                       onTap: () {},
                       child: const Text("Forgot Password?",
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: 14,
+                            color: AppColors.blueViolet,
                             fontWeight: FontWeight.w400,
                           ))),
                   const SizedBox(
-                    height: 16,
+                    height: 30,
                   ),
                   BlocBuilder<LoginBloc, LoginState>(
                     // bloc: L,
@@ -167,24 +160,24 @@ class _LoginPageState extends State<LoginPage> {
                           onTap: () {
                             bool ans = _formkey.currentState!.validate();
                             if (ans) {
-                              context.read<LoginBloc>().add(LogingProcessEvent(
-                                  number: _mobileController.text,
-                                  password: _passwordController.text,
-                                  context: context));
+                              context
+                                  .read<LoginBloc>()
+                                  .add(LogingProcessEvent(number: _mobileController.text, password: _passwordController.text, context: context));
                             }
                           },
-                          child: const CustomButton(
+                          child: CustomButton(
                             data: "Log me in",
-                            color: Color(0xff03BF9C),
+                            color:
+                                _mobileController.text.isNotEmpty && _passwordController.text.isNotEmpty ? AppColors.darkTeal : AppColors.whiteSmoke,
                             height: 54,
-                            Textsize: 16,
-                            Textcolor: Colors.white,
+                            Textsize: 14,
+                            Textcolor: _mobileController.text.isNotEmpty && _passwordController.text.isNotEmpty ? Colors.white : AppColors.lightGrey3,
                           ),
                         );
                       } else {
                         return const CustomButton(
                           data: "Logging you in..",
-                          color: Color(0xff03BF9C),
+                          color: AppColors.darkTeal,
                           height: 54,
                           Textsize: 16,
                           Textcolor: Colors.white,

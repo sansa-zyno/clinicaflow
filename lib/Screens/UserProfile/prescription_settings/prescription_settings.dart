@@ -20,93 +20,78 @@ class PrescriptionSettings extends StatefulWidget {
   State<PrescriptionSettings> createState() => _PrescriptionSettingsState();
 }
 
-class _PrescriptionSettingsState extends State<PrescriptionSettings>
-    with AppBarMixin {
+class _PrescriptionSettingsState extends State<PrescriptionSettings> with AppBarMixin {
   bool useAiPredictiveSearch = true;
   bool previewPrescriptionbeforePrint = false;
   bool notifyUserOnWhatsapp = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(context,
-          title: "Clinic Settings", automaticallyImplyLeading: true),
+      appBar: buildAppBar(context, title: "Clinic Settings", automaticallyImplyLeading: true, showDefaultActions: false),
       body: SingleChildScrollView(
-        child: BlocBuilder<SettingsCubit, SettingsState>(
-            builder: (context, state) {
-          return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 16),
-                //? PRESCRIPTION SETTINGS
-                const SectionText("PRESCRIPTION SETTINGS").pSymmetric(),
+        child: BlocBuilder<SettingsCubit, SettingsState>(builder: (context, state) {
+          return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const SizedBox(height: 16),
+            //? PRESCRIPTION SETTINGS
+            const SectionText("PRESCRIPTION SETTINGS").pSymmetric(),
 
-                const SizedBox(height: 14),
+            const SizedBox(height: 14),
 
-                //? AI PREDICTIVE SEARCH
-                MySwitchListTile(
-                  title: "Ai Predictive Search",
-                  subtitle:
-                      "The Ai search allows you to give predictive analysis based on the patient’s vitals, examinations, lab and reports",
-                  value: state.useAiPredictiveSearch,
-                  onChanged:
-                      context.read<SettingsCubit>().updateUseAiPredictiveSearch,
-                ).pSymmetric(),
+            //? AI PREDICTIVE SEARCH
+            MySwitchListTile(
+              title: "Ai Predictive Search",
+              subtitle: "The Ai search allows you to give predictive analysis based on the patient’s vitals, examinations, lab and reports",
+              value: state.useAiPredictiveSearch,
+              onChanged: context.read<SettingsCubit>().updateUseAiPredictiveSearch,
+            ).pSymmetric(),
 
-                const SizedBox(
-                  height: 18,
-                ),
+            const SizedBox(
+              height: 18,
+            ),
 
-                // Prescription layout
-                const MySwitchListTile(
-                  title: "Prescription Layout",
-                  subtitle:
-                      "Choose from the templates available or add your own template.",
-                ).pSymmetric(),
+            // Prescription layout
+            const MySwitchListTile(
+              title: "Prescription Layout",
+              subtitle: "Choose from the templates available or add your own template.",
+            ).pSymmetric(),
 
-                const SizedBox(height: 18),
+            const SizedBox(height: 18),
 
-                //? Row of available Templates
-                ScrollableRow(
-                  height: 121,
-                  children: List<Widget>.generate(
-                      PrescriptionTemplates.values.length, (index) {
-                    final template =
-                        PrescriptionTemplates.values.elementAt(index);
+            //? Row of available Templates
+            ScrollableRow(
+              height: 121,
+              children: List<Widget>.generate(PrescriptionTemplates.values.length, (index) {
+                final template = PrescriptionTemplates.values.elementAt(index);
 
-                    return PrescriptionTemplateContainer(
-                      title: "Template ${index + 1}",
-                      child: Image.asset(template.imgPath),
-                      onTap: () {
-                        log("Tapped template ${index + 1}");
-                        context.pushNamed(AppRoutes.prescriptionLayout.name,
-                            extra: template);
-                      },
-                    ).pOnly(right: 18, left: index == 0 ? 16 : 0);
-                  }),
-                ),
+                return PrescriptionTemplateContainer(
+                  title: "Template ${index + 1}",
+                  child: Image.asset(template.imgPath),
+                  onTap: () {
+                    log("Tapped template ${index + 1}");
+                    context.pushNamed(AppRoutes.prescriptionLayout.name, extra: template);
+                  },
+                ).pOnly(right: 18, left: index == 0 ? 16 : 0);
+              }),
+            ),
 
-                const SizedBox(height: 18),
+            const SizedBox(height: 18),
 
-                // preview prescription before pring
-                MySwitchListTile(
-                  title: "Preview the prescription before every print",
-                  value: state.notifyUserOnWhatsapp,
-                  onChanged:
-                      context.read<SettingsCubit>().updateNotifyUserOnWhatsapp,
-                ).pSymmetric(),
+            // preview prescription before pring
+            MySwitchListTile(
+              title: "Preview the prescription before every print",
+              value: state.notifyUserOnWhatsapp,
+              onChanged: context.read<SettingsCubit>().updateNotifyUserOnWhatsapp,
+            ).pSymmetric(),
 
-                const SizedBox(height: 18),
+            const SizedBox(height: 18),
 
-                // send prescription to user's whatsapp
-                MySwitchListTile(
-                        title:
-                            "Auto send the prescription to the user's whatsapp, ask before action",
-                        value: state.previewPrescriptionbeforePrint,
-                        onChanged: context
-                            .read<SettingsCubit>()
-                            .updatePreviewPrescriptionbeforePrint)
-                    .pSymmetric()
-              ]);
+            // send prescription to user's whatsapp
+            MySwitchListTile(
+                    title: "Auto send the prescription to the user's whatsapp, ask before action",
+                    value: state.previewPrescriptionbeforePrint,
+                    onChanged: context.read<SettingsCubit>().updatePreviewPrescriptionbeforePrint)
+                .pSymmetric()
+          ]);
         }),
       ),
     );
@@ -114,8 +99,7 @@ class _PrescriptionSettingsState extends State<PrescriptionSettings>
 }
 
 class PrescriptionTemplateContainer extends StatelessWidget {
-  const PrescriptionTemplateContainer(
-      {super.key, required this.child, this.title, this.onTap});
+  const PrescriptionTemplateContainer({super.key, required this.child, this.title, this.onTap});
 
   final Widget child;
   final String? title;
@@ -143,11 +127,7 @@ class PrescriptionTemplateContainer extends StatelessWidget {
               Text(title!,
                   textAlign: TextAlign.center,
                   style: GoogleFonts.roboto(
-                      textStyle: const TextStyle(
-                          color: AppColors.lightGreen,
-                          fontWeight: FontWeight.w400,
-                          fontSize: 13,
-                          height: 17.16 / 13)))
+                      textStyle: const TextStyle(color: AppColors.lightGreen, fontWeight: FontWeight.w400, fontSize: 13, height: 17.16 / 13)))
           ],
         ),
       ),
@@ -161,12 +141,7 @@ class MySwitchListTile extends StatelessWidget {
   final bool? value;
   final void Function(bool)? onChanged;
 
-  const MySwitchListTile(
-      {super.key,
-      required this.title,
-      this.subtitle,
-      this.value,
-      this.onChanged});
+  const MySwitchListTile({super.key, required this.title, this.subtitle, this.value, this.onChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -184,11 +159,7 @@ class MySwitchListTile extends StatelessWidget {
                 children: [
                   Expanded(
                       child: Text(title,
-                          style: GoogleFonts.urbanist(
-                              textStyle: const TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 17,
-                                  height: 22.78 / 17)))),
+                          style: GoogleFonts.urbanist(textStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 17, height: 22.78 / 17)))),
 
                   if (value != null)
                     const SizedBox(
@@ -196,8 +167,7 @@ class MySwitchListTile extends StatelessWidget {
                     ),
 
                   //? check box
-                  if (value != null)
-                    MySwitch(value: value!, onChanged: onChanged)
+                  if (value != null) MySwitch(value: value!, onChanged: onChanged)
                 ],
               ),
 
@@ -214,11 +184,7 @@ class MySwitchListTile extends StatelessWidget {
                       child: Text(
                         subtitle!,
                         style: GoogleFonts.roboto(
-                            textStyle: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w400,
-                                height: 17.16 / 13,
-                                color: AppColors.grey)),
+                            textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w400, height: 17.16 / 13, color: AppColors.grey)),
                       ),
                     ),
 

@@ -66,8 +66,7 @@ class CreateStaff {
     gender = json['gender'];
     mobile = json['mobile'];
     email = json['email'];
-    address =
-        json['address'] != null ? Address.fromJson(json['address']) : null;
+    address = json['address'] != null ? Address.fromJson(json['address']) : null;
     documentType = json['documentType'];
     documentNumber = json['documentNumber'];
     bankName = json['bankName'];
@@ -98,32 +97,37 @@ class CreateStaff {
     data['staffId'] = staffId;
     data['firstName'] = firstName;
     data['lastName'] = lastName;
-    data['specialisation'] = specialisation;
+    data['specialisation'] = specialisation ?? '';
     data['isDoctor'] = isDoctor;
     data['age'] = age;
     data['birthday'] = birthday;
     data['gender'] = gender;
     data['mobile'] = mobile;
-    data['email'] = email;
+    data['email'] = email ?? '';
     if (address != null) {
       data['address'] = address!.toJson();
+    } else {
+      data['address'] = Address().toJson();
     }
-    data['documentType'] = documentType;
-    data['documentNumber'] = documentNumber;
-    data['bankName'] = bankName;
-    data['account'] = account;
-    data['accountName'] = accountName;
-    data['ifsc'] = ifsc;
+    data['documentType'] = documentType ?? '';
+    data['documentNumber'] = documentNumber ?? '';
+    data['bankName'] = bankName ?? '';
+    data['account'] = account ?? '';
+    data['accountName'] = accountName ?? '';
+    data['ifsc'] = ifsc ?? '';
     data['isAdmin'] = isAdmin;
     data['createdOn'] = createdOn;
     data['modifiedOn'] = modifiedOn;
-    data['profilepic'] = profilepic;
+    data['profilepic'] = profilepic ?? '';
     if (documents != null) {
       data['documents'] = documents!.map((v) => v.toJson()).toList();
+    } else {
+      data['documents'] = [];
     }
     if (availableTimeSlot != null) {
-      data['availableTimeSlot'] =
-          "${availableTimeSlot!.map((v) => v.toJson(context)).toList()}";
+      data['availableTimeSlot'] = "${availableTimeSlot!.map((v) => v.toJson(context)).toList()}";
+    } else {
+      data['availableTimeSlot'] = [];
     }
     data['clientId'] = clientId;
     return data;

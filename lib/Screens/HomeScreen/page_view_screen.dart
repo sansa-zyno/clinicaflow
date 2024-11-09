@@ -6,6 +6,7 @@ import 'package:healtether_clinic_app/business_logic/cubits/home_page_bottom_nav
 import 'package:healtether_clinic_app/business_logic/blocs/login_bloc/login_bloc.dart';
 import 'package:healtether_clinic_app/utils/helper_functions/log.dart';
 import 'package:healtether_clinic_app/utils/enums/route_enums.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class HomePageView extends StatefulWidget {
   const HomePageView({super.key, required this.shell});
@@ -18,8 +19,7 @@ class HomePageView extends StatefulWidget {
 class _HomePageViewState extends State<HomePageView> {
   // int page = 0;
   // final PageController _pageController = PageController();
-  final NotchBottomBarController _notchBottomBarController =
-      NotchBottomBarController();
+  final NotchBottomBarController _notchBottomBarController = NotchBottomBarController();
 
   void navigationTapped(int page) {
     context.read<HomePageBottomNavCubit>().onPageChanged(page);
@@ -48,7 +48,6 @@ class _HomePageViewState extends State<HomePageView> {
             if (state is LoginInitial) {
               log("User logged out.\nRedirecting to login page");
               context.goNamed(AppRoutes.login.name);
-              
             }
           },
         ),
@@ -62,7 +61,32 @@ class _HomePageViewState extends State<HomePageView> {
         )
       ],
       child: Scaffold(
-        body: widget.shell,
+        body: Stack(
+          children: [
+            widget.shell,
+            widget.shell.currentIndex == 3
+                ? Container()
+                : Positioned(
+                    bottom: 0,
+                    right: 20,
+                    child: FloatingActionButton(
+                      shape: const CircleBorder(),
+                      backgroundColor: const Color(0xff32856E),
+                      onPressed: () {
+                        context.pushNamed(AppRoutes.scheduleAppointment.name);
+                        // Navigator.push(context, MaterialPageRoute(builder: (context) {
+                        //   return const AddPersonalDetailsScreen();
+                        //   // AddAppointScreen();
+                        // }));
+                      },
+                      child: Icon(
+                        MdiIcons.accountMultiplePlus,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+          ],
+        ),
         // body: PageView(
         //   controller: _pageController,
         //   onPageChanged: context.read<HomePageBottomNavCubit>().onPageChanged,
@@ -70,10 +94,10 @@ class _HomePageViewState extends State<HomePageView> {
         //   children: HomeScreenItems,
         // ),
         bottomNavigationBar: AnimatedNotchBottomBar(
-          removeMargins: true,
           notchBottomBarController: _notchBottomBarController,
+          elevation: 0,
+          removeMargins: true,
           color: const Color(0xffA1EBD6),
-          showBlurBottomBar: false,
           notchColor: const Color(0xffA1EBD6),
           bottomBarItems: const [
             BottomBarItem(

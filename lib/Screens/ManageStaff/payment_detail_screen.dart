@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:healtether_clinic_app/Screens/AppointmentScreen/widgets/custom_textfield.dart';
 import 'package:healtether_clinic_app/Screens/ManageStaff/appointment_settings.dart';
 import 'package:healtether_clinic_app/Screens/ManageStaff/bankname_dropdown.dart';
-import 'package:healtether_clinic_app/business_logic/cubits/staff_cubit/staff_cubit.dart';
 import 'package:healtether_clinic_app/data_layer/models/staff_model/create_staff_model.dart';
 import 'package:healtether_clinic_app/constants/constants.dart';
 import 'package:healtether_clinic_app/data_layer/models/staff_model/staff_model.dart';
@@ -40,35 +38,31 @@ class _PaymentDetailScreenState extends State<PaymentDetailScreen> {
   Widget build(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Add member'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => AppointmentSettings(
-                          createStaff: widget.createStaff!,
-                        )),
-              );
-            },
-            child: const Text(
-              'Skip',
-              style: TextStyle(color: Color(0XFF4646B5), fontSize: 18),
+        appBar: AppBar(
+          title: const Text('Add member'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => AppointmentSettings(
+                            createStaff: widget.createStaff!,
+                          )),
+                );
+              },
+              child: const Text(
+                'Skip',
+                style: TextStyle(color: Color(0XFF4646B5), fontSize: 18),
+              ),
             ),
-          ),
-          IconButton(
+            /*IconButton(
             onPressed: () {},
             icon: const Icon(Icons.more_vert),
-          ),
-        ],
-      ),
-      body: BlocBuilder<StaffCubit, StaffState>(builder: (context, state) {
-        if (state.errorMessage != null) {
-          return Center(child: Text('Error: ${state.errorMessage}'));
-        }
-        return Column(
+          ),*/
+          ],
+        ),
+        body: Column(
           children: [
             Expanded(
               child: SingleChildScrollView(
@@ -126,10 +120,10 @@ class _PaymentDetailScreenState extends State<PaymentDetailScreen> {
                         },
                         child: const Row(
                           children: [
-                            Icon(Icons.add, color: AppColors.blueColor),
+                            Icon(Icons.add, color: AppColors.blueViolet),
                             Text(
                               AppText.addAnotherUPIID,
-                              style: TextStyle(color: AppColors.blueColor),
+                              style: TextStyle(color: AppColors.blueViolet),
                             ),
                           ],
                         ),
@@ -139,7 +133,7 @@ class _PaymentDetailScreenState extends State<PaymentDetailScreen> {
                         child: Container(
                           height: 2,
                           width: screenSize.width * 0.6,
-                          color: AppColors.blueColor,
+                          color: AppColors.blueViolet,
                         ),
                       ),
                       const Text(
@@ -198,10 +192,10 @@ class _PaymentDetailScreenState extends State<PaymentDetailScreen> {
                         },
                         child: const Row(
                           children: [
-                            Icon(Icons.add, color: AppColors.blueColor),
+                            Icon(Icons.add, color: AppColors.blueViolet),
                             Text(
                               AppText.addAnotherNumber,
-                              style: TextStyle(color: AppColors.blueColor),
+                              style: TextStyle(color: AppColors.blueViolet),
                             ),
                           ],
                         ),
@@ -211,7 +205,7 @@ class _PaymentDetailScreenState extends State<PaymentDetailScreen> {
                         child: Container(
                           height: 2,
                           width: screenSize.width * 0.6,
-                          color: AppColors.blueColor,
+                          color: AppColors.blueViolet,
                         ),
                       ),
                       const SizedBox(height: 40),
@@ -254,8 +248,6 @@ class _PaymentDetailScreenState extends State<PaymentDetailScreen> {
               ),
             ),
           ],
-        );
-      }),
-    );
+        ));
   }
 }

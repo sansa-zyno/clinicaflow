@@ -18,6 +18,7 @@ class SelectableContainer extends StatelessWidget {
       this.borderColor,
       this.height,
       this.width,
+      this.padding,
       this.selected = false,
       this.expanded = false,
       this.backgroundColor});
@@ -43,6 +44,7 @@ class SelectableContainer extends StatelessWidget {
   final bool expanded;
   final double? height;
   final double? width;
+  final EdgeInsetsGeometry? padding;
 
   @override
   Widget build(BuildContext context) {
@@ -52,15 +54,10 @@ class SelectableContainer extends StatelessWidget {
           height: height,
           width: width,
           duration: const Duration(milliseconds: 300),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: padding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-              color: selected
-                  ? AppColors.darkTeal
-                  : backgroundColor ?? AppColors.whiteSmoke,
-              border: Border.all(
-                  color: selected
-                      ? AppColors.darkTeal
-                      : borderColor ?? AppColors.whiteSmoke),
+              color: selected ? AppColors.darkTeal : backgroundColor ?? AppColors.whiteSmoke,
+              border: Border.all(color: selected ? AppColors.darkTeal : borderColor ?? AppColors.whiteSmoke),
               borderRadius: BorderRadius.circular(7)),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -83,22 +80,19 @@ class SelectableContainer extends StatelessWidget {
     );
   }
 
-  Padding buildTitleAndSubtitle() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // title
-          (selected ? selectedTitle : title) ?? const SizedBox(),
+  buildTitleAndSubtitle() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // title
+        (selected ? selectedTitle : title) ?? const SizedBox(),
 
-          // const SizedBox(height: 16,),
+        // const SizedBox(height: 16,),
 
-          // subtitle
-          (selected ? selectedSubtitle : subtitle) ?? const SizedBox(),
-        ],
-      ),
+        // subtitle
+        (selected ? selectedSubtitle : subtitle) ?? const SizedBox(),
+      ],
     );
   }
 }

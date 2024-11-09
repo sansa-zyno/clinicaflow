@@ -18,15 +18,13 @@ class PaymentService {
 
   Future<List<GetPayment>> fetchPayment() async {
     await fetchToken();
-    final response = await HttpService.get(
-        ApiEndPoint.getPayments(clinicId: clinicId), token);
+    final response = await HttpService.get(ApiEndPoint.getPayments(clinicId: clinicId), token);
 
     if (response.statusCode == 200) {
       Map<String, dynamic> jsonResponse = response.data;
       if (jsonResponse.containsKey('data')) {
         List<dynamic> paymentList = jsonResponse['data'];
-        List<GetPayment> payments =
-            paymentList.map((json) => GetPayment.fromJson(json)).toList();
+        List<GetPayment> payments = paymentList.map((json) => GetPayment.fromJson(json)).toList();
         return payments;
       } else {
         throw 'Key "data" not found in response';

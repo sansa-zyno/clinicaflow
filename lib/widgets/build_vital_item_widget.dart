@@ -3,16 +3,10 @@ import 'dart:math' as Math;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:healtether_clinic_app/Screens/AppointmentScreen/widgets/custom_textfield.dart';
-import 'package:healtether_clinic_app/constants/app_colors.dart';
 import 'package:healtether_clinic_app/utils/helper_functions/log.dart';
 
 class VitalItem extends StatefulWidget {
-  const VitalItem(
-      {super.key,
-      required this.title,
-      required this.unit,
-      required this.hintText,
-      required this.controller});
+  const VitalItem({super.key, required this.title, required this.unit, required this.hintText, required this.controller});
   final String title;
   final String unit;
   final String hintText;
@@ -48,8 +42,7 @@ class _VitalItemState extends State<VitalItem> {
             //? title
             Text(widget.title,
                 style: GoogleFonts.urbanist(
-                  textStyle: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.w600),
+                  textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 )),
 
             const SizedBox(height: 10),
@@ -59,8 +52,8 @@ class _VitalItemState extends State<VitalItem> {
                 Expanded(
                     flex: 2,
                     child: CustomTextField(
+                        height: 52,
                         controller: real,
-                        fillColor: AppColors.fillColor2,
                         onChanged: (value) {
                           final text = widget.controller.text;
                           List<String> values = text.split('/');
@@ -73,6 +66,7 @@ class _VitalItemState extends State<VitalItem> {
                 Expanded(
                     flex: 2,
                     child: CustomTextField(
+                        height: 52,
                         controller: fraction,
                         onChanged: (value) {
                           final text = widget.controller.text;
@@ -81,7 +75,6 @@ class _VitalItemState extends State<VitalItem> {
 
                           widget.controller.text = values.join('/');
                         },
-                        fillColor: AppColors.fillColor2,
                         hintText: "${100 + Math.Random().nextInt(50)}")),
                 Expanded(
                   child: Text(
@@ -121,9 +114,10 @@ class _VitalItemState extends State<VitalItem> {
               Expanded(
                   flex: 2,
                   child: CustomTextField(
-                      controller: widget.controller,
-                      fillColor: AppColors.fillColor2,
-                      hintText: widget.hintText)),
+                    height: 52,
+                    controller: widget.controller,
+                    hintText: widget.hintText,
+                  )),
               const SizedBox(width: 6),
               Expanded(
                 flex: 1,

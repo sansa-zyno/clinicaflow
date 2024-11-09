@@ -74,14 +74,18 @@ class VitalsCubit extends Cubit<VitalsState> {
   //* PUBLIC SIMPLIFIED API ENDPOINTS
 
   //? ADD VITAL
-  void addVital(Map<String, dynamic> body) {
-    _makeRequest(
-        body: body,
-        endpoint: 'api/prescription/vitals',
-        method: 'POST',
-        loadingState: VitalsStates.addingVital,
-        successState: VitalsStates.vitalAdded,
-        failedState: VitalsStates.addingVitalFailed);
+  postVitals({required String patientId, required String appointmentId, required Map vitals}) async {
+    emit(state.copyWith(state: VitalsStates.postingVitals));
+    try {
+      String message = await service.postVitals(patientId: patientId, appointmentId: appointmentId, vitals: vitals);
+      emit(state.copyWith(
+        state: VitalsStates.vitalsPosted,
+      ));
+    } catch (error) {
+      log('Failed to save vitals: $error');
+
+      emit(state.copyWith(state: VitalsStates.postingVitalsFailed));
+    }
   }
 
   //? FETCH VITAL

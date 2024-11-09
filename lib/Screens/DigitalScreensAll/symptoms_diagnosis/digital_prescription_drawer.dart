@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:healtether_clinic_app/Screens/DigitalScreensAll/vitals_screen/vitals_screen.dart';
 
@@ -47,12 +47,12 @@ class DigitalPrescriptionEndDrawer extends StatelessWidget {
                             ),
                             GestureDetector(
                               onTap: () {
-                                Navigator.push(
+                                /* Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => const VitalsScreen(
-                                              appointmentId: '',
-                                            )));
+                                              appointment: '',
+                                            )));*/
                               },
                               child: Column(
                                 children: [
@@ -569,4 +569,4 @@ class DigitalPrescriptionEndDrawer extends StatelessWidget {
       ),
     );
   }
-}
+}*/

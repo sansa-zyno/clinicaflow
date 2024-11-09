@@ -8,6 +8,7 @@ import 'package:healtether_clinic_app/utils/enums/route_enums.dart';
 import 'package:healtether_clinic_app/utils/extensions.dart/string_extensions.dart';
 import 'package:healtether_clinic_app/utils/extensions.dart/widget_extensions.dart';
 import 'package:healtether_clinic_app/utils/helper_functions/log.dart';
+import 'package:healtether_clinic_app/widgets/buttons/my_elevated_button.dart';
 import 'package:healtether_clinic_app/widgets/buttons/my_elevated_icon_button.dart';
 import 'package:healtether_clinic_app/widgets/components/scrollable_row.dart';
 import 'package:healtether_clinic_app/widgets/icon_text.dart';
@@ -22,10 +23,7 @@ class AppointmentSummaryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-          color: AppColors.lightAqua,
-          borderRadius: BorderRadius.circular(7),
-          border: Border.all(color: AppColors.lightGrey)),
+      decoration: BoxDecoration(color: AppColors.lightAqua, borderRadius: BorderRadius.circular(7), border: Border.all(color: AppColors.lightGrey)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -46,6 +44,7 @@ class AppointmentSummaryCard extends StatelessWidget {
             children: [
               //? CHAT
               MyElevatedIconButton(
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
                 text: "Chat",
                 icon: AppIcons.whatsapp,
                 onPressed: () {
@@ -58,6 +57,7 @@ class AppointmentSummaryCard extends StatelessWidget {
 
               //? CHAT
               MyElevatedIconButton(
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
                 text: "Call",
                 icon: AppIcons.call,
                 textStyle: const TextStyle(color: AppColors.eerieBlack),
@@ -65,20 +65,20 @@ class AppointmentSummaryCard extends StatelessWidget {
                 onPressed: () {
                   log("call patient");
 
-                  launchUrl(Uri.parse('tel:+2341234567890'));
+                  launchUrl(Uri.parse('tel:+91${appointment.mobile}'));
                 },
               ),
 
               const SizedBox(width: 8),
 
               //? CHAT
-              MyElevatedIconButton(
-                text: "View bills",
-                icon: AppIcons.bill,
+              MyElevatedButton(
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
+                text: "Mark as No Show",
                 textStyle: const TextStyle(color: AppColors.eerieBlack),
                 backgroundColor: Colors.white,
                 onPressed: () {
-                  log("navigate to view bills page");
+                  //log("navigate to view bills page");
                 },
               )
             ],
@@ -99,8 +99,7 @@ class AppointmentSummaryCard extends StatelessWidget {
         ),
 
         //? ATTENDING DOCTOR
-        IconText(
-            leading: AppIcons.stethoscope, title: "${appointment.doctorName}"),
+        IconText(leading: AppIcons.stethoscope, title: "${appointment.doctorName}"),
       ],
     );
   }
@@ -112,28 +111,19 @@ class AppointmentSummaryCard extends StatelessWidget {
         //? PATIENT ID
         Text(
           "PATIENT ID - ${appointment.getPatientId}",
-          style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-              height: 16.8 / 14,
-              color: AppColors.deepAqua),
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, height: 16.8 / 14, color: AppColors.deepAqua),
         ),
 
         //? PATIENT NAME
         Text(
           appointment.name!,
-          style: const TextStyle(
-              fontWeight: FontWeight.bold, fontSize: 20, height: 24 / 20),
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20, height: 24 / 20),
         ).pSymmetric(horizontal: 0, vertical: 4),
 
         //? PATIENT AGE AND GENDER
         Text(
           "${appointment.age} ${appointment.age == 1 ? 'yr' : 'yrs'} old, ${appointment.gender?.capitalize}",
-          style: GoogleFonts.urbanist(
-              textStyle: const TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14,
-                  height: 17.36 / 14)),
+          style: GoogleFonts.urbanist(textStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14, height: 17.36 / 14)),
         ).pOnly(bottom: 10),
       ],
     );

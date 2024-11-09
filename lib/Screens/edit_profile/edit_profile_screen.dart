@@ -62,13 +62,12 @@ class _EditProfileScreensState extends State<EditProfileScreens> {
   @override
   void initState() {
     super.initState();
-    _fetchDoctors();
+    // _fetchDoctors();
   }
 
-  Future<void> _fetchDoctors() async {
+  /*Future<void> _fetchDoctors() async {
     try {
-      List<Map<String, String>> fetchedDoctorList =
-          await appointmentServices.fetchDoctors();
+      List<Map<String, String>> fetchedDoctorList = await appointmentServices.fetchDoctors();
       setState(() {
         doctorList = fetchedDoctorList;
         loading = false;
@@ -80,7 +79,7 @@ class _EditProfileScreensState extends State<EditProfileScreens> {
       });
       // Handle error
     }
-  }
+  }*/
 
   /*Future<void> _fetchTimeSlots() async {
     try {
@@ -95,10 +94,9 @@ class _EditProfileScreensState extends State<EditProfileScreens> {
     }
   }*/
 
-  Future<void> _fetchAppointments() async {
+  /*Future<void> _fetchAppointments(String status) async {
     try {
-      AppointmentModel fetchedAppointments =
-          await appointmentServices.fetchAppointments();
+      AppointmentModel fetchedAppointments = await appointmentServices.fetchAppointments(status: status);
       setState(() {
         appointments = fetchedAppointments.data!;
       });
@@ -106,7 +104,7 @@ class _EditProfileScreensState extends State<EditProfileScreens> {
       log('Error fetching appointments: $e');
       // Handle error
     }
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -114,8 +112,7 @@ class _EditProfileScreensState extends State<EditProfileScreens> {
     // final screenWidth = mediaQuery.size.width;
     // var appointmentData = Provider.of<AppointmentData>(context, listen: false);
     return Scaffold(
-      body: BlocBuilder<PatientRecordsCubit, PatientRecordsState>(
-          builder: (context, state) {
+      body: BlocBuilder<PatientRecordsCubit, PatientRecordsState>(builder: (context, state) {
         // if (patientRecordProvider.isLoading) {
         //   return Center(child: const CircularProgressIndicator());
         // }
@@ -276,14 +273,12 @@ class _EditProfileScreensState extends State<EditProfileScreens> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) =>
-                              BlocProvider<PatientRecordsCubit>(
+                          builder: (context) => BlocProvider<PatientRecordsCubit>(
                                 create: (context) => PatientRecordsCubit(),
                                 child: ContactDetailScreen(
                                   firstName: firstNameController.text,
                                   lastName: lastNameController.text,
-                                  birthDate:
-                                      DateFormat('yyyy-MM-dd').format(_dob!),
+                                  birthDate: DateFormat('yyyy-MM-dd').format(_dob!),
                                   age: ageController.text,
                                   gender: genderText,
                                   height: heightController.text,
@@ -295,8 +290,7 @@ class _EditProfileScreensState extends State<EditProfileScreens> {
                 }
               },
               child: Padding(
-                padding: const EdgeInsets.only(
-                    left: 36, right: 36, top: 5, bottom: 8),
+                padding: const EdgeInsets.only(left: 36, right: 36, top: 5, bottom: 8),
                 child: Container(
                   height: 60,
                   width: 326,
@@ -425,9 +419,7 @@ class _EditProfileScreensState extends State<EditProfileScreens> {
   int calculateAge(DateTime birthDate) {
     DateTime currentDate = DateTime.now();
     int age = currentDate.year - birthDate.year;
-    if (currentDate.month < birthDate.month ||
-        (currentDate.month == birthDate.month &&
-            currentDate.day < birthDate.day)) {
+    if (currentDate.month < birthDate.month || (currentDate.month == birthDate.month && currentDate.day < birthDate.day)) {
       age--;
     }
     return age;

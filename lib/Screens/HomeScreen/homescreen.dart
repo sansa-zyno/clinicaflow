@@ -19,7 +19,6 @@ import 'package:healtether_clinic_app/utils/enums/bloc_enums.dart';
 import 'package:healtether_clinic_app/utils/enums/route_enums.dart';
 import 'package:healtether_clinic_app/utils/extensions.dart/string_extensions.dart';
 import 'package:intl/intl.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -138,10 +137,9 @@ class _HomeScreenState extends State<HomeScreen> {
         statusBarColor: Colors.transparent,
       ),
     );
-    BlocProvider.of<AppointmentCubit>(context).fetchAppointments();
+    BlocProvider.of<AppointmentCubit>(context).fetchAppointments(status: 'Upcoming');
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Colors.white,
         body: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
           children: [
@@ -563,21 +561,6 @@ class _HomeScreenState extends State<HomeScreen> {
         drawer: const Drawer(
           child: const DrawerMenu(),
         ),
-        floatingActionButton: FloatingActionButton(
-          shape: const CircleBorder(),
-          backgroundColor: const Color(0xff32856E),
-          onPressed: () {
-            context.pushNamed(AppRoutes.addPersonalDetails.name);
-            // Navigator.push(context, MaterialPageRoute(builder: (context) {
-            //   return const AddPersonalDetailsScreen();
-            //   // AddAppointScreen();
-            // }));
-          },
-          child: Icon(
-            MdiIcons.accountMultiplePlus,
-            color: Colors.white,
-          ),
-        ),
       ),
     );
   }
@@ -785,11 +768,14 @@ class AppointmentCard extends StatelessWidget {
               children: [
                 InkWell(
                   onTap: () {
-                    context.pushNamed(AppRoutes.symptomsTest.name, extra: SampleObjects.appointmentResponseObject);
-                    // Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: (context) => const SymptomsTestsScreen()));
+                    context.pushNamed(AppRoutes.pastMedicalHistory.name, extra: {
+                      'appointment': response,
+                      'pastHistory': [],
+                      'familyHistory': [],
+                      'pastProcedures': [],
+                      'allergies': [],
+                      'medicalHistory': [],
+                    });
                   },
                   child: getOptionWidget(
                     imgPath: 'assets/homeimages/Component 15.svg',
@@ -798,11 +784,10 @@ class AppointmentCard extends StatelessWidget {
                 ),
                 InkWell(
                   onTap: () {
-                    context.pushNamed(AppRoutes.vitals.name, pathParameters: {"appointmentId": SampleObjects.appointmentResponseObject.id!});
-                    // Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: (context) => const VitalsScreen()));
+                    context.pushNamed(AppRoutes.vitals.name, extra: {
+                      'appointment': response,
+                      'vitals': [],
+                    });
                   },
                   child: getOptionWidget(
                     imgPath: 'assets/homeimages/Vector (15).svg',
@@ -811,15 +796,7 @@ class AppointmentCard extends StatelessWidget {
                 ),
                 InkWell(
                   onTap: () {
-                    context.pushNamed(AppRoutes.writePrescription.name);
-                    /* context.pushNamed(AppRoutes.writePrescription.name,
-                        extra: SampleObjects.appointmentResponseObject);*/
-                    //TODO: CHANGE context.pushNamed(AppRoutes.createDigitalPrescription.name);
-                    // Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: (context) =>
-                    //             const CreateDigitalPrescriptionScreens()));
+                    context.pushNamed(AppRoutes.writePrescription.name, extra: response);
                   },
                   child: getOptionWidget(
                     imgPath: 'assets/homeimages/Vector (16).svg',
@@ -829,11 +806,6 @@ class AppointmentCard extends StatelessWidget {
                 InkWell(
                   onTap: () {
                     context.pushNamed(AppRoutes.paymentReceiptScreen.name);
-                    // Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: (context) =>
-                    //             const PaymentsReceiptScreen()));
                   },
                   child: getOptionWidget(
                     imgPath: 'assets/homeimages/Vector (17).svg',

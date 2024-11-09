@@ -133,12 +133,10 @@ class _PaymentAnalysisState extends State<PaymentAnalysis> {
                   color: const Color(0xffF5F5F5),
                   width: 220,
                   child: Padding(
-                    padding: const EdgeInsets.only(
-                        top: 18, bottom: 10, left: 10, right: 30),
+                    padding: const EdgeInsets.only(top: 18, bottom: 10, left: 10, right: 30),
                     child: Text(
                       containerText,
-                      style: GoogleFonts.montserrat(
-                          color: Colors.black, fontWeight: FontWeight.w500),
+                      style: GoogleFonts.montserrat(color: Colors.black, fontWeight: FontWeight.w500),
                     ),
                   ),
                 ),
@@ -196,11 +194,7 @@ class _PaymentAnalysisState extends State<PaymentAnalysis> {
               degree: -120,
               text: 'Mode of payments',
               dataMap: {'Cash': 10, 'Card': 32, 'UPI': 58},
-              colorList: [
-                Color(0xff5351c7),
-                Color(0xffe4e0f3),
-                Color(0xffAEA4E2)
-              ],
+              colorList: [Color(0xff5351c7), Color(0xffe4e0f3), Color(0xffAEA4E2)],
             ),
             const SizedBox(
               height: 28,
@@ -233,7 +227,8 @@ class DateCards extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
 
-  const DateCards({super.key,
+  const DateCards({
+    super.key,
     required this.text,
     required this.isSelected,
     required this.onTap,
@@ -247,7 +242,7 @@ class DateCards extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Container(
           height: 20,
-          width: 60,
+          width: 75,
           decoration: BoxDecoration(
             color: isSelected ? const Color(0xff6CEBC6) : const Color(0xffF5F5F5),
             borderRadius: BorderRadius.circular(10),
@@ -256,7 +251,8 @@ class DateCards extends StatelessWidget {
             child: Text(
               text,
               style: TextStyle(
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,fontSize: 13,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                fontSize: 13,
                 color: Colors.black,
                 fontFamily: GoogleFonts.montserrat().fontFamily,
               ),
@@ -273,8 +269,7 @@ class RevenueCard extends StatelessWidget {
   final String amnt;
   final String value;
 
-  const RevenueCard(
-      {super.key, required this.desc, required this.amnt, required this.value});
+  const RevenueCard({super.key, required this.desc, required this.amnt, required this.value});
 
   @override
   Widget build(BuildContext context) {
@@ -293,8 +288,7 @@ class RevenueCard extends StatelessWidget {
             children: [
               Text(
                 desc,
-                style: GoogleFonts.montserrat(
-                    fontWeight: FontWeight.w600, fontSize: 12),
+                style: GoogleFonts.montserrat(fontWeight: FontWeight.w600, fontSize: 12),
               ),
               const SizedBox(
                 height: 8,

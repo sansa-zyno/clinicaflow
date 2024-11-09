@@ -30,4 +30,33 @@ class LabTestService {
       throw 'Failed to load data: ${response.statusCode}';
     }
   }
+
+  Future<String> postLabTest({required String patientId, required String appointmentId, required List labTests}) async {
+    await fetchToken();
+    final response = await HttpService.post(
+      ApiEndPoint.postLabtests(patientId: patientId, clientId: clinicId, appointmentId: appointmentId),
+      token,
+      {"labTests": labTests},
+    );
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return response.data['message'];
+    } else {
+      throw 'Failed to save data: ${response.statusCode}';
+    }
+  }
+
+  Future<List<LabTest>?> getSavedLabTests({required String appointmentId}) async {
+    await fetchToken();
+    final response = await HttpService.get(ApiEndPoint.getWholePrescriptionsAndVitals(appointmentId: appointmentId, clientId: clinicId), token);
+    if (response.statusCode == 200) {
+      if (response.data['prescriptions'] != null) {
+        List<LabTest>? labTests = (response.data['prescriptions']['labTests'] as List?)?.map((e) => LabTest.fromMap(e)).toList();
+        return labTests;
+      } else {
+        return null;
+      }
+    } else {
+      throw 'Failed to retrieve data: ${response.statusCode}';
+    }
+  }
 }

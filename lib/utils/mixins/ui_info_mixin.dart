@@ -23,10 +23,7 @@ mixin UiInfoMixin {
         return Theme(
           data: ThemeData.light().copyWith(
             colorScheme: const ColorScheme.light(
-                primary: AppColors.primaryColor,
-                onPrimary: Colors.white,
-                onSurface: Colors.black,
-                tertiaryContainer: AppColors.lightAqua),
+                primary: AppColors.primaryColor, onPrimary: Colors.white, onSurface: Colors.black, tertiaryContainer: AppColors.lightAqua),
           ),
           child: child!,
         );
@@ -41,10 +38,7 @@ mixin UiInfoMixin {
           return Theme(
               data: ThemeData.light().copyWith(
                 colorScheme: const ColorScheme.light(
-                    primary: AppColors.primaryColor,
-                    onPrimary: Colors.white,
-                    onSurface: Colors.black,
-                    tertiaryContainer: AppColors.lightAqua),
+                    primary: AppColors.primaryColor, onPrimary: Colors.white, onSurface: Colors.black, tertiaryContainer: AppColors.lightAqua),
               ),
               child: child!);
         },
@@ -58,28 +52,19 @@ mixin UiInfoMixin {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        content: Text(message,
-            style: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.w500))));
+        content: Text(message, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500))));
   }
 
-  Future<dynamic> pickTime(BuildContext context,
-      {returnTimeObject = false}) async {
+  Future<dynamic> pickTime(BuildContext context, {returnTimeObject = false}) async {
     log("Show time");
-
     final pickedTime = await showMyTimePicker(context);
-
     String? formattedTime;
-
     if (context.mounted) formattedTime = pickedTime?.format(context);
-
     log("Picked time: $formattedTime");
-
     return returnTimeObject ? pickedTime : formattedTime;
   }
 
-  Future<dynamic> pickDate(BuildContext context,
-      {bool returnDateObject = false}) async {
+  Future<dynamic> pickDate(BuildContext context, {bool returnDateObject = false}) async {
     final date = await showMyDatePicker(context);
     String? parsedDate;
     if (date != null) {

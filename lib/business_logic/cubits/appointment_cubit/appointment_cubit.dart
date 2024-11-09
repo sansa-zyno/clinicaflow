@@ -7,23 +7,19 @@ import 'package:healtether_clinic_app/utils/helper_functions/log.dart';
 part 'appointment_state.dart';
 
 class AppointmentCubit extends Cubit<AppointmentState> {
-  AppointmentCubit()
-      : super(AppointmentState(state: AppointmentStates.initial));
+  AppointmentCubit() : super(AppointmentState(state: AppointmentStates.initial));
 
   AppointmentServices service = AppointmentServices();
 
-  Future<void> fetchAppointments() async {
+  Future<void> fetchAppointments({required String status}) async {
     emit(AppointmentState(state: AppointmentStates.fetchingAppointments));
 
     try {
-      AppointmentModel appointmentModel = await service.fetchAppointments();
+      AppointmentModel appointmentModel = await service.fetchAppointments(status: status);
       final appointments = appointmentModel.data ?? [];
       final totalCount = appointmentModel.totalCount ?? 0;
 
-      emit(state.copyWith(
-          state: AppointmentStates.appointmentsFetched,
-          totalCount: totalCount,
-          appointments: appointments));
+      emit(state.copyWith(state: AppointmentStates.appointmentsFetched, totalCount: totalCount, appointments: appointments));
     } catch (error) {
       log('Failed to load appointments: $error');
 
@@ -35,7 +31,7 @@ class AppointmentCubit extends Cubit<AppointmentState> {
     emit(AppointmentState(state: AppointmentStates.creatingAppointments));
 
     try {
-      await service.bookAppointment(
+      String patientId = await service.bookAppointment(
           mobile: map['mobile'],
           name: map['name'],
           gender: map['gender'],
@@ -50,12 +46,9 @@ class AppointmentCubit extends Cubit<AppointmentState> {
           doctorName: map['doctorName'],
           clinicPatientId: map['clinicPatientId']);
 
-      emit(state.copyWith(
-        state: AppointmentStates.appointmentsCreated,
-      ));
+      emit(state.copyWith(state: AppointmentStates.appointmentsCreated, patientId: patientId));
     } catch (error) {
       log('Failed to create appointments: $error');
-
       emit(state.copyWith(state: AppointmentStates.creatingAppointmentsFailed));
     }
   }

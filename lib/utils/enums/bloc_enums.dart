@@ -50,13 +50,13 @@ enum PatientRecordsStates {
   deletingPatientFailed,
 }
 
-enum CreateSymptomsStates {
+/*enum CreateSymptomsStates {
   initial,
   //? CREATING SYMPTOMS
   postingSymptoms,
   symptomsPosted,
   postingSymptomsFailed,
-}
+}*/
 
 enum MedicationStates {
   initial,
@@ -125,9 +125,9 @@ enum PastHistoryStates {
 enum VitalsStates {
   initial,
   //? CREATING VITALS
-  addingVital,
-  vitalAdded,
-  addingVitalFailed,
+  postingVitals,
+  vitalsPosted,
+  postingVitalsFailed,
   //? FETCHING VITALS
   vitalsFetched,
   fetchingVitals,
@@ -160,10 +160,18 @@ enum AllergyStates {
 
 enum LabTestStates {
   initial,
+  //? CREATING LAB TESTS
+  postingLabTests,
+  labTestsPosted,
+  postingLabTestsFailed,
   //? FETCHING FREQUENTLY SEARCHED TESTS
   fetchingFrequentlySearchedTests,
   frequentlySearchedTestsFetched,
   frequentlySearchedTestsFailed,
+  //? FETCHING SAVED TESTS
+  fetchingSavedTests,
+  savedTestsFetched,
+  savedTestsFailed,
   //? SEARCHING FREQUENTLY SEARCHED TESTS
   searchingForTests,
   searchingForTestsSuccess,
@@ -172,31 +180,63 @@ enum LabTestStates {
 
 enum SymptomsAndDiagnosisStates {
   initial,
+  //? CREATING SYMPTOMS
+  postingSymptomsAndDiagnosis,
+  symptomsAndDiagnosisPosted,
+  postingSymptomsAndDiagnosisFailed,
+
   //FETCHING FREQUENTLY SEARCHED SYMPTOMS
   fetchingFrequentlySearchedSymptoms,
   frequentlySearchedSymptomsFetched,
   frequentlySearchedSymptomsFailed,
 
-  searchingSymptomAndPredictionForddx,
+  //FETCHING SAVED SYMPTOMS
+  fetchingSavedSymptomsAndDiagnosis,
+  savedSymptomsAndDiagnosisFetched,
+  savedSymptomsAndDiagnosisFailed,
+
+  fetchingSymptomAndPredictionForddx,
   symptomAndPredictionForddxFetched,
-  searchingSymptomAndPredictionForddxFailed,
+  fetchingSymptomAndPredictionForddxFailed,
 }
 
 enum DrugPrescriptionStates {
   initial,
-  savingDrugs,
-  drugsSaved,
-  fetchingSavedDrugs,
-  clearingSavedDrugs,
-  savedDrugsCleared,
-  removingDrug,
-  drugRemoved,
+  //? CREATING DRUG PRESCRIPTION
+  postingDrugPrescription,
+  drugPrescriptionPosted,
+  postingDrugPrescriptionFailed,
   //? FETCHING FREQUENTLY SEARCHED DRUGS
   fetchingFrequentlySearchedDrugs,
   frequentlySearchedDrugsFetched,
   frequentlySearchedDrugsFailed,
+  //? FETCHING SAVED DRUG PRESCRIPTION
+  fetchingSavedDrugPrescription,
+  savedDrugPrescriptionFetched,
+  savedDrugPrescriptionFailed,
   //? SEARCHING DRUGS
   searchingForDrugs,
   searchingForDrugsSuccess,
   searchingForDrugsFailed,
+}
+
+enum PastMedicalHistoryStates {
+  initial,
+  //? CREATING PAST MEDICAL HISTORY
+  postingPastMedicalHistory,
+  pastMedicalHistoryPosted,
+  postingPastMedicalHistoryFailed,
+
+  //? FETCHING PAST MEDICAL HISTORY
+  fetchingPastMedicalHistory,
+  pastMedicalHistoryFetched,
+  fetchingPastMedicalHistoryFailed,
+}
+
+enum WhatsappMessagingStates {
+  initial,
+  //? SENDING MESSAGES
+  sendingMessage,
+  sendingMessageDone,
+  sendingMessageFailed
 }

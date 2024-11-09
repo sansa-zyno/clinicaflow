@@ -71,9 +71,9 @@ class SymptomsAndDiagnosisCubit extends Cubit<SymptomsAndDiagnosisState> {
         endpoint: 'ddx/predict',
         body: body,
         baseUrl: "https://43.204.120.239:8000",
-        loadingState: SymptomsAndDiagnosisStates.searchingSymptomAndPredictionForddx,
+        loadingState: SymptomsAndDiagnosisStates.fetchingSymptomAndPredictionForddx,
         successState: SymptomsAndDiagnosisStates.symptomAndPredictionForddxFetched,
-        failedState: SymptomsAndDiagnosisStates.searchingSymptomAndPredictionForddxFailed);
+        failedState: SymptomsAndDiagnosisStates.fetchingSymptomAndPredictionForddxFailed);
   }
 
   Future<void> fetchFrequentlySearchedSymptoms() async {
@@ -84,9 +84,55 @@ class SymptomsAndDiagnosisCubit extends Cubit<SymptomsAndDiagnosisState> {
 
       emit(state.copyWith(state: SymptomsAndDiagnosisStates.frequentlySearchedSymptomsFetched, frequentlySearchedSymptoms: symptoms));
     } catch (error) {
-      log('Failed to load appointments: $error');
+      log('Failed to load symptoms: $error');
 
       emit(state.copyWith(state: SymptomsAndDiagnosisStates.frequentlySearchedSymptomsFailed));
+    }
+  }
+
+  ddxPredictions(List selectedSymptoms, List selectedDiagnosis) async {
+    emit(state.copyWith(state: SymptomsAndDiagnosisStates.fetchingSymptomAndPredictionForddx));
+
+    try {
+      Map<String, List<Symptom>> ddxPredictions = await service.ddxPredictions(selectedSymptoms, selectedDiagnosis);
+      emit(state.copyWith(
+          state: SymptomsAndDiagnosisStates.symptomAndPredictionForddxFetched,
+          associatedSymptoms: ddxPredictions['Sx'],
+          differentialDiagnosis: ddxPredictions['Dx']));
+    } catch (error) {
+      log('Failed to load ddxPredictions: $error');
+
+      emit(state.copyWith(state: SymptomsAndDiagnosisStates.fetchingSymptomAndPredictionForddxFailed));
+    }
+  }
+
+  postSymptomsAndDiagnosis({required String patientId, required String appointmentId, required List symptoms, required List diagnosis}) async {
+    emit(state.copyWith(state: SymptomsAndDiagnosisStates.postingSymptomsAndDiagnosis));
+    try {
+      String message =
+          await service.postSymtomsAndDiagnostics(patientId: patientId, appointmentId: appointmentId, symptoms: symptoms, diagnosis: diagnosis);
+      emit(state.copyWith(state: SymptomsAndDiagnosisStates.symptomsAndDiagnosisPosted, message: message));
+    } catch (error) {
+      log('Failed to load ddxPredictions: $error');
+      emit(state.copyWith(state: SymptomsAndDiagnosisStates.postingSymptomsAndDiagnosisFailed));
+    }
+  }
+
+  getSavedSymptomsAndDiagnosis({required String appointmentId}) async {
+    emit(state.copyWith(
+      state: SymptomsAndDiagnosisStates.fetchingSavedSymptomsAndDiagnosis,
+    ));
+    try {
+      Map<String, List<Symptom>?> result = await service.getSavedSymptomsAndDiagnosis(appointmentId: appointmentId);
+      emit(state.copyWith(
+          state: SymptomsAndDiagnosisStates.savedSymptomsAndDiagnosisFetched,
+          savedSymptoms: result['symptoms'],
+          savedDiagnosis: result['diagnosis']));
+    } catch (error) {
+      log('Failed to fetch saved symptoms and diagnosis: $error');
+      emit(state.copyWith(
+        state: SymptomsAndDiagnosisStates.savedSymptomsAndDiagnosisFailed,
+      ));
     }
   }
 }

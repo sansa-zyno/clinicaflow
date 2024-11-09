@@ -46,4 +46,33 @@ class DrugPrescriptionService {
       throw 'Failed to load data: ${response.statusCode}';
     }
   }
+
+  Future<String> postDrugPrescription({required String patientId, required String appointmentId, required List drugs}) async {
+    await fetchToken();
+    final response = await HttpService.post(
+      ApiEndPoint.postDrugs(patientId: patientId, clientId: clinicId, appointmentId: appointmentId),
+      token,
+      {"drugs": drugs},
+    );
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return response.data['message'];
+    } else {
+      throw 'Failed to save data: ${response.statusCode}';
+    }
+  }
+
+  Future<List<Drug>?> getSavedDrugPrescription({required String appointmentId}) async {
+    await fetchToken();
+    final response = await HttpService.get(ApiEndPoint.getWholePrescriptionsAndVitals(appointmentId: appointmentId, clientId: clinicId), token);
+    if (response.statusCode == 200) {
+      if (response.data['prescriptions'] != null) {
+        List<Drug>? drugs = (response.data['prescriptions']['drugPrescriptions'] as List?)?.map((e) => Drug.fromMap(e)).toList();
+        return drugs;
+      } else {
+        return null;
+      }
+    } else {
+      throw 'Failed to retrieve data: ${response.statusCode}';
+    }
+  }
 }

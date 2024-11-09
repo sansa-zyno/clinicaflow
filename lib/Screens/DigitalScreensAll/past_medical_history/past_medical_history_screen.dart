@@ -4,7 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:healtether_clinic_app/Screens/AppointmentScreen/widgets/custom_textfield.dart';
 import 'package:healtether_clinic_app/Screens/DigitalScreensAll/symptoms_diagnosis/create_digital_prescription_screens.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/allergy_cubit/allergy_cubit.dart';
-import 'package:healtether_clinic_app/business_logic/cubits/medications_cubit/medications_cubit.dart';
+import 'package:healtether_clinic_app/business_logic/cubits/drug_cubit/drug_prescription_cubit.dart';
+import 'package:healtether_clinic_app/business_logic/cubits/past_medical_history_cubit/past_medical_history_cubit.dart';
 import 'package:healtether_clinic_app/data_layer/models/allergies/allergies.dart';
 import 'package:healtether_clinic_app/data_layer/models/appointment_models/appointment_model.dart';
 import 'package:healtether_clinic_app/data_layer/models/drug_model/drug_model.dart';
@@ -25,17 +26,24 @@ import 'package:healtether_clinic_app/widgets/section_text.dart';
 import 'package:healtether_clinic_app/widgets/text_list_tile.dart';
 import 'dart:developer' as dev;
 
-class SymptomsTestsScreen extends StatefulWidget {
-  const SymptomsTestsScreen({Key? key, required this.appointment}) : super(key: key);
+class PastMedicalHistoryScreen extends StatefulWidget {
   final Appointment appointment;
+  final List<HistoryItem>? pastHistory;
+  final List<HistoryItem>? familyHistory;
+  final List<HistoryItem>? pastProcedures;
+  final List<HistoryItem>? allergies;
+  final List<HistoryItem>? medicationHistory;
+  const PastMedicalHistoryScreen(
+      {Key? key, required this.appointment, this.pastHistory, this.familyHistory, this.pastProcedures, this.allergies, this.medicationHistory})
+      : super(key: key);
 
   @override
-  State<SymptomsTestsScreen> createState() => _SymptomsTestsScreenState();
+  State<PastMedicalHistoryScreen> createState() => _PastMedicalHistoryScreenState();
 }
 
-class _SymptomsTestsScreenState extends State<SymptomsTestsScreen> with AppBarMixin, UiInfoMixin {
+class _PastMedicalHistoryScreenState extends State<PastMedicalHistoryScreen> with AppBarMixin, UiInfoMixin {
   late final UserModel? user;
-
+  bool hasNavigated = false;
   late List<HistoryItem> pastHistory;
   late List<HistoryItem> familyHistory;
   late List<HistoryItem> pastProcedures;
@@ -80,36 +88,60 @@ class _SymptomsTestsScreenState extends State<SymptomsTestsScreen> with AppBarMi
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: buildAppBar(context, title: "Digital Prescription", automaticallyImplyLeading: true, backgroundColor: AppColors.whitColor),
-      body: CustomScrollView(
-        controller: scrollController,
-        slivers: [
-          //? SECTION TEXT | Medical condition investigation
-          SliverToBoxAdapter(
-            child: const SectionText(
-              "MEDICAL CONDITION INVESTIGATION",
-              textStyle: TextStyle(fontSize: 18, height: 24 / 20),
-              underlineWidth: 358,
-              underlineColor: AppColors.eerieBlack,
-            ).pOnly(left: 16, right: 16, top: 10, bottom: 12),
-          ),
-
-          const SliverToBoxAdapter(child: SizedBox.shrink()),
-
-          SliverToBoxAdapter(child: buildNotTypingView()),
-        ],
-      ),
-      bottomNavigationBar: DualActionBottomNav(
-        text: "Clear",
-        focusedText: 'Add Vitals',
-        onPressed: clear,
-        onFocusedPressed: () {
-          showSnackMessage(context, 'Past Medical History have been saved successfully.');
-
-          context.pushReplacementNamed(AppRoutes.vitals.name, pathParameters: {"appointmentId": widget.appointment.id!});
+      body: BlocListener<PastMedicalHistoryCubit, PastMedicalHistoryState>(
+        listener: (context, state) {
+          if (state.state == PastMedicalHistoryStates.pastMedicalHistoryPosted && !hasNavigated) {
+            dev.log(state.state.toString());
+            hasNavigated = true;
+            //context.read<LabTestCubit>().getSavedLabTests(appointmentId: widget.appointment.id!);
+            showSnackMessage(context, 'Past Medical History has been saved successfully.');
+            context.pushReplacementNamed(AppRoutes.vitals.name, extra: {
+              'appointment': widget.appointment,
+              'vitals': [],
+            });
+          }
         },
+        child: CustomScrollView(
+          controller: scrollController,
+          slivers: [
+            //? SECTION TEXT | Medical condition investigation
+            SliverToBoxAdapter(
+              child: const SectionText(
+                "MEDICAL CONDITION INVESTIGATION",
+                textStyle: TextStyle(fontSize: 18, height: 24 / 20),
+                underlineWidth: 358,
+                underlineColor: AppColors.eerieBlack,
+              ).pOnly(left: 16, right: 16, top: 10, bottom: 12),
+            ),
+
+            const SliverToBoxAdapter(child: SizedBox.shrink()),
+
+            SliverToBoxAdapter(child: buildNotTypingView()),
+          ],
+        ),
       ),
+      bottomNavigationBar: BlocBuilder<PastMedicalHistoryCubit, PastMedicalHistoryState>(builder: (context, state) {
+        if (state.state == PastMedicalHistoryStates.postingPastMedicalHistory) {
+          return const SizedBox(height: 100, child: Center(child: CircularProgressIndicator()));
+        } else {
+          return DualActionBottomNav(
+            text: "Clear All",
+            focusedText: 'Add Vitals',
+            onPressed: clear,
+            onFocusedPressed: () {
+              hasNavigated = false;
+              context.read<PastMedicalHistoryCubit>().postPastMedicalHistory(
+                  patientId: widget.appointment.patientId!,
+                  medications: medicationHistory.map((e) => e.toMap()).toList(),
+                  allergies: allergies.map((e) => e.toMap()).toList(),
+                  familyHistory: familyHistory.map((e) => e.toMap()).toList(),
+                  pastHistory: pastHistory.map((e) => e.toMap()).toList(),
+                  pastProcedureHistory: pastProcedures.map((e) => e.toMap()).toList());
+            },
+          );
+        }
+      }),
     );
   }
 
@@ -256,7 +288,7 @@ class SectionRow extends StatelessWidget {
 }
 
 class HistoryItemWidget extends StatefulWidget {
-  HistoryItemWidget({
+  const HistoryItemWidget({
     super.key,
     required this.title,
     required this.onAdd,
@@ -323,8 +355,7 @@ class _HistoryItemWidgetState extends State<HistoryItemWidget> {
                   child: CustomTextField(
                     usePadding: false,
                     borderRadius: 0,
-                    fillColor: AppColors.whiteSmoke,
-                    height: 42,
+                    height: 52,
                     hintText: widget.hintText1,
                     controller: controller,
                     onChanged: (value) {
@@ -334,18 +365,18 @@ class _HistoryItemWidgetState extends State<HistoryItemWidget> {
                         _removeOverlay();
                         if (widget.title == 'Allergies') {
                           context.read<AllergyCubit>().search(value);
-                          _showOverlay(context, buildAllergySearchResults(controller), layerLink);
+                          _showOverlay(context, buildAllergySearchResults(controller, item, index), layerLink);
                         } else if (widget.title == 'Medication History') {
-                          context.read<MedicationCubit>().search(value);
-                          _showOverlay(context, buildMedicationsSearchResults(controller), layerLink);
+                          context.read<DrugPrescriptionCubit>().searchDrugs(value);
+                          _showOverlay(context, buildMedicationsSearchResults(controller, item, index), layerLink);
                         }
                       } else {
                         if (widget.title == 'Allergies') {
                           context.read<AllergyCubit>().search(value);
-                          _showOverlay(context, buildAllergySearchResults(controller), layerLink);
+                          _showOverlay(context, buildAllergySearchResults(controller, item, index), layerLink);
                         } else if (widget.title == 'Medication History') {
-                          context.read<MedicationCubit>().search(value);
-                          _showOverlay(context, buildMedicationsSearchResults(controller), layerLink);
+                          context.read<DrugPrescriptionCubit>().searchDrugs(value);
+                          _showOverlay(context, buildMedicationsSearchResults(controller, item, index), layerLink);
                         }
                       }
                     },
@@ -357,13 +388,17 @@ class _HistoryItemWidgetState extends State<HistoryItemWidget> {
                         child: CustomTextField(
                             usePadding: false,
                             borderRadius: 0,
-                            fillColor: AppColors.whiteSmoke,
-                            height: 42,
+                            height: 52,
                             keyBoardType: TextInputType.number,
                             inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(4)],
                             controller: TextEditingController(text: item.year),
                             onChanged: (value) {
-                              item = item.copyWith(year: value);
+                              if (value.length == 4) {
+                                int noOfYears = DateTime.now().year - int.parse(value);
+                                item = item.copyWith(year: noOfYears.toString());
+                              } else {
+                                item = item.copyWith(year: "");
+                              }
                               widget.items[index] = item;
                             },
                             hintText: widget.hintText2)),
@@ -413,7 +448,7 @@ class _HistoryItemWidgetState extends State<HistoryItemWidget> {
     );
   }
 
-  Widget buildAllergySearchResults(TextEditingController controller) {
+  Widget buildAllergySearchResults(TextEditingController controller, HistoryItem item, int itemIndex) {
     return BlocBuilder<AllergyCubit, AllergyState>(builder: (context, state) {
       if (state.state == AllergyStates.searchingForAllergies) {
         return Container();
@@ -422,11 +457,11 @@ class _HistoryItemWidgetState extends State<HistoryItemWidget> {
       } else {
         return Column(
             children: List<Widget>.generate(state.allergies?.length ?? 0, (index) {
-          Allergy test = state.allergies!.elementAt(index);
+          Allergy allergy = state.allergies!.elementAt(index);
 
           return TextListTile(
             padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 8),
-            text: test.name,
+            text: allergy.name,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             /*leading: Checkbox(
@@ -439,7 +474,9 @@ class _HistoryItemWidgetState extends State<HistoryItemWidget> {
                   }
                 }),*/
             onTap: () {
-              controller.text = test.name;
+              controller.text = allergy.name;
+              item = item.copyWith(name: allergy.name);
+              widget.items[itemIndex] = item;
               _removeOverlay();
               /*if (selectedTests.contains(test) == true) {
                 selectedTests.remove(test);
@@ -453,20 +490,20 @@ class _HistoryItemWidgetState extends State<HistoryItemWidget> {
     });
   }
 
-  Widget buildMedicationsSearchResults(TextEditingController controller) {
-    return BlocBuilder<MedicationCubit, MedicationState>(builder: (context, state) {
-      if (state.state == MedicationStates.searchingMedications) {
+  Widget buildMedicationsSearchResults(TextEditingController controller, HistoryItem item, int itemIndex) {
+    return BlocBuilder<DrugPrescriptionCubit, DrugPrescriptionState>(builder: (context, state) {
+      if (state.state == DrugPrescriptionStates.searchingForDrugs) {
         return Container();
-      } else if (state.state == MedicationStates.searchingMedicationsFailed) {
+      } else if (state.state == DrugPrescriptionStates.searchingForDrugsFailed) {
         return Container();
       } else {
         return Column(
-            children: List<Widget>.generate(state.searchedMedications?.length ?? 0, (index) {
-          Drug test = state.searchedMedications!.elementAt(index);
+            children: List<Widget>.generate(state.drugs?.length ?? 0, (index) {
+          Drug drug = state.drugs!.elementAt(index);
 
           return TextListTile(
             padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 8),
-            text: test.name,
+            text: drug.name,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             /*leading: Checkbox(
@@ -479,7 +516,9 @@ class _HistoryItemWidgetState extends State<HistoryItemWidget> {
                   }
                 }),*/
             onTap: () {
-              controller.text = test.name;
+              controller.text = drug.name;
+              item = item.copyWith(name: drug.name);
+              widget.items[itemIndex] = item;
               _removeOverlay();
             },
           ).pOnly(bottom: 8);

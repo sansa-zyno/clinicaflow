@@ -11,8 +11,7 @@ class EditPaymentDetailScreen extends StatefulWidget {
   const EditPaymentDetailScreen({super.key, this.pageController});
 
   @override
-  State<EditPaymentDetailScreen> createState() =>
-      _EditPaymentDetailScreenState();
+  State<EditPaymentDetailScreen> createState() => _EditPaymentDetailScreenState();
 }
 
 class _EditPaymentDetailScreenState extends State<EditPaymentDetailScreen> {
@@ -21,8 +20,7 @@ class _EditPaymentDetailScreenState extends State<EditPaymentDetailScreen> {
   TextEditingController accountNoController = TextEditingController();
   TextEditingController accountHolderNameController = TextEditingController();
   TextEditingController additionalUpiIDController = TextEditingController();
-  TextEditingController additionalAnotherNumberIDController =
-      TextEditingController();
+  TextEditingController additionalAnotherNumberIDController = TextEditingController();
   bool showUpiID = false;
   bool showAnotherNumber = false;
   String? bankNameText;
@@ -101,10 +99,10 @@ class _EditPaymentDetailScreenState extends State<EditPaymentDetailScreen> {
                       },
                       child: const Row(
                         children: [
-                          Icon(Icons.add, color: AppColors.blueColor),
+                          Icon(Icons.add, color: AppColors.blueViolet),
                           Text(
                             AppText.addAnotherUPIID,
-                            style: TextStyle(color: AppColors.blueColor),
+                            style: TextStyle(color: AppColors.blueViolet),
                           ),
                         ],
                       ),
@@ -114,7 +112,7 @@ class _EditPaymentDetailScreenState extends State<EditPaymentDetailScreen> {
                       child: Container(
                         height: 2,
                         width: screenSize.width * 0.6,
-                        color: AppColors.blueColor,
+                        color: AppColors.blueViolet,
                       ),
                     ),
                     const Text(
@@ -170,10 +168,10 @@ class _EditPaymentDetailScreenState extends State<EditPaymentDetailScreen> {
                       },
                       child: const Row(
                         children: [
-                          Icon(Icons.add, color: AppColors.blueColor),
+                          Icon(Icons.add, color: AppColors.blueViolet),
                           Text(
                             AppText.addAnotherBank,
-                            style: TextStyle(color: AppColors.blueColor),
+                            style: TextStyle(color: AppColors.blueViolet),
                           ),
                         ],
                       ),
@@ -183,7 +181,7 @@ class _EditPaymentDetailScreenState extends State<EditPaymentDetailScreen> {
                       child: Container(
                         height: 2,
                         width: screenSize.width * 0.6,
-                        color: AppColors.blueColor,
+                        color: AppColors.blueViolet,
                       ),
                     ),
                     const SizedBox(height: 40),
@@ -193,8 +191,7 @@ class _EditPaymentDetailScreenState extends State<EditPaymentDetailScreen> {
             ),
           ),
           Padding(
-            padding:
-                const EdgeInsets.only(left: 36, right: 36, bottom: 8, top: 5),
+            padding: const EdgeInsets.only(left: 36, right: 36, bottom: 8, top: 5),
             child: Container(
               height: 60,
               width: 280,

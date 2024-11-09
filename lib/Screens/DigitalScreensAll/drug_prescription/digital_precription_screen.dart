@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:developer' as dev;
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -13,7 +14,6 @@ import 'package:healtether_clinic_app/data_layer/sample_objects/sample_objects.d
 import 'package:healtether_clinic_app/constants/app_constants.dart';
 import 'package:healtether_clinic_app/constants/app_colors.dart';
 import 'package:healtether_clinic_app/utils/enums/bloc_enums.dart';
-import 'package:healtether_clinic_app/utils/enums/route_enums.dart';
 import 'package:healtether_clinic_app/utils/extensions.dart/string_extensions.dart';
 import 'package:healtether_clinic_app/utils/extensions.dart/widget_extensions.dart';
 import 'package:healtether_clinic_app/utils/helper_functions/log.dart';
@@ -24,22 +24,22 @@ import 'package:healtether_clinic_app/widgets/buttons/my_selectable_container.da
 import 'package:healtether_clinic_app/widgets/components/build_section.dart';
 import 'package:healtether_clinic_app/widgets/components/dual_action_bottom_nav.dart';
 import 'package:healtether_clinic_app/widgets/components/my_search_bar.dart';
+import 'package:healtether_clinic_app/widgets/components/vitals_and_past_history_end_drawer.dart';
 import 'package:healtether_clinic_app/widgets/section_text.dart';
 import 'package:healtether_clinic_app/widgets/buttons/my_elevated_button.dart';
 import 'package:healtether_clinic_app/widgets/text_list_tile.dart';
 
 class DigitalPrecriptionScreen extends StatefulWidget {
-  final String? dosageFrequency;
-  final String? dosageTime;
-  final List<String>? selectedDrugs;
-  const DigitalPrecriptionScreen({super.key, this.dosageFrequency, this.dosageTime, this.selectedDrugs, required this.appointment});
   final Appointment appointment;
+  final List<Drug>? selectedDrugs;
+  const DigitalPrecriptionScreen({super.key, required this.appointment, this.selectedDrugs});
 
   @override
   State<DigitalPrecriptionScreen> createState() => _DigitalPrecriptionScreenState();
 }
 
 class _DigitalPrecriptionScreenState extends State<DigitalPrecriptionScreen> with DeviceInfoMixin, TimeParserMixin, UiInfoMixin {
+  bool hasNavigated = false;
   final TextEditingController searchController = TextEditingController();
   final TextEditingController diet = TextEditingController();
   final TextEditingController otherInstructions = TextEditingController();
@@ -54,142 +54,152 @@ class _DigitalPrecriptionScreenState extends State<DigitalPrecriptionScreen> wit
   bool get isTyping => forceStillTyping || searchBarFocusNode.hasFocus;
   TextStyle get subtitleTextStyle => GoogleFonts.urbanist(textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14, height: 17.36 / 14));
 
-  late List<Drug> savedDrugs;
+  List<Drug> selectedDrugs = [];
 
   @override
   void initState() {
     super.initState();
     context.read<DrugPrescriptionCubit>().fetchFrequentlySearchedDrugs();
-    savedDrugs = context.read<DrugPrescriptionCubit>().getSavedDrugs(widget.appointment.patientId) ?? [];
-
-    log("SAVED DRUGS: $savedDrugs");
-  }
-
-  void saveDrug({required String patientId, required Drug drug}) {
-    context.read<DrugPrescriptionCubit>().saveDrug(patientId: patientId, drug: drug);
-  }
-
-  void clearSavedDrugs(String patientId) {
-    context.read<DrugPrescriptionCubit>().clearSavedDrugs(patientId);
+    selectedDrugs = widget.selectedDrugs ?? [];
   }
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
-      appBar: AppBar(
-        leadingWidth: 30,
-        leading: InkWell(
-            onTap: () {
-              if (isTyping) {
-                searchController.clear();
-                searchBarFocusNode.unfocus();
-                forceStillTyping = false;
-                setState(() {});
-              } else {
-                context.pop();
-              }
-            },
-            child: Padding(
-              padding: const EdgeInsets.only(left: 8),
-              child: Icon(Icons.arrow_back),
-            )),
-        title: Text(
-          AppText.digitalPrescription,
-          style: GoogleFonts.montserrat(
-            textStyle: const TextStyle(
-              fontSize: 18,
-              fontFamily: 'Urbanist',
-              fontWeight: FontWeight.w500,
-              height: 1.25,
-              color: AppColors.lightBlueColor,
+        key: _scaffoldKey,
+        appBar: AppBar(
+          leadingWidth: 30,
+          leading: InkWell(
+              onTap: () {
+                if (isTyping) {
+                  searchController.clear();
+                  searchBarFocusNode.unfocus();
+                  forceStillTyping = false;
+                  setState(() {});
+                } else {
+                  context.read<DrugPrescriptionCubit>().getSavedDrugPrescription(appointmentId: widget.appointment.id!);
+                  context.pop();
+                }
+              },
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8),
+                child: Icon(Icons.arrow_back),
+              )),
+          title: Text(
+            AppText.digitalPrescription,
+            style: GoogleFonts.montserrat(
+              textStyle: const TextStyle(
+                fontSize: 18,
+                fontFamily: 'Urbanist',
+                fontWeight: FontWeight.w500,
+                height: 1.25,
+                color: AppColors.lightBlueColor,
+              ),
             ),
           ),
+          backgroundColor: const Color(0xFFE1F9F2),
+          actions: [
+            IconButton(
+              onPressed: () {
+                _scaffoldKey.currentState?.openEndDrawer();
+              },
+              icon: const Icon(Icons.menu),
+            ),
+          ],
         ),
-        backgroundColor: const Color(0xFFE1F9F2),
-        actions: [
-          IconButton(
-            onPressed: () {
-              _scaffoldKey.currentState?.openEndDrawer();
-            },
-            icon: const Icon(Icons.menu),
-          ),
-        ],
-      ),
-      //endDrawer: const VitalsAndPastHistoryEndDrawer(),
-      body: BlocBuilder<DrugPrescriptionCubit, DrugPrescriptionState>(builder: (context, state) {
-        return CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(child: const SizedBox(height: 19)),
+        endDrawer: VitalsAndPastHistoryEndDrawer(appointment: widget.appointment),
+        body: BlocListener<DrugPrescriptionCubit, DrugPrescriptionState>(
+          listener: (context, state) {
+            if (state.state == DrugPrescriptionStates.drugPrescriptionPosted && !hasNavigated) {
+              dev.log(state.state.toString());
+              hasNavigated = true;
+              context.read<DrugPrescriptionCubit>().getSavedDrugPrescription(appointmentId: widget.appointment.id!);
+              context.pop();
+            }
+          },
+          child: BlocBuilder<DrugPrescriptionCubit, DrugPrescriptionState>(builder: (context, state) {
+            return CustomScrollView(
+              slivers: [
+                const SliverToBoxAdapter(child: SizedBox(height: 19)),
 
-            // //? TITLE
-            SliverToBoxAdapter(
-              child: const SectionText(
-                "DRUG PRESCRIPTION & FOLLOW-UP",
-                textStyle: TextStyle(fontSize: 20, height: 24 / 20),
-                underlineWidth: double.maxFinite,
-                underlineColor: AppColors.eerieBlack,
-              ).pSymmetric(),
-            ),
+                // //? TITLE
+                SliverToBoxAdapter(
+                  child: const SectionText(
+                    "DRUG PRESCRIPTION & FOLLOW-UP",
+                    textStyle: TextStyle(fontSize: 20, height: 24 / 20),
+                    underlineWidth: double.maxFinite,
+                    underlineColor: AppColors.eerieBlack,
+                  ).pSymmetric(),
+                ),
 
-            const SliverToBoxAdapter(child: SizedBox(height: 12)),
+                const SliverToBoxAdapter(child: SizedBox(height: 12)),
 
-            // //? SEARCH BAR
-            SliverToBoxAdapter(
-              child: MySearchBar(
-                searchController: searchController,
-                hintText: "Search by brand or generic name",
-                focusNode: searchBarFocusNode,
-                onChanged: (value) {
-                  context.read<DrugPrescriptionCubit>().searchDrugs(value);
+                // //? SEARCH BAR
+                SliverToBoxAdapter(
+                  child: MySearchBar(
+                    searchController: searchController,
+                    hintText: "Search by brand or generic name",
+                    focusNode: searchBarFocusNode,
+                    onChanged: (value) {
+                      context.read<DrugPrescriptionCubit>().searchDrugs(value);
+                      log("Searching...");
+                      setState(() {});
+                    },
+                    onEditingComplete: () {
+                      searchBarFocusNode.unfocus();
+                      forceStillTyping = true;
+                    },
+                  ).pSymmetric(),
+                ),
 
-                  log("Searching...");
+                const SliverToBoxAdapter(child: SizedBox(height: 10)),
+
+                isTyping
+                    ? buildTypingView() // view when the doctor is searching for drugs
+                    : selectedDrugs?.isNotEmpty == true
+                        ? SliverToBoxAdapter(child: buildAddDrugsView()) // view when the doctor has saved atleast one drug for this patient
+                        : buildNotTypingView(state)
+                // view when the doctor is not typing and has not saved any drug
+              ],
+            );
+          }),
+        ),
+        bottomNavigationBar: BlocBuilder<DrugPrescriptionCubit, DrugPrescriptionState>(builder: (context, state) {
+          if (state.state == DrugPrescriptionStates.postingDrugPrescription) {
+            return const SizedBox(height: 100, child: Center(child: CircularProgressIndicator()));
+          } else {
+            return DualActionBottomNav(
+                text: "Clear All",
+                focusedText: "Save",
+                onPressed: () {
+                  selectedDrugs.clear();
                   setState(() {});
                 },
-                onEditingComplete: () {
-                  searchBarFocusNode.unfocus();
-                  forceStillTyping = true;
-                },
-              ).pSymmetric(),
-            ),
-
-            const SliverToBoxAdapter(child: SizedBox(height: 10)),
-
-            isTyping
-                ? buildTypingView() // view when the doctor is searching for drugs
-                : context.read<DrugPrescriptionCubit>().getSavedDrugs(widget.appointment.patientId!)?.isNotEmpty == true
-                    ? SliverToBoxAdapter(child: buildAddDrugsView()) // view when the doctor has saved atleast one drug for this patient
-                    : buildNotTypingView(state)
-            // view when the doctor is not typing and has not saved any drug
-          ],
-        );
-      }),
-      bottomNavigationBar: DualActionBottomNav(
-          text: "Clear",
-          focusedText: "Save",
-          onPressed: () {
-            context.read<DrugPrescriptionCubit>().clearSavedDrugs(widget.appointment.patientId);
-          },
-          onFocusedPressed: () {
-            if (context.read<DrugPrescriptionCubit>().getSavedDrugs(widget.appointment.patientId)?.isEmpty == true) {
-              showSnackMessage(context, "No drugs added for this patient");
-              return;
-            }
-            showSnackMessage(context, "Drugs saved successfully");
-
-            context.goNamed(AppRoutes.writePrescription.name, extra: widget.appointment);
-          }),
-    );
+                onFocusedPressed: () {
+                  if (selectedDrugs != null) {
+                    dev.log(selectedDrugs.map((e) => e.toMap()).toList().toString());
+                    hasNavigated = false;
+                    context.read<DrugPrescriptionCubit>().postDrugPrescription(
+                        patientId: widget.appointment.patientId!,
+                        appointmentId: widget.appointment.id!,
+                        drugs: selectedDrugs.map((e) => e.toMap()).toList());
+                  }
+                  /*if (context.read<DrugPrescriptionCubit>().getSavedDrugs(widget.appointment.patientId)?.isEmpty == true) {
+                    showSnackMessage(context, "No drugs added for this patient");
+                    return;
+                  }*/
+                });
+          }
+        }));
   }
 
   Widget buildAddDrugsView() {
     return BlocBuilder<DrugPrescriptionCubit, DrugPrescriptionState>(builder: (context, state) {
-      final drugs = context.read<DrugPrescriptionCubit>().getSavedDrugs(widget.appointment.patientId);
       return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         // add drugs
-        ...List<Widget>.generate(drugs?.length ?? 0, (index) {
-          final drug = drugs!.elementAt(index);
+        ...List<Widget>.generate(selectedDrugs?.length ?? 0, (index) {
+          final drug = selectedDrugs!.elementAt(index);
 
           return Container(
               padding: const EdgeInsets.all(12),
@@ -210,7 +220,8 @@ class _DigitalPrecriptionScreenState extends State<DigitalPrecriptionScreen> wit
                   MyIconContainer(
                       onTap: () {
                         log("REMOVE: $drug");
-                        context.read<DrugPrescriptionCubit>().removeSavedDrug(widget.appointment.patientId, drug);
+                        selectedDrugs.remove(drug);
+                        setState(() {});
                       },
                       icon: const Icon(Icons.close, color: AppColors.darkBlueViolet, size: 18))
                 ],
@@ -341,7 +352,7 @@ class _DigitalPrecriptionScreenState extends State<DigitalPrecriptionScreen> wit
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                 decoration: BoxDecoration(
-                    color: isAm && !followUpDate.keys.contains('None') ? AppColors.darkTeal : AppColors.textFieldFillColor,
+                    color: isAm && !followUpDate.keys.contains('None') ? AppColors.darkTeal : AppColors.whiteSmoke,
                     borderRadius: BorderRadius.circular(8)),
                 child: Text('am', style: TextStyle(color: isAm && !followUpDate.keys.contains('None') ? Colors.white : Colors.black)),
               ),
@@ -358,7 +369,7 @@ class _DigitalPrecriptionScreenState extends State<DigitalPrecriptionScreen> wit
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                 decoration: BoxDecoration(
-                    color: isPm && !followUpDate.keys.contains('None') ? AppColors.darkTeal : AppColors.textFieldFillColor,
+                    color: isPm && !followUpDate.keys.contains('None') ? AppColors.darkTeal : AppColors.whiteSmoke,
                     borderRadius: BorderRadius.circular(8)),
                 child: Text('pm', style: TextStyle(color: isPm && !followUpDate.keys.contains('None') ? Colors.white : Colors.black)),
               ),
@@ -395,8 +406,9 @@ class _DigitalPrecriptionScreenState extends State<DigitalPrecriptionScreen> wit
               final drug = state.drugs!.elementAt(index);
 
               return GestureDetector(
-                onTap: () {
-                  selectDrug(context, drug);
+                onTap: () async {
+                  await selectDrug(context, drug);
+                  setState(() {});
                 },
                 child: Container(
                     padding: const EdgeInsets.all(16),
@@ -475,9 +487,10 @@ class _DigitalPrecriptionScreenState extends State<DigitalPrecriptionScreen> wit
 
                 return SelectableContainer(
                   title: Text(drug.name),
-                  onTap: () {
+                  onTap: () async {
                     log("${drug.name} TAPPED");
-                    selectDrug(context, drug);
+                    await selectDrug(context, drug);
+                    setState(() {});
                   },
                 );
               }),
@@ -490,11 +503,13 @@ class _DigitalPrecriptionScreenState extends State<DigitalPrecriptionScreen> wit
 
   Future<dynamic> selectDrug(BuildContext context, Drug drug) {
     final drugName = TextEditingController(text: drug.name);
+    final dosage = TextEditingController(text: drug.quantity?.toString() ?? '');
     final focusNode = FocusNode();
     bool editDrugName = false;
     bool other = false;
     return showModalBottomSheet(
         context: context,
+        isDismissible: false,
         isScrollControlled: true,
         builder: (context) {
           String patientId = widget.appointment.patientId!;
@@ -558,7 +573,7 @@ class _DigitalPrecriptionScreenState extends State<DigitalPrecriptionScreen> wit
 
                               const SizedBox(height: 4),
 
-                              //? contents: content
+                              /*  //? contents: content
                               RichText(
                                   text: TextSpan(
                                       text: "Contents: ",
@@ -571,12 +586,12 @@ class _DigitalPrecriptionScreenState extends State<DigitalPrecriptionScreen> wit
                                         style: const TextStyle(
                                           color: AppColors.blueViolet,
                                         ))
-                                  ])),
+                                  ])),*/
 
                               //? drug type
-                              if (drug.type != null) const SizedBox(height: 10),
+                              // if (drug.type != null) const SizedBox(height: 10),
 
-                              if (drug.type != null) DrugType(drug: drug)
+                              //if (drug.type != null) DrugType(drug: drug)
                             ],
                           ),
                         ).pOnly(left: 16, right: 16, top: 16, bottom: 6),
@@ -589,7 +604,7 @@ class _DigitalPrecriptionScreenState extends State<DigitalPrecriptionScreen> wit
                         ),
 
                         CustomTextField(
-                          controller: TextEditingController(text: drug.quantity?.toString() ?? ''),
+                          controller: dosage,
                           hintText: "Enter dosage",
                           usePadding: false,
                           fillColor: AppColors.whiteSmoke,
@@ -598,7 +613,7 @@ class _DigitalPrecriptionScreenState extends State<DigitalPrecriptionScreen> wit
                           borderRadius: 0,
                           onChanged: (value) {
                             // if(value == null) return;
-                            drug = drug.copyWith(quantity: int.parse(value));
+                            drug = drug.copyWith(quantity: value);
                           },
                         ).pSymmetric(),
 
@@ -684,7 +699,8 @@ class _DigitalPrecriptionScreenState extends State<DigitalPrecriptionScreen> wit
                         Text("Duration", style: subtitleTextStyle).pOnly(left: 16, right: 16, top: 10, bottom: 8),
 
                         CustomTextField(
-                                controller: TextEditingController(text: drug.duration != null ? "Till ${drug.duration}" : ''),
+                                controller: TextEditingController(
+                                    text: drug.duration != null ? "For ${drug.duration!['value']} ${drug.duration!['unit']}" : ''),
                                 usePadding: false,
                                 readOnly: true,
                                 onTap: () async {
@@ -707,11 +723,20 @@ class _DigitalPrecriptionScreenState extends State<DigitalPrecriptionScreen> wit
                                                           // context.pop();
                                                           if (value == null) {
                                                             final DateTime? pickedDate = await pickDate(context, returnDateObject: true);
-
-                                                            drug = drug.copyWith(duration: formatTimeStamp(pickedDate.toString()));
-                                                            context.pop();
+                                                            if (pickedDate != null) {
+                                                              DateTime today = DateTime.now();
+                                                              int pickDateInDays =
+                                                                  pickedDate.difference(DateTime(today.year, today.month, today.day)).inDays;
+                                                              drug = drug.copyWith(duration: {"value": pickDateInDays, "unit": "Days"});
+                                                              context.pop();
+                                                            }
                                                           } else {
-                                                            drug = drug.copyWith(duration: formatTimeStamp(value.toString()));
+                                                            String val = key.split(' ')[1];
+                                                            String unit = key.split(' ')[2];
+                                                            if (val == 'a') {
+                                                              val = '1';
+                                                            }
+                                                            drug = drug.copyWith(duration: {"value": int.parse(val), "unit": unit});
                                                             context.pop();
                                                           }
                                                         }).pOnly(bottom: 8);
@@ -724,7 +749,7 @@ class _DigitalPrecriptionScreenState extends State<DigitalPrecriptionScreen> wit
                                 borderRadius: 0,
                                 suffixIcon: const Icon(Icons.arrow_drop_down_rounded),
                                 onChanged: (value) {
-                                  drug = drug.copyWith(duration: value);
+                                  // drug = drug.copyWith(duration: value);
                                 },
                                 fillColor: AppColors.whiteSmoke,
                                 hintText: "e.g For 5 days")
@@ -735,24 +760,39 @@ class _DigitalPrecriptionScreenState extends State<DigitalPrecriptionScreen> wit
                     ),
                   ),
                   bottomNavigationBar: DualActionBottomNav(
-                      text: "Clear all",
+                      text: "Back",
                       focusedText: "Save",
                       onPressed: () {
-                        log("CLEAR THE CURRENT PATIENT (patient: $patientId) DRUG PRESCIPTION");
-
+                        context.pop();
+                        /* log("CLEAR THE CURRENT PATIENT (patient: $patientId) DRUG PRESCIPTION");
                         clearSavedDrugs(patientId);
                         context.pop();
                         searchController.clear();
                         forceStillTyping = false;
-                        searchBarFocusNode.unfocus();
+                        searchBarFocusNode.unfocus();*/
                       },
                       onFocusedPressed: () {
-                        log("SAVE THE CURRENT PATIENT (patient: $patientId) DRUG PRESCIPTION: $drug");
-                        saveDrug(patientId: patientId, drug: drug);
-                        context.pop();
-                        searchController.clear();
-                        forceStillTyping = false;
-                        searchBarFocusNode.unfocus();
+                        //log("SAVE THE CURRENT PATIENT (patient: $patientId) DRUG PRESCIPTION: $drug");
+                        // saveDrug(patientId: patientId, drug: drug);
+                        if (drug.name != "" &&
+                            drug.quantity != null &&
+                            drug.dosageFrequency != null &&
+                            drug.dosageTime != null &&
+                            drug.duration != null) {
+                          if (selectedDrugs.contains(drug)) {
+                            int index = selectedDrugs.indexOf(drug);
+                            dev.log("contains drug");
+                            selectedDrugs[index] = drug;
+                          } else {
+                            selectedDrugs.add(drug);
+                          }
+                          context.pop();
+                          searchController.clear();
+                          forceStillTyping = false;
+                          searchBarFocusNode.unfocus();
+                        } else {
+                          showSnackMessage(context, 'You need to fill all the drug details');
+                        }
                       }),
                 ),
               ),

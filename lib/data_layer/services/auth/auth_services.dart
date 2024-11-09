@@ -3,16 +3,16 @@ import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:healtether_clinic_app/constants/api.dart';
 import 'package:healtether_clinic_app/data_layer/models/user_model/user_model.dart';
 import 'package:healtether_clinic_app/data_layer/services/shared_preferences_service.dart';
 import 'package:http/http.dart' as http;
 
 class AuthService {
-  static Future<String> loginUser(
-      String phone, String password, BuildContext context) async {
+  static Future<String> loginUser(String phone, String password, BuildContext context) async {
     try {
       var response = await http.post(
-        Uri.parse("https://api-uhi.azurewebsites.net/api/authlogin"),
+        Uri.parse("${ApiEndPoint.baseUrl}${ApiEndPoint.authLogin}"),
         body: {"emailOrPhone": phone, "password": password},
       );
       var result = json.decode(response.body);

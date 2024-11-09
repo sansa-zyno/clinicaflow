@@ -1,12 +1,12 @@
-
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:healtether_clinic_app/data_layer/models/appointment_models/appointment_model.dart';
+import 'package:healtether_clinic_app/utils/enums/route_enums.dart';
 
 class VitalsAndPastHistoryEndDrawer extends StatefulWidget {
-  const VitalsAndPastHistoryEndDrawer({
-    super.key,
-    
-  });
+  final Appointment appointment;
+  const VitalsAndPastHistoryEndDrawer({super.key, required this.appointment});
 
   @override
   State<VitalsAndPastHistoryEndDrawer> createState() => _VitalsAndPastHistoryEndDrawerState();
@@ -20,22 +20,25 @@ class _VitalsAndPastHistoryEndDrawerState extends State<VitalsAndPastHistoryEndD
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 600,
+      height: 640,
       child: Drawer(
         width: 320,
+        elevation: 10,
+        backgroundColor: Colors.transparent,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(20)),
+        ),
         child: SingleChildScrollView(
           child: Column(
             children: [
               SizedBox(
-                height: height * 0.64,
+                height: height * 0.27,
                 child: Material(
-                  borderRadius: const BorderRadius.only(
-                      bottomLeft: Radius.circular(20),
-                      bottomRight: Radius.circular(20)),
-                  elevation: 6,
-                  // shadowColor: const Color(0xffF5F5F5),
-                  // color: const Color(0xffF5F5F5),
-                  // surfaceTintColor: const Color(0xffF5F5F5),
+                  borderRadius: const BorderRadius.all(Radius.circular(20)),
+                  elevation: 10,
+                  shadowColor: const Color(0xFFFFFFFF),
+                  surfaceTintColor: const Color(0xFFFFFFFF),
+                  color: const Color(0xFFFFFFFF),
                   child: Padding(
                     padding: const EdgeInsets.all(12.0),
                     child: Column(
@@ -48,28 +51,30 @@ class _VitalsAndPastHistoryEndDrawerState extends State<VitalsAndPastHistoryEndD
                           children: [
                             const Text(
                               'Vitals',
-                              style: TextStyle(
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w500,
-                                  color: Color(0xff0C091F)),
+                              style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Color(0xff0C091F)),
                             ),
-                            Column(
-                              children: [
-                                const Text(
-                                  'Edit',
-                                  style: TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w500,
-                                      color: Color(0xff5351C7)),
-                                ),
-                                Container(
-                                  height: 1,
-                                  width: 30,
-                                  decoration: const BoxDecoration(
-                                    color: Color(0xff5351C7),
+                            InkWell(
+                              onTap: () {
+                                context.pushNamed(AppRoutes.vitals.name, extra: {
+                                  'appointment': widget.appointment,
+                                  'vitals': [],
+                                });
+                              },
+                              child: Column(
+                                children: [
+                                  const Text(
+                                    'Edit',
+                                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Color(0xff5351C7)),
                                   ),
-                                ),
-                              ],
+                                  Container(
+                                    height: 1,
+                                    width: 30,
+                                    decoration: const BoxDecoration(
+                                      color: Color(0xff5351C7),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
@@ -87,10 +92,8 @@ class _VitalsAndPastHistoryEndDrawerState extends State<VitalsAndPastHistoryEndD
                                   color: const Color(0xFFF7F7F7),
                                 ),
                                 child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.center,
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       'SpO2',
@@ -104,8 +107,7 @@ class _VitalsAndPastHistoryEndDrawerState extends State<VitalsAndPastHistoryEndD
                                     ),
                                     const SizedBox(height: 4),
                                     Center(
-                                      child: Image.asset(
-                                          "assets/homeimages/Vector (4).png"),
+                                      child: Image.asset("assets/homeimages/Vector (4).png"),
                                     ),
                                     const SizedBox(height: 4),
                                     Center(
@@ -134,10 +136,8 @@ class _VitalsAndPastHistoryEndDrawerState extends State<VitalsAndPastHistoryEndD
                                   color: const Color(0xffF5F5F5),
                                 ),
                                 child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.center,
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       'BP',
@@ -151,8 +151,7 @@ class _VitalsAndPastHistoryEndDrawerState extends State<VitalsAndPastHistoryEndD
                                     ),
                                     const SizedBox(height: 4),
                                     Center(
-                                      child: Image.asset(
-                                          "assets/homeimages/Vector (5).png"),
+                                      child: Image.asset("assets/homeimages/Vector (5).png"),
                                     ),
                                     const SizedBox(height: 4),
                                     Center(
@@ -181,10 +180,8 @@ class _VitalsAndPastHistoryEndDrawerState extends State<VitalsAndPastHistoryEndD
                                   color: const Color(0xffF5F5F5),
                                 ),
                                 child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.center,
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       'Heart rate',
@@ -198,8 +195,7 @@ class _VitalsAndPastHistoryEndDrawerState extends State<VitalsAndPastHistoryEndD
                                     ),
                                     const SizedBox(height: 4),
                                     Center(
-                                      child: Image.asset(
-                                          "assets/homeimages/Vector (6).png"),
+                                      child: Image.asset("assets/homeimages/Vector (6).png"),
                                     ),
                                     const SizedBox(height: 4),
                                     Center(
@@ -228,10 +224,8 @@ class _VitalsAndPastHistoryEndDrawerState extends State<VitalsAndPastHistoryEndD
                                   color: const Color(0xffF5F5F5),
                                 ),
                                 child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.center,
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       'BG',
@@ -245,8 +239,7 @@ class _VitalsAndPastHistoryEndDrawerState extends State<VitalsAndPastHistoryEndD
                                     ),
                                     const SizedBox(height: 4),
                                     Center(
-                                      child: Image.asset(
-                                          "assets/homeimages/droplet-outline.png"),
+                                      child: Image.asset("assets/homeimages/droplet-outline.png"),
                                     ),
                                     const SizedBox(height: 4),
                                     Center(
@@ -272,8 +265,7 @@ class _VitalsAndPastHistoryEndDrawerState extends State<VitalsAndPastHistoryEndD
                           padding: const EdgeInsets.only(right: 152),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Expanded(
                                 child: Container(
@@ -284,10 +276,8 @@ class _VitalsAndPastHistoryEndDrawerState extends State<VitalsAndPastHistoryEndD
                                     color: const Color(0xffF5F5F5),
                                   ),
                                   child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         'Ht',
@@ -301,8 +291,7 @@ class _VitalsAndPastHistoryEndDrawerState extends State<VitalsAndPastHistoryEndD
                                       ),
                                       const SizedBox(height: 4),
                                       Center(
-                                        child: Image.asset(
-                                            "assets/homeimages/Vector (7).png"),
+                                        child: Image.asset("assets/homeimages/Vector (7).png"),
                                       ),
                                       const SizedBox(height: 4),
                                       Center(
@@ -331,10 +320,8 @@ class _VitalsAndPastHistoryEndDrawerState extends State<VitalsAndPastHistoryEndD
                                     color: const Color(0xffF5F5F5),
                                   ),
                                   child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         'Wt',
@@ -348,8 +335,7 @@ class _VitalsAndPastHistoryEndDrawerState extends State<VitalsAndPastHistoryEndD
                                       ),
                                       const SizedBox(height: 4),
                                       Center(
-                                        child: Image.asset(
-                                            "assets/homeimages/Vector (8).png"),
+                                        child: Image.asset("assets/homeimages/Vector (8).png"),
                                       ),
                                       const SizedBox(height: 4),
                                       Center(
@@ -376,16 +362,13 @@ class _VitalsAndPastHistoryEndDrawerState extends State<VitalsAndPastHistoryEndD
                   ),
                 ),
               ),
-              SizedBox(height: height * 0.06),
+              const SizedBox(height: 15),
               Material(
                 elevation: 8,
                 shadowColor: const Color(0xFFFFFFFF),
                 surfaceTintColor: const Color(0xFFFFFFFF),
                 color: const Color(0xFFFFFFFF),
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                ),
+                borderRadius: const BorderRadius.all(Radius.circular(20)),
                 child: Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: Column(
@@ -404,34 +387,38 @@ class _VitalsAndPastHistoryEndDrawerState extends State<VitalsAndPastHistoryEndD
                               ),
                             ),
                           ),
-                          Column(
-                            children: [
-                              const Text(
-                                'Edit',
-                                style: TextStyle(
-                                  fontFamily: 'Urbanist',
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w500,
-                                  color: Color(0xff5351C7),
+                          InkWell(
+                            onTap: () {
+                              context.pushNamed(AppRoutes.pastMedicalHistory.name, extra: {
+                                'appointment': widget.appointment,
+                                'pastHistory': [],
+                                'familyHistory': [],
+                                'pastProcedures': [],
+                                'allergies': [],
+                                'medicalHistory': [],
+                              });
+                            },
+                            child: Column(
+                              children: [
+                                const Text('Edit', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Color(0xff5351C7))),
+                                Container(
+                                  height: 1,
+                                  width: 30,
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xff5351C7),
+                                  ),
                                 ),
-                              ),
-                              Container(
-                                height: 1,
-                                width: 30,
-                                decoration: const BoxDecoration(
-                                  color: Color(0xff5351C7),
-                                ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 14),
+                      const SizedBox(height: 10),
                       Text(
                         'Family History',
                         style: GoogleFonts.urbanist(
                           textStyle: const TextStyle(
-                            fontSize: 18,
+                            fontSize: 15,
                             fontWeight: FontWeight.w500,
                             color: Color(0xff868686),
                           ),
@@ -440,12 +427,11 @@ class _VitalsAndPastHistoryEndDrawerState extends State<VitalsAndPastHistoryEndD
                       const SizedBox(height: 10),
                       Container(
                         width: width,
-                        height: 40,
-                        padding: const EdgeInsets.only(top: 10, left: 10),
+                        height: 52,
+                        padding: const EdgeInsets.only(top: 15, left: 10),
                         decoration: const BoxDecoration(
                           color: Color(0xffF7F7F7),
-                          borderRadius:
-                              BorderRadius.all(Radius.circular(8)),
+                          borderRadius: BorderRadius.all(Radius.circular(8)),
                         ),
                         child: const Text(
                           'Asthma, Hypertension',
@@ -458,24 +444,24 @@ class _VitalsAndPastHistoryEndDrawerState extends State<VitalsAndPastHistoryEndD
                         ),
                       ),
                       const SizedBox(height: 8),
-                      const Text(
+                      Text(
                         'Medical Procedures',
-                        style: TextStyle(
-                          fontFamily: 'Urbanist',
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xff868686),
+                        style: GoogleFonts.urbanist(
+                          textStyle: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xff868686),
+                          ),
                         ),
                       ),
                       const SizedBox(height: 8),
                       Container(
                         width: width,
-                        height: 40,
-                        padding: const EdgeInsets.only(top: 10, left: 10),
+                        height: 52,
+                        padding: const EdgeInsets.only(top: 15, left: 10),
                         decoration: const BoxDecoration(
                           color: Color(0xffF7F7F7),
-                          borderRadius:
-                              BorderRadius.all(Radius.circular(8)),
+                          borderRadius: BorderRadius.all(Radius.circular(8)),
                         ),
                         child: const Text(
                           'Heart Surgery',
@@ -491,24 +477,24 @@ class _VitalsAndPastHistoryEndDrawerState extends State<VitalsAndPastHistoryEndD
                         //     horizontal: 10.0, vertical: 2.0),
                       ),
                       const SizedBox(height: 10),
-                      const Text(
+                      Text(
                         'Medication',
-                        style: TextStyle(
-                          fontFamily: 'Urbanist',
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xff868686),
+                        style: GoogleFonts.urbanist(
+                          textStyle: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xff868686),
+                          ),
                         ),
                       ),
                       const SizedBox(height: 8),
                       Container(
                         width: width,
-                        height: 40,
-                        padding: const EdgeInsets.only(top: 10, left: 10),
+                        height: 52,
+                        padding: const EdgeInsets.only(top: 15, left: 10),
                         decoration: const BoxDecoration(
                           color: Color(0xffF7F7F7),
-                          borderRadius:
-                              BorderRadius.all(Radius.circular(8)),
+                          borderRadius: BorderRadius.all(Radius.circular(8)),
                         ),
                         child: const Text(
                           'Dolo - 650, Paracetomol',
@@ -525,48 +511,49 @@ class _VitalsAndPastHistoryEndDrawerState extends State<VitalsAndPastHistoryEndD
                       ),
                       SizedBox(height: height * 0.04),
                       RichText(
-                        text: const TextSpan(
+                        text: TextSpan(
                           children: [
                             TextSpan(
                               text: 'Allergies - ',
-                              style: TextStyle(
-                                fontFamily: 'Urbanist',
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xff868686),
+                              style: GoogleFonts.urbanist(
+                                textStyle: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500,
+                                  color: Color(0xff868686),
+                                ),
                               ),
                             ),
-                            TextSpan(
-                              text: 'Pollen, Sunlight',
-                              style: TextStyle(
-                                fontFamily: 'Urbanist',
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xff0C091F),
-                              ),
-                            ),
+                            const TextSpan(
+                                text: 'Pollen, Sunlight',
+                                style: TextStyle(
+                                  fontFamily: 'Urbanist',
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                  color: Color(0xff0C091F),
+                                )),
                           ],
                         ),
                       ),
                       const SizedBox(height: 10),
                       RichText(
-                        text: const TextSpan(
+                        text: TextSpan(
                           children: [
                             TextSpan(
                               text: 'Phobias/Fears - ',
-                              style: TextStyle(
-                                fontFamily: 'Urbanist',
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xff868686),
+                              style: GoogleFonts.urbanist(
+                                textStyle: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500,
+                                  color: Color(0xff868686),
+                                ),
                               ),
                             ),
-                            TextSpan(
+                            const TextSpan(
                               text: 'Pollen, Sunlight',
                               style: TextStyle(
                                 fontFamily: 'Urbanist',
                                 fontSize: 14,
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.w400,
                                 color: Color(0xff0C091F),
                               ),
                             ),

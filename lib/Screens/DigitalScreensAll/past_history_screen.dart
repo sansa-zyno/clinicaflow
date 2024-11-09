@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:healtether_clinic_app/Screens/DigitalScreensAll/diabetics_screen.dart';
 import 'package:healtether_clinic_app/data_layer/models/past_history/past_history.dart';
@@ -6,7 +6,6 @@ import 'package:healtether_clinic_app/constants/app_colors.dart';
 import 'package:healtether_clinic_app/constants/app_text.dart';
 import 'package:healtether_clinic_app/utils/enums/bloc_enums.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:healtether_clinic_app/business_logic/cubits/past_history_cubit/past_history_cubit.dart';
 import 'package:healtether_clinic_app/data_layer/models/user_model/user_model.dart';
 import 'package:healtether_clinic_app/utils/extensions.dart/string_extensions.dart';
 import 'package:healtether_clinic_app/utils/helper_functions/log.dart';
@@ -283,4 +282,4 @@ class _PastHistoryScreenState extends State<PastHistoryScreen> with UiInfoMixin 
       _selectedDiseases.add(newHistory);
     });
   }
-}
+}*/

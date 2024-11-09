@@ -7,6 +7,8 @@ class SymptomsAndDiagnosisState {
   final List<Symptom>? frequentlySearchedSymptoms;
   final List<Symptom>? associatedSymptoms;
   final List<Symptom>? differentialDiagnosis;
+  final List<Symptom>? savedSymptoms;
+  final List<Symptom>? savedDiagnosis;
   final AppError? error;
   SymptomsAndDiagnosisState({
     required this.state,
@@ -14,6 +16,8 @@ class SymptomsAndDiagnosisState {
     this.frequentlySearchedSymptoms,
     this.associatedSymptoms,
     this.differentialDiagnosis,
+    this.savedSymptoms,
+    this.savedDiagnosis,
     this.error,
   });
 
@@ -23,6 +27,8 @@ class SymptomsAndDiagnosisState {
     List<Symptom>? frequentlySearchedSymptoms,
     List<Symptom>? associatedSymptoms,
     List<Symptom>? differentialDiagnosis,
+    List<Symptom>? savedSymptoms,
+    List<Symptom>? savedDiagnosis,
     AppError? error,
   }) {
     return SymptomsAndDiagnosisState(
@@ -31,6 +37,8 @@ class SymptomsAndDiagnosisState {
       frequentlySearchedSymptoms: frequentlySearchedSymptoms ?? this.frequentlySearchedSymptoms,
       associatedSymptoms: associatedSymptoms ?? this.associatedSymptoms,
       differentialDiagnosis: differentialDiagnosis ?? this.differentialDiagnosis,
+      savedSymptoms: savedSymptoms,
+      savedDiagnosis: savedDiagnosis,
       error: error ?? this.error,
     );
   }

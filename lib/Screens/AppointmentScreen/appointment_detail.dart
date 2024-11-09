@@ -4,9 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:healtether_clinic_app/data_layer/models/appointment_models/appointment_model.dart';
 // import 'package:healtether_clinic_app/Screens/AppointmentScreen/widgets/custom_textfield.dart';
 // import 'package:healtether_clinic_app/data_layer/models/appointment_models/appointment_log.dart';
-
 import 'package:healtether_clinic_app/data_layer/models/helper_models/schedule_helper.dart';
-import 'package:healtether_clinic_app/data_layer/sample_objects/sample_objects.dart';
 import 'package:healtether_clinic_app/constants/app_icons.dart';
 import 'package:healtether_clinic_app/utils/extensions.dart/widget_extensions.dart';
 import 'package:healtether_clinic_app/utils/helper_functions/log.dart';
@@ -24,15 +22,16 @@ import 'package:healtether_clinic_app/widgets/section_text.dart';
 // import 'package:intl/intl.dart';
 
 class AppointmentDetail extends StatefulWidget {
-  const AppointmentDetail({super.key});
+  final Appointment appointment;
+  const AppointmentDetail({required this.appointment, super.key});
 
   @override
   State<AppointmentDetail> createState() => _AppointmentDetailState();
 }
 
-class _AppointmentDetailState extends State<AppointmentDetail>
-    with AppBarMixin, UiInfoMixin {
-  Appointment get appointment => SampleObjects.appointmentResponseObject;
+class _AppointmentDetailState extends State<AppointmentDetail> with AppBarMixin, UiInfoMixin {
+  //Appointment get appointment => SampleObjects.appointmentResponseObject;
+  Appointment get appointment => widget.appointment;
 
   // late TextEditingController followUpTimeController;
 
@@ -43,8 +42,7 @@ class _AppointmentDetailState extends State<AppointmentDetail>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(context,
-          title: 'Appointments', automaticallyImplyLeading: true),
+      appBar: buildAppBar(context, title: 'Appointments', automaticallyImplyLeading: true),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -61,27 +59,27 @@ class _AppointmentDetailState extends State<AppointmentDetail>
 
             //? FOLLOW UP
             MyElevatedButton(
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                 text: "Follow up",
                 textStyle: const TextStyle(color: AppColors.lightGrey2),
                 onPressed: () => followUp(context),
                 backgroundColor: AppColors.whiteSmoke),
 
             const SizedBox(width: 8),
-
-            //? RESCHEDULE
-            MyElevatedButton(
-                text: "Reschedule",
-                textStyle: const TextStyle(color: AppColors.lightGrey2),
-                onPressed: rescheduleAppointment,
-                backgroundColor: AppColors.whiteSmoke),
-
-            const SizedBox(width: 8),
-
             //? CANCEL APPOINTMENT
             MyElevatedButton(
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                 text: "Cancel Appointment",
                 textStyle: const TextStyle(color: AppColors.lightGrey2),
                 onPressed: cancelAppointment,
+                backgroundColor: AppColors.whiteSmoke),
+            const SizedBox(width: 8),
+            //? RESCHEDULE
+            MyElevatedButton(
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                text: "Reschedule",
+                textStyle: const TextStyle(color: AppColors.lightGrey2),
+                onPressed: rescheduleAppointment,
                 backgroundColor: AppColors.whiteSmoke),
 
             const SizedBox(width: 16)
@@ -101,8 +99,7 @@ class _AppointmentDetailState extends State<AppointmentDetail>
               itemBuilder: (BuildContext context, int index) {
                 final appointmentLog = appointment.appointmentLogs![index];
 
-                return AppointmentLogItem(appointmentLog: appointmentLog)
-                    .pOnly(left: 16, right: 16, bottom: 16);
+                return AppointmentLogItem(appointmentLog: appointmentLog).pOnly(left: 16, right: 16, bottom: 16);
               },
             ),
           ),
@@ -117,26 +114,26 @@ class _AppointmentDetailState extends State<AppointmentDetail>
 
   void followUp(BuildContext context) {
     log("Follow up");
-    showDialog(
+    showModalBottomSheet(
         context: context,
+        constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height / 1.91),
+        //shape: const RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16))),
         builder: (BuildContext context) {
           return MyScheduleDialog(
+            appointment: appointment,
             title: const SectionText("SCHEDULE FOLLOW-UP"),
+            dateTitle: "Follow-up date",
             schedule: followUpSchedule,
-            // followUpTimeController: followUpTimeController,
-            // onDone: () {
-
-            //   context.pop();
-            // },
-            onExit: context.pop, dateTitle: "Follow-up date",
+            onExit: context.pop,
           );
         });
   }
 
   void cancelAppointment() {
     log("Cancel appointment");
-    showDialog(
+    showModalBottomSheet(
         context: context,
+        constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height / 3),
         builder: (BuildContext context) {
           return CancelAppointmentDialog(schedule: cancelAppointmentSchedule);
         });
@@ -144,24 +141,22 @@ class _AppointmentDetailState extends State<AppointmentDetail>
 
   void rescheduleAppointment() {
     log("Reschedule appointment");
-    showDialog(
+    showModalBottomSheet(
         context: context,
+        constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height / 1.91),
         builder: (BuildContext context) {
           return MyScheduleDialog(
-            title: const SectionText("RESCHEDULE FOLLOW-UP"),
+            appointment: appointment,
+            title: const SectionText("RESCHEDULE APPOINTMENT"),
+            dateTitle: "Set up a date",
             schedule: rescheduleFollowUpSchedule,
             // onDone: () {
             //   log(rescheduleFollowUpSchedule.toMap());
             //   context.pop();
             // },
             onExit: context.pop,
-            dateTitle: "Set up a date",
           );
         });
-  }
-
-  void scheduleFollowUp() {
-    print("Scheduling follow up...");
   }
 }
 
@@ -177,9 +172,7 @@ class SectionText2 extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: GoogleFonts.roboto(
-          textStyle: const TextStyle(
-              fontWeight: FontWeight.w500, fontSize: 16, height: 22.08 / 16)),
+      style: GoogleFonts.roboto(textStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16, height: 22.08 / 16)),
     );
   }
 }
@@ -202,14 +195,7 @@ class MyCloseIconButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(7),
             border: Border.all(color: AppColors.darkBlueViolet),
             color: Colors.white,
-            boxShadow: !showShadow
-                ? null
-                : [
-                    BoxShadow(
-                        color: Colors.black.withOpacity(0.25),
-                        blurRadius: 4,
-                        offset: const Offset(0, 4))
-                  ]),
+            boxShadow: !showShadow ? null : [BoxShadow(color: Colors.black.withOpacity(0.25), blurRadius: 4, offset: const Offset(0, 4))]),
         child: AppIcons.close,
       ),
     );

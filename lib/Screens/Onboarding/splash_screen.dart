@@ -24,7 +24,7 @@ class SplashScreenState extends State<SplashScreen> {
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       log(timer.tick);
-      if (timer.tick == 6) {
+      /* if (timer.tick == 6) {
         onboardingState = OnboardingState.second;
       } else if (timer.tick == 10) {
         onboardingState = OnboardingState.third;
@@ -32,6 +32,11 @@ class SplashScreenState extends State<SplashScreen> {
         onboardingState = OnboardingState.end;
         context.goNamed(AppRoutes.onboarding.name);
         _timer?.cancel();
+      }*/
+
+      if (timer.tick == 2) {
+        //onboardingState = OnboardingState.end;
+        context.goNamed(AppRoutes.onboarding.name);
       }
 
       setState(() {});
@@ -58,20 +63,19 @@ class SplashScreenState extends State<SplashScreen> {
         ),
         Center(
           child: AnimatedCrossFade(
-            duration: const Duration(seconds: 1),
-            firstChild: Transform.scale(
-              scale: 0.8,
-              child: SvgPicture.asset("assets/svg/icon/logo.svg"),
-            ),
-            secondChild: Transform.scale(
-                scale: 0.8,
-                child: onboardingState == OnboardingState.second
-                    ? SvgPicture.asset("assets/svg/logo2.svg")
-                    : SvgPicture.asset("assets/svg/logo3.svg")),
-            crossFadeState: onboardingState == OnboardingState.first
-                ? CrossFadeState.showFirst
-                : CrossFadeState.showSecond,
-          ),
+              duration: const Duration(seconds: 1),
+              firstChild: Transform.scale(
+                scale: 1.1,
+                child: SvgPicture.asset("assets/svg/icon/logo.svg"),
+              ),
+              secondChild: Transform.scale(
+                  scale: 0.8,
+                  child:
+                      null //onboardingState == OnboardingState.second ? SvgPicture.asset("assets/svg/logo2.svg") : SvgPicture.asset("assets/svg/logo3.svg")
+                  ),
+              crossFadeState:
+                  CrossFadeState.showFirst //onboardingState == OnboardingState.first ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+              ),
         ),
       ],
     );

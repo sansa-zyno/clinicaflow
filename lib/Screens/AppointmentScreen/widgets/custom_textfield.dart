@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:healtether_clinic_app/constants/constants.dart';
 
 class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
@@ -20,6 +19,7 @@ class CustomTextField extends StatelessWidget {
   final Color? fillColor;
   final double borderRadius;
   final String? suffixText;
+  final TextStyle? textStyle;
   final TextStyle? hintStyle;
   final bool? usePadding;
   final FocusNode? focusNode;
@@ -36,7 +36,8 @@ class CustomTextField extends StatelessWidget {
       this.minLines = 1,
       this.focusNode,
       this.onEditingComplete,
-      this.borderRadius = 7,
+      this.borderRadius = 0,
+      this.textStyle,
       this.hintStyle,
       this.height,
       this.width,
@@ -58,8 +59,7 @@ class CustomTextField extends StatelessWidget {
     return SizedBox(
       height: height,
       child: Padding(
-        padding: EdgeInsets.symmetric(
-            horizontal: (usePadding ?? false) == false ? 0 : 10.0),
+        padding: EdgeInsets.symmetric(horizontal: (usePadding ?? false) == false ? 0 : 10.0),
         child: TextFormField(
           keyboardType: keyBoardType,
           controller: controller,
@@ -73,12 +73,18 @@ class CustomTextField extends StatelessWidget {
           obscureText: obscureText,
           maxLines: maxLines,
           minLines: minLines,
+          style: textStyle ??
+              const TextStyle(
+                color: Colors.black,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
           decoration: InputDecoration(
             hintText: hintText,
             suffixIcon: suffixIcon,
             prefixIcon: prefixIcon,
             suffixText: suffixText,
-            fillColor: fillColor ?? AppColors.textFieldFillColor,
+            fillColor: fillColor ?? const Color(0xffF7F7F7),
             contentPadding: contentPadding,
             filled: true,
             hintStyle: hintStyle ??
@@ -87,21 +93,16 @@ class CustomTextField extends StatelessWidget {
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                 ),
-            enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(borderRadius),
-                borderSide: const BorderSide(color: Colors.transparent)),
-            focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(borderRadius),
-                borderSide: const BorderSide(color: Colors.transparent)),
-            disabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(borderRadius),
-                borderSide: const BorderSide(color: Colors.transparent)),
-            focusedErrorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(borderRadius),
-                borderSide: const BorderSide(color: Colors.transparent)),
-            errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(borderRadius),
-                borderSide: const BorderSide(color: Colors.transparent)),
+            enabledBorder:
+                OutlineInputBorder(borderRadius: BorderRadius.circular(borderRadius), borderSide: const BorderSide(color: Colors.transparent)),
+            focusedBorder:
+                OutlineInputBorder(borderRadius: BorderRadius.circular(borderRadius), borderSide: const BorderSide(color: Colors.transparent)),
+            disabledBorder:
+                OutlineInputBorder(borderRadius: BorderRadius.circular(borderRadius), borderSide: const BorderSide(color: Colors.transparent)),
+            focusedErrorBorder:
+                OutlineInputBorder(borderRadius: BorderRadius.circular(borderRadius), borderSide: const BorderSide(color: Colors.transparent)),
+            errorBorder:
+                OutlineInputBorder(borderRadius: BorderRadius.circular(borderRadius), borderSide: const BorderSide(color: Colors.transparent)),
           ),
         ),
       ),

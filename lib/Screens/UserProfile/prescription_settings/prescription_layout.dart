@@ -5,7 +5,6 @@ import 'package:healtether_clinic_app/Screens/AppointmentScreen/widgets/custom_t
 import 'package:healtether_clinic_app/data_layer/models/template_form_data/template_form_data.dart';
 import 'package:healtether_clinic_app/constants/constants.dart';
 import 'package:healtether_clinic_app/constants/app_icons.dart';
-import 'package:healtether_clinic_app/constants/constants.dart';
 import 'package:healtether_clinic_app/utils/enums/bloc_enums.dart';
 import 'package:healtether_clinic_app/utils/enums/enums.dart';
 import 'package:healtether_clinic_app/utils/extensions.dart/string_extensions.dart';
@@ -34,8 +33,7 @@ class PrescriptionLayout extends StatefulWidget {
   State<PrescriptionLayout> createState() => _PrescriptionLayoutState();
 }
 
-class _PrescriptionLayoutState extends State<PrescriptionLayout>
-    with AppBarMixin, ImageMixin, UiInfoMixin {
+class _PrescriptionLayoutState extends State<PrescriptionLayout> with AppBarMixin, ImageMixin, UiInfoMixin {
   late final TextEditingController doctorName;
   late final TextEditingController doctorSpecialty;
   late final TextEditingController otherInfo;
@@ -62,28 +60,18 @@ class _PrescriptionLayoutState extends State<PrescriptionLayout>
   @override
   void initState() {
     super.initState();
-    final savedTemplateForm =
-        (context.read<SettingsCubit>().state.templatesFormData);
+    final savedTemplateForm = (context.read<SettingsCubit>().state.templatesFormData);
 
     log("SAVED TEMPLATE FORM: $savedTemplateForm");
-    List<TemplateFormData>? currentForm = savedTemplateForm
-        ?.where((form) => form.template == widget.template)
-        .toList();
-    form = (currentForm == null || currentForm.isEmpty == true
-            ? [TemplateFormData(template: widget.template)]
-            : currentForm)
-        .first;
+    List<TemplateFormData>? currentForm = savedTemplateForm?.where((form) => form.template == widget.template).toList();
+    form = (currentForm == null || currentForm.isEmpty == true ? [TemplateFormData(template: widget.template)] : currentForm).first;
     log("INITIAL FORM DATA: $form");
     if (form.clinicLogo != null) clinicLogo = XFile(form.clinicLogo!);
 
     openHours = form.openHours;
     if (openHours.isEmpty) {
       openHours = [
-        AppointmentSlot(
-            id: Uuid().v4(),
-            days: [],
-            duration: '',
-            timeSlots: [TimeSlot(const Uuid().v4())])
+        AppointmentSlot(id: Uuid().v4(), days: [], duration: '', timeSlots: [TimeSlot(const Uuid().v4())])
       ];
     }
 
@@ -91,26 +79,20 @@ class _PrescriptionLayoutState extends State<PrescriptionLayout>
     doctorSpecialty = TextEditingController(text: form.doctorSpecialty);
     otherInfo = TextEditingController(text: form.otherInfo);
     clinicAddress = TextEditingController(text: form.clinicAddress);
-    clinicContacts = List<TextEditingController>.generate(
-        form.clinicContacts.length, (index) {
+    clinicContacts = List<TextEditingController>.generate(form.clinicContacts.length, (index) {
       final contact = form.clinicContacts.elementAt(index);
 
       return TextEditingController(text: contact);
     });
-    clinicEmails =
-        List<TextEditingController>.generate(form.clinicEmails.length, (index) {
+    clinicEmails = List<TextEditingController>.generate(form.clinicEmails.length, (index) {
       final email = form.clinicEmails.elementAt(index);
 
       return TextEditingController(text: email);
     });
   }
 
-  TextStyle get titleTextStyle => GoogleFonts.urbanist(
-      textStyle: const TextStyle(
-          fontWeight: FontWeight.bold,
-          color: AppColors.grey,
-          fontSize: 17,
-          height: 23.12 / 17));
+  TextStyle get titleTextStyle =>
+      GoogleFonts.urbanist(textStyle: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.grey, fontSize: 17, height: 23.12 / 17));
 
   @override
   void dispose() {
@@ -138,22 +120,15 @@ class _PrescriptionLayoutState extends State<PrescriptionLayout>
         }
       },
       child: Scaffold(
-        appBar: buildAppBar(
-          context,
-          title: "Clinic Settings",
-          automaticallyImplyLeading: true,
-        ),
-        bottomNavigationBar: BlocBuilder<SettingsCubit, SettingsState>(
-            builder: (context, state) {
+        appBar: buildAppBar(context, title: "Clinic Settings", automaticallyImplyLeading: true, showDefaultActions: false),
+        bottomNavigationBar: BlocBuilder<SettingsCubit, SettingsState>(builder: (context, state) {
           // final bool isValid = validateForm();
           // log("BUILDING SAVE: ${form.isValid}");
           return MyElevatedButton(
               text: "Save",
               height: 61,
-              backgroundColor:
-                  form.isValid == false ? AppColors.whiteSmoke : null,
-              textStyle: TextStyle(
-                  color: form.isValid == false ? AppColors.lightGrey3 : null),
+              backgroundColor: form.isValid == false ? AppColors.whiteSmoke : null,
+              textStyle: TextStyle(color: form.isValid == false ? AppColors.lightGrey3 : null),
               onPressed: () {
                 log("NEW SETTINGS: $state");
                 FocusManager.instance.primaryFocus?.unfocus();
@@ -188,34 +163,27 @@ class _PrescriptionLayoutState extends State<PrescriptionLayout>
                 buildSectionHeader("Header Info").pSymmetric(),
 
                 //? ADD CLINIC LOGO
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Add Clinic Logo",
-                        style: GoogleFonts.urbanist(
-                            textStyle: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 17,
-                                height: 23.12 / 17)),
-                      ),
+                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                  Text(
+                    "Add Clinic Logo",
+                    style: GoogleFonts.urbanist(textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17, height: 23.12 / 17)),
+                  ),
 
-                      //? select image
-                      MyImageContainer(
-                        file: clinicLogo,
-                        onTap: () async {
-                          print("Change image");
-                          clinicLogo = await getSingleImageFromSource();
-                          if (clinicLogo != null) {
-                            setState(() {
-                              form =
-                                  form.copyWith(clinicLogo: clinicLogo?.path);
-                            });
-                          }
-                        },
-                        child: AppIcons.camera,
-                      )
-                    ]).pSymmetric(vertical: 12),
+                  //? select image
+                  MyImageContainer(
+                    file: clinicLogo,
+                    onTap: () async {
+                      print("Change image");
+                      clinicLogo = await getSingleImageFromSource();
+                      if (clinicLogo != null) {
+                        setState(() {
+                          form = form.copyWith(clinicLogo: clinicLogo?.path);
+                        });
+                      }
+                    },
+                    child: AppIcons.camera,
+                  )
+                ]).pSymmetric(vertical: 12),
 
                 //? DOCTORS NAME
                 TitledTextField(
@@ -225,8 +193,7 @@ class _PrescriptionLayoutState extends State<PrescriptionLayout>
                               form = form.copyWith(doctorName: value);
                               log("NEW FORM: $form");
                             }),
-                        validator: (value) => nonNullValidator(
-                            value, "Doctor's name cannot be empty"),
+                        validator: (value) => nonNullValidator(value, "Doctor's name cannot be empty"),
                         hintText: "E.g Dr Kim Jones")
                     .pOnly(left: 16, right: 16, bottom: 12),
 
@@ -238,8 +205,7 @@ class _PrescriptionLayoutState extends State<PrescriptionLayout>
                               form = form.copyWith(doctorSpecialty: value);
                               log("NEW FORM: $form");
                             }),
-                        validator: (value) => nonNullValidator(
-                            value, "Doctor's specialty cannot be empty"),
+                        validator: (value) => nonNullValidator(value, "Doctor's specialty cannot be empty"),
                         hintText: "E.g Neurologist")
                     .pOnly(left: 16, right: 16, bottom: 12),
 
@@ -266,33 +232,23 @@ class _PrescriptionLayoutState extends State<PrescriptionLayout>
                               form = form.copyWith(clinicAddress: value);
                               log("NEW FORM: $form");
                             }),
-                        validator: (value) => nonNullValidator(
-                            value, "Clinic address cannot be empty"),
+                        validator: (value) => nonNullValidator(value, "Clinic address cannot be empty"),
                         hintText: "E.g Plot no, Street, Landmark, City, State")
                     .pOnly(left: 16, right: 16, bottom: 12),
 
                 //? CLINIC CONTACT
-                Text("Clinic contact${clinicContacts.length > 1 ? 's' : ''}",
-                        style: titleTextStyle)
-                    .pOnly(bottom: 4, left: 16, right: 16),
+                Text("Clinic contact${clinicContacts.length > 1 ? 's' : ''}", style: titleTextStyle).pOnly(bottom: 4, left: 16, right: 16),
                 ...List<Widget>.generate(clinicContacts.length, (index) {
                   final clinicContact = clinicContacts.elementAt(index);
 
                   return TitledTextField(
                           controller: clinicContact,
                           onChanged: (value) => setState(() {
-                                form = form.copyWith(
-                                    clinicContacts: clinicContacts
-                                        .map((e) =>
-                                            e == clinicContact ? value : e.text)
-                                        .toList());
+                                form = form.copyWith(clinicContacts: clinicContacts.map((e) => e == clinicContact ? value : e.text).toList());
                                 log("NEW FORM: $form");
                               }),
-                          validator: (value) => nonNullValidator(
-                              value, "Clinic contact cannot be empty"),
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly
-                          ],
+                          validator: (value) => nonNullValidator(value, "Clinic contact cannot be empty"),
+                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                           keyBoardType: TextInputType.number,
                           hintText: "E.g +91")
                       .pOnly(left: 16, right: 16, bottom: 12);
@@ -305,8 +261,7 @@ class _PrescriptionLayoutState extends State<PrescriptionLayout>
                   onTap: () {
                     log("Adding contact");
                     setState(() {
-                      form = form.copyWith(
-                          clinicContacts: [...form.clinicContacts, '']);
+                      form = form.copyWith(clinicContacts: [...form.clinicContacts, '']);
                       clinicContacts.add(TextEditingController(text: ''));
 
                       log("new form: $form");
@@ -319,24 +274,17 @@ class _PrescriptionLayoutState extends State<PrescriptionLayout>
                 ),
 
                 //? CLINIC EMAIL
-                Text("Clinic email${clinicEmails.length > 1 ? 's' : ''}",
-                        style: titleTextStyle)
-                    .pOnly(bottom: 4, left: 16, right: 16),
+                Text("Clinic email${clinicEmails.length > 1 ? 's' : ''}", style: titleTextStyle).pOnly(bottom: 4, left: 16, right: 16),
                 ...List<Widget>.generate(clinicEmails.length, (index) {
                   final clinicEmail = clinicEmails.elementAt(index);
 
                   return TitledTextField(
                           controller: clinicEmail,
                           onChanged: (value) => setState(() {
-                                form = form.copyWith(
-                                    clinicEmails: clinicEmails
-                                        .map((e) =>
-                                            e == clinicEmail ? value : e.text)
-                                        .toList());
+                                form = form.copyWith(clinicEmails: clinicEmails.map((e) => e == clinicEmail ? value : e.text).toList());
                                 log("NEW FORM: $form");
                               }),
-                          validator: (value) => nonNullValidator(
-                              value, "Clinic email cannot be empty"),
+                          validator: (value) => nonNullValidator(value, "Clinic email cannot be empty"),
                           hintText: "E.g xyz@gmail.com")
                       .pOnly(left: 16, right: 16, bottom: 12);
                 }),
@@ -349,8 +297,7 @@ class _PrescriptionLayoutState extends State<PrescriptionLayout>
                   onTap: () {
                     log("Adding email");
                     setState(() {
-                      form = form
-                          .copyWith(clinicEmails: [...form.clinicEmails, '']);
+                      form = form.copyWith(clinicEmails: [...form.clinicEmails, '']);
                       clinicEmails.add(TextEditingController(text: ''));
 
                       log("new form: $form");
@@ -364,8 +311,7 @@ class _PrescriptionLayoutState extends State<PrescriptionLayout>
                 ...List<Widget>.generate(openHours.length, (index) {
                   final openHour = openHours.elementAt(index);
 
-                  return TimeSelectionCard(appointmentSlot: openHour)
-                      .pSymmetric();
+                  return TimeSelectionCard(appointmentSlot: openHour).pSymmetric();
                 }),
 
                 Row(
@@ -376,19 +322,14 @@ class _PrescriptionLayoutState extends State<PrescriptionLayout>
                         text: "Add other timings",
                         onTap: () {
                           setState(() {
-                            openHours.add(AppointmentSlot(
-                                id: Uuid().v4(),
-                                days: [],
-                                duration: '',
-                                timeSlots: [TimeSlot(const Uuid().v4())]));
+                            openHours.add(AppointmentSlot(id: Uuid().v4(), days: [], duration: '', timeSlots: [TimeSlot(const Uuid().v4())]));
                           });
                         }),
 
                     //? clear
                     CustomTextButton(
                         text: "Clear",
-                        textStyle:
-                            const TextStyle(color: AppColors.darkBlueViolet),
+                        textStyle: const TextStyle(color: AppColors.darkBlueViolet),
                         onTap: () {
                           setState(() {
                             openHours = [AppointmentSlot.empty()];
@@ -404,8 +345,7 @@ class _PrescriptionLayoutState extends State<PrescriptionLayout>
 
                 buildSectionHeader("Body Info").pSymmetric(vertical: 8),
                 //? AUTOFILL DATA IN THE PRESCRIPTION
-                boldSubheading("Auto fill data in the prescription")
-                    .pSymmetric(),
+                boldSubheading("Auto fill data in the prescription").pSymmetric(),
                 const SizedBox(
                   height: 4,
                 ),
@@ -430,9 +370,7 @@ class _PrescriptionLayoutState extends State<PrescriptionLayout>
                       //? column with key
                       Expanded(
                           child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [Text(key), const Divider()]))
+                              mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [Text(key), const Divider()]))
                     ],
                   ).pSymmetric();
                 })
@@ -449,9 +387,7 @@ class _PrescriptionLayoutState extends State<PrescriptionLayout>
   Text boldSubheading(String text) {
     return Text(
       text,
-      style: GoogleFonts.poppins(
-          textStyle: const TextStyle(
-              fontWeight: FontWeight.bold, fontSize: 14, height: 18.2 / 14)),
+      style: GoogleFonts.poppins(textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, height: 18.2 / 14)),
     );
   }
 
@@ -492,46 +428,31 @@ class TitledTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // title
-          if (title != null)
-            Text(title!,
-                style: GoogleFonts.urbanist(
-                    textStyle: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.grey,
-                        fontSize: 17,
-                        height: 23.12 / 17))),
+    return Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+      // title
+      if (title != null)
+        Text(title!,
+            style: GoogleFonts.urbanist(
+                textStyle: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.grey, fontSize: 17, height: 23.12 / 17))),
 
-          if (title != null) const SizedBox(height: 4),
+      if (title != null) const SizedBox(height: 4),
 
-          // textfield
-          CustomTextField(
-            controller: controller,
-            validator: validator,
-            inputFormatters: inputFormatters,
-            hintText: hintText,
-            keyBoardType: keyBoardType,
-            fillColor: AppColors.backgroundColor,
-            onChanged: onChanged,
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
-          )
-        ]);
+      // textfield
+      CustomTextField(
+        controller: controller,
+        validator: validator,
+        inputFormatters: inputFormatters,
+        hintText: hintText,
+        keyBoardType: keyBoardType,
+        onChanged: onChanged,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
+      )
+    ]);
   }
 }
 
 class CustomTextButton extends StatelessWidget {
-  const CustomTextButton(
-      {super.key,
-      required this.text,
-      this.prefixIcon,
-      this.dividerLength,
-      this.textStyle,
-      required this.onTap});
+  const CustomTextButton({super.key, required this.text, this.prefixIcon, this.dividerLength, this.textStyle, required this.onTap});
   final String text;
   final Widget? prefixIcon;
   final void Function() onTap;
@@ -556,21 +477,12 @@ class CustomTextButton extends StatelessWidget {
                 ),
               Text(text,
                   style: GoogleFonts.urbanist(
-                      textStyle: const TextStyle(
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.blueViolet,
-                              fontSize: 17,
-                              height: 23.12 / 17)
+                      textStyle: const TextStyle(fontWeight: FontWeight.w600, color: AppColors.blueViolet, fontSize: 17, height: 23.12 / 17)
                           .merge(textStyle))),
             ],
           ),
           if (dividerLength != null) const SizedBox(height: 6),
-          if (dividerLength != null)
-            SizedBox(
-                width: dividerLength,
-                child: Divider(
-                    color: textStyle?.color ?? AppColors.blueViolet,
-                    thickness: 2))
+          if (dividerLength != null) SizedBox(width: dividerLength, child: Divider(color: textStyle?.color ?? AppColors.blueViolet, thickness: 2))
         ],
       ),
     );
@@ -602,8 +514,7 @@ class _TimeSelectionCardState extends State<TimeSelectionCard> {
   void initState() {
     super.initState();
     final String startStr = widget.appointmentSlot.timeSlots[0].startStr ?? '';
-    final String finishStr =
-        widget.appointmentSlot.timeSlots[0].finishStr ?? '';
+    final String finishStr = widget.appointmentSlot.timeSlots[0].finishStr ?? '';
     if (startStr.isNotEmpty) {
       startHour.text = startStr.split(':')[0];
       startMinute.text = startStr.split(':')[1];
@@ -665,22 +576,17 @@ class _TimeSelectionCardState extends State<TimeSelectionCard> {
                       spacing: 8,
                       runSpacing: 8,
                       alignment: WrapAlignment.end,
-                      children: List<Widget>.generate(WeekDays.values.length,
-                          (index) {
-                        final WeekDays weekDay =
-                            WeekDays.values.elementAt(index);
+                      children: List<Widget>.generate(WeekDays.values.length, (index) {
+                        final WeekDays weekDay = WeekDays.values.elementAt(index);
                         final bool selected = selectedDays.contains(weekDay);
 
                         return SelectableContainer(
                           title: Text(weekDay.describe.capitalize),
-                          selectedTitle: Text(weekDay.describe.capitalize,
-                              style: const TextStyle(color: Colors.white)),
+                          selectedTitle: Text(weekDay.describe.capitalize, style: const TextStyle(color: Colors.white)),
                           selected: selected,
                           onTap: () {
                             setState(() {
-                              selected
-                                  ? selectedDays.remove(weekDay)
-                                  : selectedDays.add(weekDay);
+                              selected ? selectedDays.remove(weekDay) : selectedDays.add(weekDay);
                             });
                           },
                         );
@@ -695,9 +601,7 @@ class _TimeSelectionCardState extends State<TimeSelectionCard> {
   Text buildSectionText(String text) {
     return Text(
       text,
-      style: GoogleFonts.urbanist(
-          textStyle: const TextStyle(
-              fontWeight: FontWeight.bold, fontSize: 14, height: 17.36 / 14)),
+      style: GoogleFonts.urbanist(textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, height: 17.36 / 14)),
     );
   }
 }
@@ -725,10 +629,7 @@ class TimeField extends StatelessWidget {
           controller: hour,
           hintText: "00",
           // suffixText: "hr",
-          inputFormatters: [
-            FilteringTextInputFormatter.digitsOnly,
-            LengthLimitingTextInputFormatter(2)
-          ],
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(2)],
         )),
 
         const Text(":"), //.pSymmetric(horizontal: 4),
@@ -739,10 +640,7 @@ class TimeField extends StatelessWidget {
           controller: minute,
           hintText: "00",
           // suffixText: "min",
-          inputFormatters: [
-            FilteringTextInputFormatter.digitsOnly,
-            LengthLimitingTextInputFormatter(2)
-          ],
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(2)],
         )),
 
         SelectableContainer(
@@ -750,8 +648,7 @@ class TimeField extends StatelessWidget {
           title: Text(DayPeriod.am.name.toUpperCase()),
           selectedTitle: Text(
             DayPeriod.am.name.toUpperCase(),
-            style: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.w500),
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
           ),
           onTap: () => onDayPeriodSelected(DayPeriod.am),
           selected: selectedDayPeriod == DayPeriod.am,
@@ -764,8 +661,7 @@ class TimeField extends StatelessWidget {
           height: 76,
           selectedTitle: Text(
             DayPeriod.pm.name.toUpperCase(),
-            style: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.w500),
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
           ),
           onTap: () => onDayPeriodSelected(DayPeriod.pm),
           selected: selectedDayPeriod == DayPeriod.pm,

@@ -8,12 +8,10 @@ import 'edit_document_screen.dart';
 class EditContactDetailScreen extends StatefulWidget {
   final PageController? pageController;
 
-  const EditContactDetailScreen({Key? key, this.pageController})
-      : super(key: key);
+  const EditContactDetailScreen({Key? key, this.pageController}) : super(key: key);
 
   @override
-  State<EditContactDetailScreen> createState() =>
-      _EditContactDetailScreenState();
+  State<EditContactDetailScreen> createState() => _EditContactDetailScreenState();
 }
 
 class _EditContactDetailScreenState extends State<EditContactDetailScreen> {
@@ -95,10 +93,10 @@ class _EditContactDetailScreenState extends State<EditContactDetailScreen> {
                         children: [
                           const Row(
                             children: [
-                              Icon(Icons.add, color: AppColors.blueColor),
+                              Icon(Icons.add, color: AppColors.blueViolet),
                               Text(
                                 AppText.addAnotherNumber,
-                                style: TextStyle(color: AppColors.blueColor),
+                                style: TextStyle(color: AppColors.blueViolet),
                               ),
                             ],
                           ),
@@ -107,7 +105,7 @@ class _EditContactDetailScreenState extends State<EditContactDetailScreen> {
                             child: Container(
                               height: 2,
                               width: screenSize.width * 0.5,
-                              color: AppColors.blueColor,
+                              color: AppColors.blueViolet,
                             ),
                           ),
                         ],
@@ -140,11 +138,11 @@ class _EditContactDetailScreenState extends State<EditContactDetailScreen> {
                             children: [
                               Icon(
                                 Icons.add,
-                                color: AppColors.blueColor,
+                                color: AppColors.blueViolet,
                               ),
                               Text(
                                 AppText.addAnotherEmail,
-                                style: TextStyle(color: AppColors.blueColor),
+                                style: TextStyle(color: AppColors.blueViolet),
                               ),
                             ],
                           ),
@@ -153,7 +151,7 @@ class _EditContactDetailScreenState extends State<EditContactDetailScreen> {
                             child: Container(
                               height: 2,
                               width: screenSize.width * 0.5,
-                              color: AppColors.blueColor,
+                              color: AppColors.blueViolet,
                             ),
                           ),
                         ],
@@ -202,8 +200,7 @@ class _EditContactDetailScreenState extends State<EditContactDetailScreen> {
             ),
           ),
           Padding(
-            padding:
-                const EdgeInsets.only(left: 36, right: 36, bottom: 8, top: 5),
+            padding: const EdgeInsets.only(left: 36, right: 36, bottom: 8, top: 5),
             child: Container(
               height: 60,
               width: 280,

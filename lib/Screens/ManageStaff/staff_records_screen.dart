@@ -50,8 +50,7 @@ class _StaffRecordsScreenState extends State<StaffRecordsScreen> {
           IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert))
         ],
       ),
-      body: BlocBuilder<StaffDetailCubit, StaffDetailState>(
-          builder: (context, state) {
+      body: BlocBuilder<StaffDetailCubit, StaffDetailState>(builder: (context, state) {
         if (state is StaffDetailLoadingState) {
           return const Center(
             child: CircularProgressIndicator(),
@@ -73,9 +72,7 @@ class _StaffRecordsScreenState extends State<StaffRecordsScreen> {
                       padding: const EdgeInsets.only(left: 10.0),
                       child: CircleAvatar(
                         backgroundImage: NetworkImage(
-                          data!.profilePic.isEmpty
-                              ? 'https://picsum.photos/seed/picsum/200/300'
-                              : data.profilePic,
+                          data!.profilePic.isEmpty ? 'https://picsum.photos/seed/picsum/200/300' : data.profilePic,
                         ),
                         radius: 45,
                       ),
@@ -97,13 +94,8 @@ class _StaffRecordsScreenState extends State<StaffRecordsScreen> {
                             ),
                             child: Center(
                               child: Text(
-                                widget.data.isDoctor == true
-                                    ? 'Admin'
-                                    : 'Guest',
-                                style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    fontFamily: 'Montserrat'),
+                                widget.data.isDoctor == true ? 'Admin' : 'Guest',
+                                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, fontFamily: 'Montserrat'),
                                 textAlign: TextAlign.center,
                               ),
                             ),
@@ -138,7 +130,7 @@ class _StaffRecordsScreenState extends State<StaffRecordsScreen> {
                         Text(
                           data!.specialization,
                           style: GoogleFonts.montserrat(
-                            color: AppColors.blueColor,
+                            color: AppColors.blueViolet,
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
                           ),
@@ -188,24 +180,16 @@ class _StaffRecordsScreenState extends State<StaffRecordsScreen> {
                         buildDetailSection(
                           title: AppText.PERSONALDETAILS,
                           details: [
-                            detailRowWidget(
-                                subTitle: DateFormat('yyyy-MM-dd')
-                                    .format(data.birthday!),
-                                title: 'Birthday'),
-                            detailRowWidget(
-                                subTitle: data.age.toString(), title: 'Age'),
-                            detailRowWidget(
-                                subTitle: data.gender, title: 'Gender'),
+                            detailRowWidget(subTitle: DateFormat('yyyy-MM-dd').format(data.birthday!), title: 'Birthday'),
+                            detailRowWidget(subTitle: data.age.toString(), title: 'Age'),
+                            detailRowWidget(subTitle: data.gender, title: 'Gender'),
                           ],
                         ),
                         const Divider(),
                         buildDetailSection(
                           title: AppText.CONTACTDETAILS,
                           details: [
-                            detailRowWidget(
-                                subTitle:
-                                    "+91 ${widget.data.mobile ?? '9865 632142'}",
-                                title: 'Mobile'),
+                            detailRowWidget(subTitle: "+91 ${widget.data.mobile ?? '9865 632142'}", title: 'Mobile'),
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -247,8 +231,7 @@ class _StaffRecordsScreenState extends State<StaffRecordsScreen> {
                                 )
                               ],
                             ),
-                            detailRowWidget(
-                                subTitle: data.email, title: 'Email'),
+                            detailRowWidget(subTitle: data.email, title: 'Email'),
                             detailRowWidget(
                                 subTitle:
                                     "${data.address!.street} ${data.address!.landmarks} ${data.address!.house} ${data.address!.city} ${data.address!.pincode}",
@@ -259,35 +242,24 @@ class _StaffRecordsScreenState extends State<StaffRecordsScreen> {
                         buildDetailSection(
                           title: AppText.BANKDETAILS,
                           details: [
-                            detailRowWidget(
-                                subTitle: 'ajitbhalla@ybl', title: 'UPI ID'),
-                            detailRowWidget(
-                                subTitle: 'Indian Bank', title: 'Bank'),
-                            detailRowWidget(
-                                subTitle: '5213 5123 6554 5894',
-                                title: 'A/c no.'),
-                            detailRowWidget(
-                                subTitle: 'IDBI000H013', title: 'IFSC code'),
-                            detailRowWidget(
-                                subTitle: 'Kim Jones', title: 'Account Holder'),
+                            detailRowWidget(subTitle: 'ajitbhalla@ybl', title: 'UPI ID'),
+                            detailRowWidget(subTitle: 'Indian Bank', title: 'Bank'),
+                            detailRowWidget(subTitle: '5213 5123 6554 5894', title: 'A/c no.'),
+                            detailRowWidget(subTitle: 'IDBI000H013', title: 'IFSC code'),
+                            detailRowWidget(subTitle: 'Kim Jones', title: 'Account Holder'),
                           ],
                         ),
                         const Divider(),
                         buildDetailSection(
                           title: 'DOCUMENTS',
                           details: [
-                            detailRowWidget(
-                                subTitle: data.documentType, title: 'ID type'),
-                            detailRowWidget(
-                                subTitle: data.documentNumber, title: 'ID no.'),
-                            detailWidget(
-                                subTitle: '', title: 'Other Documents'),
+                            detailRowWidget(subTitle: data.documentType, title: 'ID type'),
+                            detailRowWidget(subTitle: data.documentNumber, title: 'ID no.'),
+                            detailWidget(subTitle: '', title: 'Other Documents'),
                             Column(
                               children: data.documents
                                   .map(
-                                    (e) => detailsRowWidget(
-                                        subTitle: e['blobName'],
-                                        title: e['fileName']),
+                                    (e) => detailsRowWidget(subTitle: e['blobName'], title: e['fileName']),
                                   )
                                   .toList(),
                             )
@@ -298,10 +270,8 @@ class _StaffRecordsScreenState extends State<StaffRecordsScreen> {
                           title: 'PAYMENTS HISTORY',
                           details: [
                             detailRowWidget(subTitle: '', title: 'Receipts'),
-                            detailsRowWidget(
-                                subTitle: '', title: '1. Salary_aug23'),
-                            detailsRowWidget(
-                                subTitle: '', title: '2. Salary_july23'),
+                            detailsRowWidget(subTitle: '', title: '1. Salary_aug23'),
+                            detailsRowWidget(subTitle: '', title: '2. Salary_july23'),
                           ],
                         ),
                       ],
@@ -316,8 +286,7 @@ class _StaffRecordsScreenState extends State<StaffRecordsScreen> {
     );
   }
 
-  Widget buildDetailSection(
-      {required String title, required List<Widget> details}) {
+  Widget buildDetailSection({required String title, required List<Widget> details}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -345,9 +314,7 @@ class _StaffRecordsScreenState extends State<StaffRecordsScreen> {
     return Container(
       height: 2,
       width: 40,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          color: const Color(0xFF52CFAC)),
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), color: const Color(0xFF52CFAC)),
     );
   }
 

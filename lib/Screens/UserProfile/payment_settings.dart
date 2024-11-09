@@ -26,10 +26,7 @@ class _PaymentSettingsState extends State<PaymentSettings> with AppBarMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(context,
-          title: "Clinic Settings",
-          automaticallyImplyLeading: true,
-          showDefaultActions: true),
+      appBar: buildAppBar(context, title: "Clinic Settings", automaticallyImplyLeading: true, showDefaultActions: false),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(14.0),
@@ -94,10 +91,7 @@ class _PaymentSettingsState extends State<PaymentSettings> with AppBarMixin {
               ),
               Text(
                 'Merchant ID*',
-                style: GoogleFonts.roboto(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.lightGrey8),
+                style: GoogleFonts.roboto(fontSize: 14, fontWeight: FontWeight.w500, color: AppColors.lightGrey8),
               ),
               const SizedBox(height: 6),
               Container(
@@ -156,10 +150,7 @@ class _PaymentSettingsState extends State<PaymentSettings> with AppBarMixin {
               ),
               Text(
                 'Salt Key*',
-                style: GoogleFonts.roboto(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.lightGrey8),
+                style: GoogleFonts.roboto(fontSize: 14, fontWeight: FontWeight.w500, color: AppColors.lightGrey8),
               ),
               const SizedBox(height: 6),
               Container(
@@ -218,10 +209,7 @@ class _PaymentSettingsState extends State<PaymentSettings> with AppBarMixin {
               ),
               Text(
                 'Salt Index*',
-                style: GoogleFonts.roboto(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.lightGrey8),
+                style: GoogleFonts.roboto(fontSize: 14, fontWeight: FontWeight.w500, color: AppColors.lightGrey8),
               ),
               const SizedBox(height: 6),
               Container(
@@ -280,12 +268,9 @@ class _PaymentSettingsState extends State<PaymentSettings> with AppBarMixin {
               ),
               GestureDetector(
                 onTap: () {
-                  if (text1.text.isEmpty &&
-                      text2.text.isEmpty &&
-                      text3.text.isEmpty) {
+                  if (text1.text.isEmpty && text2.text.isEmpty && text3.text.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text('Please fill in all the details')),
+                      const SnackBar(content: Text('Please fill in all the details')),
                     );
                   }
                 },
@@ -294,11 +279,7 @@ class _PaymentSettingsState extends State<PaymentSettings> with AppBarMixin {
                     height: 52,
                     margin: EdgeInsets.symmetric(horizontal: 20),
                     decoration: BoxDecoration(
-                      color: text1.text.isEmpty &&
-                              text2.text.isEmpty &&
-                              text3.text.isEmpty
-                          ? const Color(0xffF8F7FC)
-                          : const Color(0xff32856E),
+                      color: text1.text.isEmpty && text2.text.isEmpty && text3.text.isEmpty ? const Color(0xffF8F7FC) : const Color(0xff32856E),
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Center(
@@ -306,11 +287,7 @@ class _PaymentSettingsState extends State<PaymentSettings> with AppBarMixin {
                         'Save',
                         style: GoogleFonts.montserrat(
                           fontWeight: FontWeight.w500,
-                          color: text1.text.isEmpty &&
-                                  text2.text.isEmpty &&
-                                  text3.text.isEmpty
-                              ? Colors.grey
-                              : Colors.white,
+                          color: text1.text.isEmpty && text2.text.isEmpty && text3.text.isEmpty ? Colors.grey : Colors.white,
                         ),
                       ),
                     ),
@@ -347,8 +324,7 @@ class PayOptionsCards extends StatelessWidget {
           height: 20,
           width: 88,
           decoration: BoxDecoration(
-            color:
-                isSelected ? const Color(0xff6CEBC6) : const Color(0xffF5F5F5),
+            color: isSelected ? const Color(0xff6CEBC6) : const Color(0xffF5F5F5),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Center(

@@ -103,10 +103,10 @@ class _EditDocumentScreenState extends State<EditDocumentScreen> {
                         },
                         child: const Row(
                           children: [
-                            Icon(Icons.add, color: AppColors.blueColor),
+                            Icon(Icons.add, color: AppColors.blueViolet),
                             Text(
                               AppText.addAnotherID,
-                              style: TextStyle(color: AppColors.blueColor),
+                              style: TextStyle(color: AppColors.blueViolet),
                             ),
                           ],
                         ),
@@ -116,7 +116,7 @@ class _EditDocumentScreenState extends State<EditDocumentScreen> {
                         child: Container(
                           height: 2,
                           width: screenSize.width * 0.6,
-                          color: AppColors.blueColor,
+                          color: AppColors.blueViolet,
                         ),
                       ),
                       const SizedBox(height: 10),
@@ -182,11 +182,8 @@ class _EditDocumentScreenState extends State<EditDocumentScreen> {
                           const SizedBox(
                             width: 85,
                           ),
-                          IconButton(
-                              onPressed: () {},
-                              icon: const Icon(Icons.find_in_page_rounded)),
-                          IconButton(
-                              onPressed: () {}, icon: const Icon(Icons.delete)),
+                          IconButton(onPressed: () {}, icon: const Icon(Icons.find_in_page_rounded)),
+                          IconButton(onPressed: () {}, icon: const Icon(Icons.delete)),
                         ],
                       ),
                       const SizedBox(
@@ -205,8 +202,7 @@ class _EditDocumentScreenState extends State<EditDocumentScreen> {
               }));
             },
             child: Padding(
-              padding:
-                  const EdgeInsets.only(left: 36, right: 36, bottom: 8, top: 5),
+              padding: const EdgeInsets.only(left: 36, right: 36, bottom: 8, top: 5),
               child: Container(
                 height: 60,
                 width: 280,

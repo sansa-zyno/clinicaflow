@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import 'package:healtether_clinic_app/business_logic/cubits/drug_cubit/drug_prescription_cubit.dart';
+import 'package:healtether_clinic_app/business_logic/cubits/lab_test_cubit/lab_test_cubit.dart';
+import 'package:healtether_clinic_app/business_logic/cubits/symptoms_and_diagnosis_cubit/symptoms_and_diagnosis_cubit.dart';
 import 'package:healtether_clinic_app/constants/app_colors.dart';
 import 'package:healtether_clinic_app/constants/app_text.dart';
 import 'package:healtether_clinic_app/data_layer/models/appointment_models/appointment_model.dart';
-
+import 'package:healtether_clinic_app/utils/enums/bloc_enums.dart';
 import 'package:healtether_clinic_app/utils/enums/route_enums.dart';
 import 'package:healtether_clinic_app/widgets/components/vitals_and_past_history_end_drawer.dart';
 
@@ -18,9 +21,19 @@ class DigitalScreen extends StatefulWidget {
 }
 
 class _DigitalScreenState extends State<DigitalScreen> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    context.read<SymptomsAndDiagnosisCubit>().getSavedSymptomsAndDiagnosis(appointmentId: widget.appointment.id!);
+    context.read<LabTestCubit>().getSavedLabTests(appointmentId: widget.appointment.id!);
+    context.read<DrugPrescriptionCubit>().getSavedDrugPrescription(appointmentId: widget.appointment.id!);
+  }
+
   Widget _buildMenuItem({
     required String title,
     required VoidCallback onTap,
+    required bool? isSaved,
   }) {
     return GestureDetector(
       onTap: onTap,
@@ -45,11 +58,15 @@ class _DigitalScreenState extends State<DigitalScreen> {
               ),
             ),
             // const Spacer(),
-            const Icon(
-              Icons.arrow_forward_ios,
-              size: 24,
-              color: Colors.black54,
-            ),
+            isSaved == null
+                ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator())
+                : isSaved
+                    ? Image.asset('assets/png/saved_icon.png')
+                    : const Icon(
+                        Icons.arrow_forward_ios,
+                        size: 24,
+                        color: Colors.black54,
+                      ),
           ],
         ),
       ),
@@ -102,98 +119,133 @@ class _DigitalScreenState extends State<DigitalScreen> {
           ),
         ],
       ),
-      endDrawer: const VitalsAndPastHistoryEndDrawer(),
+      endDrawer: VitalsAndPastHistoryEndDrawer(appointment: widget.appointment),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            _buildMenuItem(
-              title: AppText.symptomsTests,
-              onTap: () {
-                context.pushNamed(AppRoutes.createDigitalPrescription.name);
-              },
-            ),
+            BlocBuilder<SymptomsAndDiagnosisCubit, SymptomsAndDiagnosisState>(builder: (context, state) {
+              return _buildMenuItem(
+                  title: AppText.symptomsTests,
+                  onTap: () {
+                    if (state.state == SymptomsAndDiagnosisStates.savedSymptomsAndDiagnosisFetched) {
+                      context.pushNamed(AppRoutes.createDigitalPrescription.name, extra: {
+                        'appointment': widget.appointment,
+                        'symptoms': state.savedSymptoms,
+                        'diagnosis': state.savedDiagnosis,
+                      });
+                    }
+                  },
+                  isSaved: state.state == SymptomsAndDiagnosisStates.fetchingSavedSymptomsAndDiagnosis
+                      ? null
+                      : (state.savedSymptoms?.isNotEmpty ?? false) || (state.savedDiagnosis?.isNotEmpty ?? false));
+            }),
+            const SizedBox(height: 8),
+            BlocBuilder<LabTestCubit, LabTestState>(builder: (context, state) {
+              return _buildMenuItem(
+                  title: "Lab tests ",
+                  onTap: () {
+                    if (state.state == LabTestStates.savedTestsFetched) {
+                      context.pushNamed(AppRoutes.labInvestigations.name, extra: {
+                        'appointment': widget.appointment,
+                        'labTests': state.savedTests,
+                      });
+                    }
+                  },
+                  isSaved: state.state == LabTestStates.fetchingSavedTests ? null : (state.savedTests?.isNotEmpty ?? false));
+            }),
+            const SizedBox(height: 8),
+            BlocBuilder<DrugPrescriptionCubit, DrugPrescriptionState>(builder: (context, state) {
+              return _buildMenuItem(
+                  title: AppText.drugPrescription,
+                  onTap: () {
+                    if (state.state == DrugPrescriptionStates.savedDrugPrescriptionFetched) {
+                      context.pushNamed(AppRoutes.drugPrescription.name, extra: {
+                        'appointment': widget.appointment,
+                        'drugs': state.savedDrugs,
+                      });
+                    }
+                  },
+                  isSaved: state.state == DrugPrescriptionStates.fetchingSavedDrugPrescription ? null : (state.savedDrugs?.isNotEmpty ?? false));
+            }),
             const SizedBox(height: 8),
             _buildMenuItem(
-              title: "Lab tests ",
-              onTap: () {
-                context.pushNamed(AppRoutes.labInvestigations.name, extra: []);
-              },
-            ),
+                title: AppText.pastMedicalHistory,
+                onTap: () {
+                  context.pushNamed(AppRoutes.pastMedicalHistory.name, extra: {
+                    'appointment': widget.appointment,
+                    'pastHistory': [],
+                    'familyHistory': [],
+                    'pastProcedures': [],
+                    'allergies': [],
+                    'medicalHistory': [],
+                  });
+                },
+                isSaved: false),
             const SizedBox(height: 8),
             _buildMenuItem(
-              title: AppText.drugPrescription,
-              onTap: () {
-                context.pushNamed(AppRoutes.drugPrescription.name,
-                    extra: widget.appointment);
-              },
-            ),
-            const SizedBox(height: 8),
-            _buildMenuItem(
-              title: AppText.pastMedicalHistory,
-              onTap: () {
-                context.pushNamed(AppRoutes.symptomsTest.name,
-                    extra: widget.appointment);
-              },
-            ),
-            const SizedBox(height: 8),
-            _buildMenuItem(
-              title: 'Vitals & General Examination',
-              onTap: () {
-                context.pushNamed(AppRoutes.vitals.name,
-                    pathParameters: {"appointmentId": widget.appointment.id!});
-              },
-            ),
+                title: 'Vitals & General Examination',
+                onTap: () {
+                  context.pushNamed(AppRoutes.vitals.name, extra: {
+                    'appointment': widget.appointment,
+                    'vitals': [],
+                  });
+                },
+                isSaved: false),
             const Spacer(),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 2.0),
-              child: Row(children: [
-                Container(
+            Row(children: [
+              GestureDetector(
+                onTap: () {
+                  context.pushNamed(AppRoutes.paymentReceiptScreen.name);
+                },
+                child: Container(
                   width: 150,
-                  height: 50,
+                  height: 58,
                   decoration: BoxDecoration(
-                    color: const Color(0xffF7F7F7),
+                    color: AppColors.whiteSmoke,
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: const Center(
                     child: Text(
-                      'xxxxx',
+                      'Make Receipt',
                       style: TextStyle(
                         color: Colors.black,
-                        fontSize: 17,
+                        fontSize: 15,
                         fontFamily: 'Urbanist',
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(width: 14),
-                GestureDetector(
-                  onTap: () {},
-                  child: Container(
-                    width: 150,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF32856E),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Center(
-                      child: Text(
-                        'Preview Rx',
-                        style: GoogleFonts.urbanist(
-                          textStyle: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 17,
-                            fontWeight: FontWeight.w600,
-                            fontFamily: 'Urbanist',
-                          ),
+              ),
+              const Spacer(),
+              GestureDetector(
+                onTap: () {
+                  context.pushNamed(AppRoutes.prescriptionPreview.name);
+                },
+                child: Container(
+                  width: 150,
+                  height: 58,
+                  decoration: BoxDecoration(
+                    color: AppColors.greenColor,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'Preview Rx',
+                      style: GoogleFonts.urbanist(
+                        textStyle: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: 'Urbanist',
                         ),
                       ),
                     ),
                   ),
                 ),
-              ]),
-            ),
+              ),
+            ]),
           ],
         ),
       ),

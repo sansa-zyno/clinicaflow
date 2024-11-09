@@ -23,173 +23,13 @@ class ManageStaffScreen extends StatefulWidget {
   State<ManageStaffScreen> createState() => _ManageStaffScreenState();
 }
 
-class _ManageStaffScreenState extends State<ManageStaffScreen>
-    with AppBarMixin {
+class _ManageStaffScreenState extends State<ManageStaffScreen> with AppBarMixin {
   String selectedDate = 'All';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(context,
-          title: "Manage Staff",
-          showDefaultActions: true,
-          automaticallyImplyLeading: true),
-      // appBar: AppBar(
-      //   automaticallyImplyLeading: false,
-      //   title: Row(
-      //     children: [
-      //       IconButton(
-      //           onPressed: () {
-      //             Navigator.pop(context);
-      //           },
-      //           icon: const Icon(Icons.arrow_back)),
-      //       Text(
-      //         AppText.manageStaff,
-      //         style: GoogleFonts.montserrat(fontWeight: FontWeight.w500),
-      //       ),
-      //     ],
-      //   ),
-      //   actions: [
-      //     Container(
-      //       height: 30,
-      //       width: 30,
-      //       decoration: BoxDecoration(
-      //         border: Border.all(color: AppColors.blackColor),
-      //         borderRadius: BorderRadius.circular(6),
-      //       ),
-      //       child: InkWell(
-      //         onTap: () {
-      //           Navigator.of(context).pop();
-      //         },
-      //         child: const Icon(
-      //           Icons.close_rounded,
-      //         ),
-      //       ),
-      //     ),
-      //     const SizedBox(
-      //       width: 5,
-      //     ),
-      //     PopupMenuButton<String>(
-      //       onSelected: (String value) {
-      //         if (value == 'option_1') {
-      //           // Handle option 1
-      //         } else if (value == 'option_2') {
-      //           showModalBottomSheet(
-      //             context: context,
-      //             builder: (context) => const ScheduleFollowUp(),
-      //           );
-      //         } else if (value == 'option_3') {
-      //           showModalBottomSheet(
-      //             context: context,
-      //             builder: (context) => const RescheduleAppointment(),
-      //           );
-      //         } else if (value == 'option_4') {
-      //           showModalBottomSheet(
-      //             backgroundColor: Colors.transparent,
-      //             context: context,
-      //             builder: (BuildContext context) {
-      //               return const CancelAppointment();
-      //             },
-      //           );
-      //         } else if (value == 'option_5') {
-      //           Navigator.push(
-      //             context,
-      //             MaterialPageRoute(
-      //                 builder: (context) => PatientRecordsScreen(
-      //                       patient: PatientModel(),
-      //                     )),
-      //           );
-      //         }
-      //       },
-      //       itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-      //         PopupMenuItem<String>(
-      //           value: 'option_1',
-      //           child: SizedBox(
-      //             width: 200,
-      //             child: Container(
-      //               decoration: BoxDecoration(
-      //                 color: const Color(0xff5DDCB8),
-      //                 borderRadius: BorderRadius.circular(10),
-      //               ),
-      //               padding: const EdgeInsets.symmetric(
-      //                   vertical: 10, horizontal: 16),
-      //               child: const Row(
-      //                 children: [
-      //                   Text(
-      //                     'Menu',
-      //                     style: TextStyle(
-      //                       fontSize: 20,
-      //                       fontFamily: 'Montserrat',
-      //                       fontWeight: FontWeight.w500,
-      //                       color: Colors.black,
-      //                     ),
-      //                   ),
-      //                   Spacer(),
-      //                   Icon(
-      //                     Icons.cancel,
-      //                     color: Colors.white,
-      //                   ),
-      //                 ],
-      //               ),
-      //             ),
-      //           ),
-      //         ),
-      //         const PopupMenuItem<String>(
-      //           value: 'option_2',
-      //           child: ListTile(
-      //             title: Text(
-      //               'Schedule Follow-up',
-      //               style: TextStyle(
-      //                 fontWeight: FontWeight.w500,
-      //                 fontSize: 14,
-      //                 fontFamily: 'Montserrat',
-      //               ),
-      //             ),
-      //           ),
-      //         ),
-      //         const PopupMenuItem<String>(
-      //           value: 'option_3',
-      //           child: ListTile(
-      //             title: Text(
-      //               'Reschedule Appointment',
-      //               style: TextStyle(
-      //                 fontWeight: FontWeight.w500,
-      //                 fontSize: 14,
-      //                 fontFamily: 'Montserrat',
-      //               ),
-      //             ),
-      //           ),
-      //         ),
-      //         const PopupMenuItem<String>(
-      //           value: 'option_4',
-      //           child: ListTile(
-      //             title: Text(
-      //               'Cancel Appointment',
-      //               style: TextStyle(
-      //                 fontWeight: FontWeight.w500,
-      //                 fontSize: 14,
-      //                 fontFamily: 'Montserrat',
-      //               ),
-      //             ),
-      //           ),
-      //         ),
-      //         const PopupMenuItem<String>(
-      //           value: 'option_5',
-      //           child: ListTile(
-      //             title: Text(
-      //               'View Patient Details',
-      //               style: TextStyle(
-      //                 fontWeight: FontWeight.w500,
-      //                 fontSize: 14,
-      //                 fontFamily: 'Montserrat',
-      //               ),
-      //             ),
-      //           ),
-      //         ),
-      //       ],
-      //     ),
-      //   ],
-      // ),
+      appBar: buildAppBar(context, title: "Manage Staff", showDefaultActions: false, automaticallyImplyLeading: true),
       body: BlocBuilder<StaffCubit, StaffState>(
         builder: (context, state) {
           return Stack(
@@ -203,8 +43,7 @@ class _ManageStaffScreenState extends State<ManageStaffScreen>
                       color: AppColors.whiteColor,
                       width: 336,
                       child: Padding(
-                        padding: const EdgeInsets.only(
-                            top: 15, bottom: 10, left: 10, right: 30),
+                        padding: const EdgeInsets.only(top: 15, bottom: 10, left: 10, right: 30),
                         child: Row(
                           children: [
                             const Icon(Icons.search),
@@ -216,10 +55,7 @@ class _ManageStaffScreenState extends State<ManageStaffScreen>
                               child: TextField(
                                 decoration: InputDecoration(
                                   hintText: AppText.quickSearch,
-                                  hintStyle: GoogleFonts.montserrat(
-                                      color: Colors.grey,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w400),
+                                  hintStyle: GoogleFonts.montserrat(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.w400),
                                   border: InputBorder.none,
                                 ),
                               ),
@@ -412,10 +248,7 @@ class _InfoCardState extends State<InfoCard> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(builder: (context) {
-                                  return BlocProvider(
-                                      create: (context) =>
-                                          StaffDetailCubit(StaffServices()),
-                                      child: StaffRecordsScreen(data: staff));
+                                  return BlocProvider(create: (context) => StaffDetailCubit(StaffServices()), child: StaffRecordsScreen(data: staff));
                                 }),
                               );
                             },
@@ -445,8 +278,7 @@ class _InfoCardState extends State<InfoCard> {
                             ),
                           ),
                           Container(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 8, horizontal: 10),
+                            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
                             decoration: BoxDecoration(
                               color: Colors.black,
                               borderRadius: BorderRadius.circular(6),
@@ -454,10 +286,7 @@ class _InfoCardState extends State<InfoCard> {
                             child: Center(
                               child: Text(
                                 staff.isDoctor == true ? 'Admin' : 'Guest',
-                                style: const TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.white),
+                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.white),
                               ),
                             ),
                           ),
@@ -478,8 +307,7 @@ class _InfoCardState extends State<InfoCard> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              const Icon(Icons.mail_outline, size: 20)
-                                  .pOnly(right: 10),
+                              const Icon(Icons.mail_outline, size: 20).pOnly(right: 10),
                               Image.asset(
                                 "assets/homeimages/whatsapp.png",
                                 color: const Color(0xFF110C2C),
@@ -519,26 +347,17 @@ class _InfoCardState extends State<InfoCard> {
                                                 context.pop();
                                               },
                                               style: ButtonStyle(
-                                                backgroundColor:
-                                                    MaterialStateProperty.all(
-                                                        const Color(
-                                                            0xff32856E)),
-                                                shape:
-                                                    MaterialStateProperty.all(
+                                                backgroundColor: MaterialStateProperty.all(const Color(0xff32856E)),
+                                                shape: MaterialStateProperty.all(
                                                   RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            4.0),
+                                                    borderRadius: BorderRadius.circular(4.0),
                                                   ),
                                                 ),
-                                                minimumSize:
-                                                    MaterialStateProperty.all(
-                                                        const Size(110, 50)),
+                                                minimumSize: MaterialStateProperty.all(const Size(110, 50)),
                                               ),
                                               child: const Text(
                                                 'No',
-                                                style: TextStyle(
-                                                    color: Colors.white),
+                                                style: TextStyle(color: Colors.white),
                                               ),
                                             ),
                                             TextButton(
@@ -547,28 +366,19 @@ class _InfoCardState extends State<InfoCard> {
                                                 deleteStaff(staff);
                                               },
                                               style: ButtonStyle(
-                                                backgroundColor:
-                                                    MaterialStateProperty.all<
-                                                        Color>(
+                                                backgroundColor: MaterialStateProperty.all<Color>(
                                                   const Color(0xFF0F8F7FC),
                                                 ),
-                                                shape:
-                                                    MaterialStateProperty.all<
-                                                        RoundedRectangleBorder>(
+                                                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                                                   RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            4.0),
+                                                    borderRadius: BorderRadius.circular(4.0),
                                                   ),
                                                 ),
-                                                minimumSize:
-                                                    MaterialStateProperty.all(
-                                                        const Size(110, 50)),
+                                                minimumSize: MaterialStateProperty.all(const Size(110, 50)),
                                               ),
                                               child: const Text(
                                                 'Yes',
-                                                style: TextStyle(
-                                                    color: Colors.black),
+                                                style: TextStyle(color: Colors.black),
                                               ),
                                             ),
                                           ],
@@ -632,9 +442,7 @@ class _SelectStaffTypeState extends State<SelectStaffType> {
           Container(
             height: 2,
             width: 55,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: const Color(0xFF52CFAC)),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), color: const Color(0xFF52CFAC)),
           ),
           const SizedBox(
             height: 5,
@@ -646,11 +454,7 @@ class _SelectStaffTypeState extends State<SelectStaffType> {
               isGuest = false;
               setState(() {});
               context.pop();
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          const AddMemberScreen(isAdmin: true)));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const AddMemberScreen(isAdmin: true)));
             },
             child: Container(
               width: double.infinity,
@@ -670,10 +474,7 @@ class _SelectStaffTypeState extends State<SelectStaffType> {
                         children: [
                           Text(
                             'Admin',
-                            style: GoogleFonts.montserrat(
-                                color: isAdmin ? Colors.white : Colors.black,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600),
+                            style: GoogleFonts.montserrat(color: isAdmin ? Colors.white : Colors.black, fontSize: 15, fontWeight: FontWeight.w600),
                           ),
                         ],
                       ),
@@ -693,11 +494,7 @@ class _SelectStaffTypeState extends State<SelectStaffType> {
               isAdmin = false;
               setState(() {});
               context.pop();
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          const AddMemberScreen(isAdmin: false)));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const AddMemberScreen(isAdmin: false)));
             },
             child: Container(
               width: double.infinity,
@@ -717,10 +514,7 @@ class _SelectStaffTypeState extends State<SelectStaffType> {
                         children: [
                           Text(
                             'Guest',
-                            style: GoogleFonts.montserrat(
-                                color: isGuest ? Colors.white : Colors.black,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600),
+                            style: GoogleFonts.montserrat(color: isGuest ? Colors.white : Colors.black, fontSize: 15, fontWeight: FontWeight.w600),
                           ),
                         ],
                       ),

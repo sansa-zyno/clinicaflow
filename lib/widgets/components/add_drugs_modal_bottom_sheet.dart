@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -16,18 +16,15 @@ import 'package:healtether_clinic_app/widgets/buttons/my_selectable_container.da
 import 'package:healtether_clinic_app/widgets/components/dual_action_bottom_nav.dart';
 
 class AddDrugsModalBottomSheet extends StatefulWidget {
-  const AddDrugsModalBottomSheet(
-      {super.key, required this.drug, required this.patientId});
+  const AddDrugsModalBottomSheet({super.key, required this.drug, required this.patientId});
   final Drug drug;
   final String patientId;
 
   @override
-  State<AddDrugsModalBottomSheet> createState() =>
-      _AddDrugsModalBottomSheetState();
+  State<AddDrugsModalBottomSheet> createState() => _AddDrugsModalBottomSheetState();
 }
 
-class _AddDrugsModalBottomSheetState extends State<AddDrugsModalBottomSheet>
-    with DeviceInfoMixin {
+class _AddDrugsModalBottomSheetState extends State<AddDrugsModalBottomSheet> with DeviceInfoMixin {
   late final TextEditingController drugName;
   late final FocusNode? focusNode;
   bool editDrugName = false;
@@ -41,26 +38,13 @@ class _AddDrugsModalBottomSheetState extends State<AddDrugsModalBottomSheet>
     drug = widget.drug;
   }
 
-  void saveDrug({required String patientId, required Drug drug}) {
-    context
-        .read<DrugPrescriptionCubit>()
-        .saveDrug(patientId: patientId, drug: drug);
-  }
-
-  void clearSavedDrugs(String patientId) {
-    context.read<DrugPrescriptionCubit>().clearSavedDrugs(patientId);
-  }
-
-  TextStyle get subtitleTextStyle => GoogleFonts.urbanist(
-      textStyle: const TextStyle(
-          fontWeight: FontWeight.w700, fontSize: 14, height: 17.36 / 14));
+  TextStyle get subtitleTextStyle => GoogleFonts.urbanist(textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14, height: 17.36 / 14));
 
   @override
   Widget build(BuildContext context) {
     return StatefulBuilder(builder: (context, setState) {
       return ClipRRect(
-        borderRadius: const BorderRadius.only(
-            topRight: Radius.circular(16), topLeft: Radius.circular(16)),
+        borderRadius: const BorderRadius.only(topRight: Radius.circular(16), topLeft: Radius.circular(16)),
         child: SizedBox(
           height: screenDimensions(context).height * 3 / 4,
           child: Scaffold(
@@ -70,15 +54,10 @@ class _AddDrugsModalBottomSheetState extends State<AddDrugsModalBottomSheet>
                 focusedText: "Save",
                 onPressed: () {
                   log("CLEAR THE CURRENT PATIENT (patient: ${widget.patientId}) DRUG PRESCIPTION");
-
-                  clearSavedDrugs(widget.patientId);
                   context.pop();
                 },
                 onFocusedPressed: () {
                   log("SAVE THE CURRENT PATIENT (patient: ${widget.patientId}) DRUG PRESCIPTION: $drug");
-
-                  saveDrug(patientId: widget.patientId, drug: drug);
-
                   context.pop();
                 }),
             body: SingleChildScrollView(
@@ -88,9 +67,7 @@ class _AddDrugsModalBottomSheetState extends State<AddDrugsModalBottomSheet>
                   //? DRUG DESCRIPTION
                   Container(
                     padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                        color: AppColors.whiteSmoke,
-                        borderRadius: BorderRadius.circular(7)),
+                    decoration: BoxDecoration(color: AppColors.whiteSmoke, borderRadius: BorderRadius.circular(7)),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -104,13 +81,10 @@ class _AddDrugsModalBottomSheetState extends State<AddDrugsModalBottomSheet>
                               hintText: "Enter drug name",
                               fillColor: Colors.transparent,
                               usePadding: false,
-                              contentPadding:
-                                  const EdgeInsets.symmetric(horizontal: 0),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 0),
                               focusNode: focusNode,
                               readOnly: !editDrugName,
-                              validator: (value) => value?.isEmpty == true
-                                  ? "Drug name cannot be empty"
-                                  : null,
+                              validator: (value) => value?.isEmpty == true ? "Drug name cannot be empty" : null,
                             )),
                             const SizedBox(
                               width: 10,
@@ -127,16 +101,12 @@ class _AddDrugsModalBottomSheetState extends State<AddDrugsModalBottomSheet>
                                   } else {
                                     log("Save new drug name");
 
-                                    drug = widget.drug
-                                        .copyWith(name: drugName.text);
+                                    drug = widget.drug.copyWith(name: drugName.text);
                                   }
                                 });
                               },
                               backgroundColor: AppColors.grey3,
-                              icon: Icon(
-                                  editDrugName ? Icons.check : Icons.edit,
-                                  color: AppColors.darkBlueViolet,
-                                  size: 18),
+                              icon: Icon(editDrugName ? Icons.check : Icons.edit, color: AppColors.darkBlueViolet, size: 18),
                             )
                           ],
                         ),
@@ -148,11 +118,7 @@ class _AddDrugsModalBottomSheetState extends State<AddDrugsModalBottomSheet>
                             text: TextSpan(
                                 text: "Contents: ",
                                 style: GoogleFonts.urbanist(
-                                    textStyle: const TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 14,
-                                        height: 17.36 / 14)),
+                                    textStyle: const TextStyle(color: Colors.black, fontWeight: FontWeight.w500, fontSize: 14, height: 17.36 / 14)),
                                 children: [
                               TextSpan(
                                   text: widget.drug.contents,
@@ -162,16 +128,12 @@ class _AddDrugsModalBottomSheetState extends State<AddDrugsModalBottomSheet>
                             ])),
 
                         //? drug type
-                        if (widget.drug.type != null)
-                          const SizedBox(height: 10),
+                        if (widget.drug.type != null) const SizedBox(height: 10),
 
                         if (widget.drug.type != null)
                           Container(
                             padding: const EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(4),
-                                border:
-                                    Border.all(color: AppColors.blueViolet)),
+                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(4), border: Border.all(color: AppColors.blueViolet)),
                             child: Text(widget.drug.type!.capitalize),
                           )
                       ],
@@ -179,16 +141,14 @@ class _AddDrugsModalBottomSheetState extends State<AddDrugsModalBottomSheet>
                   ).pOnly(left: 16, right: 16, top: 16, bottom: 6),
 
                   //? QUANTITY / DOSAGE
-                  Text("Quantity/Dosage", style: subtitleTextStyle)
-                      .pSymmetric(),
+                  Text("Quantity/Dosage", style: subtitleTextStyle).pSymmetric(),
 
                   const SizedBox(
                     height: 8,
                   ),
 
                   CustomTextField(
-                    controller: TextEditingController(
-                        text: widget.drug.quantity?.toString() ?? ''),
+                    controller: TextEditingController(text: widget.drug.quantity?.toString() ?? ''),
                     hintText: "Enter dosage",
                     usePadding: false,
                     fillColor: AppColors.whiteSmoke,
@@ -202,16 +162,13 @@ class _AddDrugsModalBottomSheetState extends State<AddDrugsModalBottomSheet>
                   ).pSymmetric(),
 
                   //? DOSAGE FREQUENCY
-                  Text("Dosage frequency", style: subtitleTextStyle)
-                      .pOnly(left: 16, right: 16, top: 10, bottom: 8),
+                  Text("Dosage frequency", style: subtitleTextStyle).pOnly(left: 16, right: 16, top: 10, bottom: 8),
 
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
-                    children: List<Widget>.generate(
-                        SampleObjects.dosageFrequency.length, (index) {
-                      final freq =
-                          SampleObjects.dosageFrequency.elementAt(index);
+                    children: List<Widget>.generate(SampleObjects.dosageFrequency.length, (index) {
+                      final freq = SampleObjects.dosageFrequency.elementAt(index);
 
                       log("$index, $freq");
 
@@ -228,32 +185,27 @@ class _AddDrugsModalBottomSheetState extends State<AddDrugsModalBottomSheet>
                         ),
                         selectedTitle: Text(
                           freq,
-                          style: const TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.w500),
+                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
                         ),
                       );
                     }),
                   ).pSymmetric(),
 
                   //? DOSAGE TIME
-                  Text("Dosage time", style: subtitleTextStyle)
-                      .pOnly(left: 16, right: 16, top: 10, bottom: 8),
+                  Text("Dosage time", style: subtitleTextStyle).pOnly(left: 16, right: 16, top: 10, bottom: 8),
 
                   Wrap(
                       spacing: 8,
                       runSpacing: 8,
-                      children: List<Widget>.generate(
-                          SampleObjects.dosageTime.length, (index) {
-                        final dosageTime =
-                            SampleObjects.dosageTime.elementAt(index);
+                      children: List<Widget>.generate(SampleObjects.dosageTime.length, (index) {
+                        final dosageTime = SampleObjects.dosageTime.elementAt(index);
 
                         return SelectableContainer(
                           selected: widget.drug.dosageTime == dosageTime,
                           onTap: () {
                             setState(() {
                               setState(() {
-                                drug = widget.drug
-                                    .copyWith(dosageTime: dosageTime);
+                                drug = widget.drug.copyWith(dosageTime: dosageTime);
                               });
                             });
                           },
@@ -263,20 +215,16 @@ class _AddDrugsModalBottomSheetState extends State<AddDrugsModalBottomSheet>
                           ),
                           selectedTitle: Text(
                             dosageTime,
-                            style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500),
+                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
                           ),
                         );
                       })).pSymmetric(),
 
                   //? DURATION
-                  Text("Duration", style: subtitleTextStyle)
-                      .pOnly(left: 16, right: 16, top: 10, bottom: 8),
+                  Text("Duration", style: subtitleTextStyle).pOnly(left: 16, right: 16, top: 10, bottom: 8),
 
                   CustomTextField(
-                          controller:
-                              TextEditingController(text: widget.drug.duration),
+                          controller: TextEditingController(text: widget.drug.duration),
                           usePadding: false,
                           borderRadius: 0,
                           suffixIcon: const Icon(Icons.arrow_drop_down_rounded),
@@ -297,4 +245,4 @@ class _AddDrugsModalBottomSheetState extends State<AddDrugsModalBottomSheet>
     });
     ;
   }
-}
+}*/

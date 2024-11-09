@@ -21,15 +21,7 @@ class ContactDetailScreen extends StatefulWidget {
   final String? weight;
 
   const ContactDetailScreen(
-      {Key? key,
-      this.pageController,
-      this.firstName,
-      this.lastName,
-      this.age,
-      this.birthDate,
-      this.height,
-      this.weight,
-      this.gender})
+      {Key? key, this.pageController, this.firstName, this.lastName, this.age, this.birthDate, this.height, this.weight, this.gender})
       : super(key: key);
 
   @override
@@ -121,11 +113,10 @@ class _ContactDetailScreenState extends State<ContactDetailScreen> {
                             children: [
                               const Row(
                                 children: [
-                                  Icon(Icons.add, color: AppColors.blueColor),
+                                  Icon(Icons.add, color: AppColors.blueViolet),
                                   Text(
                                     AppText.addAnotherNumber,
-                                    style:
-                                        TextStyle(color: AppColors.blueColor),
+                                    style: TextStyle(color: AppColors.blueViolet),
                                   ),
                                 ],
                               ),
@@ -134,7 +125,7 @@ class _ContactDetailScreenState extends State<ContactDetailScreen> {
                                 child: Container(
                                   height: 2,
                                   width: screenSize.width * 0.5,
-                                  color: AppColors.blueColor,
+                                  color: AppColors.blueViolet,
                                 ),
                               ),
                             ],
@@ -167,12 +158,11 @@ class _ContactDetailScreenState extends State<ContactDetailScreen> {
                                 children: [
                                   Icon(
                                     Icons.add,
-                                    color: AppColors.blueColor,
+                                    color: AppColors.blueViolet,
                                   ),
                                   Text(
                                     AppText.addAnotherEmail,
-                                    style:
-                                        TextStyle(color: AppColors.blueColor),
+                                    style: TextStyle(color: AppColors.blueViolet),
                                   ),
                                 ],
                               ),
@@ -181,7 +171,7 @@ class _ContactDetailScreenState extends State<ContactDetailScreen> {
                                 child: Container(
                                   height: 2,
                                   width: screenSize.width * 0.5,
-                                  color: AppColors.blueColor,
+                                  color: AppColors.blueViolet,
                                 ),
                               ),
                             ],
@@ -230,8 +220,7 @@ class _ContactDetailScreenState extends State<ContactDetailScreen> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(
-                    left: 36, right: 36, bottom: 8, top: 5),
+                padding: const EdgeInsets.only(left: 36, right: 36, bottom: 8, top: 5),
                 child: Container(
                   height: 60,
                   width: 280,
@@ -261,8 +250,7 @@ class _ContactDetailScreenState extends State<ContactDetailScreen> {
                                           address: AddressPatient(
                                               house: houseController.text,
                                               street: areaController.text,
-                                              landmarks:
-                                                  landmarkController.text,
+                                              landmarks: landmarkController.text,
                                               pincode: pincodeController.text,
                                               city: cityController.text)),
                                       // firstName: widget.firstName,

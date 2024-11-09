@@ -27,8 +27,7 @@ class _ClinicDetailsState extends State<ClinicDetails> with AppBarMixin {
   void getCurrentUser() async {
     var data = await UserModel.getCurrentUser();
     userModel = data;
-    text2 = TextEditingController(
-        text: '${userModel?.firstName ?? ''} ${userModel?.lastName ?? ''}');
+    text2 = TextEditingController(text: '${userModel?.firstName ?? ''} ${userModel?.lastName ?? ''}');
     text3 = TextEditingController(text: '');
     text4 = TextEditingController(text: userModel?.email ?? '');
     setState(() {});
@@ -47,10 +46,7 @@ class _ClinicDetailsState extends State<ClinicDetails> with AppBarMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(context,
-          title: "Clinic Settings",
-          automaticallyImplyLeading: true,
-          showDefaultActions: true),
+      appBar: buildAppBar(context, title: "Clinic Settings", automaticallyImplyLeading: true, showDefaultActions: false),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(14.0),
@@ -93,8 +89,7 @@ class _ClinicDetailsState extends State<ClinicDetails> with AppBarMixin {
                     child: CircleAvatar(
                       radius: 56,
                       backgroundColor: const Color(0xffF1E7F9),
-                      backgroundImage:
-                          _image != null ? FileImage(_image!) : null,
+                      backgroundImage: _image != null ? FileImage(_image!) : null,
                       child: _image == null
                           ? IconButton(
                               onPressed: () {
@@ -123,17 +118,11 @@ class _ClinicDetailsState extends State<ClinicDetails> with AppBarMixin {
                       ),
                       Text(
                         'Click on the camera to add',
-                        style: GoogleFonts.montserrat(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 13,
-                            color: Colors.grey),
+                        style: GoogleFonts.montserrat(fontWeight: FontWeight.w600, fontSize: 13, color: Colors.grey),
                       ),
                       Text(
                         'Clinic logo',
-                        style: GoogleFonts.montserrat(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 13,
-                            color: Colors.grey),
+                        style: GoogleFonts.montserrat(fontWeight: FontWeight.w600, fontSize: 13, color: Colors.grey),
                       ),
                     ],
                   ),
@@ -144,10 +133,7 @@ class _ClinicDetailsState extends State<ClinicDetails> with AppBarMixin {
               ),
               Text(
                 'Clinic name*',
-                style: GoogleFonts.roboto(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.lightGrey8),
+                style: GoogleFonts.roboto(fontSize: 14, fontWeight: FontWeight.w500, color: AppColors.lightGrey8),
               ),
               const SizedBox(height: 6),
               Container(
@@ -163,10 +149,7 @@ class _ClinicDetailsState extends State<ClinicDetails> with AppBarMixin {
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       hintText: 'Clinic name',
-                      hintStyle: GoogleFonts.poppins(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 15,
-                          color: Colors.grey),
+                      hintStyle: GoogleFonts.poppins(fontWeight: FontWeight.w400, fontSize: 15, color: Colors.grey),
                     ),
                   ),
                 ),
@@ -176,10 +159,7 @@ class _ClinicDetailsState extends State<ClinicDetails> with AppBarMixin {
               ),
               Text(
                 'Admin name*',
-                style: GoogleFonts.roboto(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.lightGrey8),
+                style: GoogleFonts.roboto(fontSize: 14, fontWeight: FontWeight.w500, color: AppColors.lightGrey8),
               ),
               const SizedBox(height: 6),
               Container(
@@ -195,10 +175,7 @@ class _ClinicDetailsState extends State<ClinicDetails> with AppBarMixin {
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       hintText: 'Admin name',
-                      hintStyle: GoogleFonts.poppins(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 15,
-                          color: Colors.grey),
+                      hintStyle: GoogleFonts.poppins(fontWeight: FontWeight.w400, fontSize: 15, color: Colors.grey),
                     ),
                   ),
                 ),
@@ -208,10 +185,7 @@ class _ClinicDetailsState extends State<ClinicDetails> with AppBarMixin {
               ),
               Text(
                 'Mobile no.*',
-                style: GoogleFonts.roboto(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.lightGrey8),
+                style: GoogleFonts.roboto(fontSize: 14, fontWeight: FontWeight.w500, color: AppColors.lightGrey8),
               ),
               const SizedBox(height: 6),
               Container(
@@ -228,10 +202,7 @@ class _ClinicDetailsState extends State<ClinicDetails> with AppBarMixin {
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       hintText: 'Mobile no',
-                      hintStyle: GoogleFonts.poppins(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 15,
-                          color: Colors.grey),
+                      hintStyle: GoogleFonts.poppins(fontWeight: FontWeight.w400, fontSize: 15, color: Colors.grey),
                     ),
                   ),
                 ),
@@ -241,10 +212,7 @@ class _ClinicDetailsState extends State<ClinicDetails> with AppBarMixin {
               ),
               Text(
                 'Clinic\'s email*',
-                style: GoogleFonts.roboto(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.lightGrey8),
+                style: GoogleFonts.roboto(fontSize: 14, fontWeight: FontWeight.w500, color: AppColors.lightGrey8),
               ),
               const SizedBox(height: 6),
               Container(
@@ -260,10 +228,7 @@ class _ClinicDetailsState extends State<ClinicDetails> with AppBarMixin {
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       hintText: "Clinic's Email",
-                      hintStyle: GoogleFonts.poppins(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 15,
-                          color: Colors.grey),
+                      hintStyle: GoogleFonts.poppins(fontWeight: FontWeight.w400, fontSize: 15, color: Colors.grey),
                     ),
                   ),
                 ),
@@ -273,10 +238,7 @@ class _ClinicDetailsState extends State<ClinicDetails> with AppBarMixin {
               ),
               Text(
                 'Patient ID Text*',
-                style: GoogleFonts.roboto(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.lightGrey8),
+                style: GoogleFonts.roboto(fontSize: 14, fontWeight: FontWeight.w500, color: AppColors.lightGrey8),
               ),
               const SizedBox(height: 6),
               Row(
@@ -288,8 +250,7 @@ class _ClinicDetailsState extends State<ClinicDetails> with AppBarMixin {
                         color: Color(0xffEEEEEE),
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.only(
-                            top: 15, bottom: 10, left: 14, right: 30),
+                        padding: const EdgeInsets.only(top: 15, bottom: 10, left: 14, right: 30),
                         child: TextField(
                           decoration: InputDecoration(
                             border: InputBorder.none,
@@ -323,8 +284,7 @@ class _ClinicDetailsState extends State<ClinicDetails> with AppBarMixin {
                         color: Color(0xffEEEEEE),
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.only(
-                            top: 15, bottom: 10, left: 14, right: 30),
+                        padding: const EdgeInsets.only(top: 15, bottom: 10, left: 14, right: 30),
                         child: TextField(
                           decoration: InputDecoration(
                             border: InputBorder.none,
@@ -346,13 +306,9 @@ class _ClinicDetailsState extends State<ClinicDetails> with AppBarMixin {
               ),
               GestureDetector(
                 onTap: () {
-                  if (text1.text.isEmpty &&
-                      text2.text.isEmpty &&
-                      text3.text.isEmpty &&
-                      text4.text.isEmpty) {
+                  if (text1.text.isEmpty && text2.text.isEmpty && text3.text.isEmpty && text4.text.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text('Please fill in all the details')),
+                      const SnackBar(content: Text('Please fill in all the details')),
                     );
                   }
                 },
@@ -361,10 +317,7 @@ class _ClinicDetailsState extends State<ClinicDetails> with AppBarMixin {
                     height: 52,
                     margin: EdgeInsets.symmetric(horizontal: 20),
                     decoration: BoxDecoration(
-                      color: text1.text.isEmpty &&
-                              text2.text.isEmpty &&
-                              text3.text.isEmpty &&
-                              text4.text.isEmpty
+                      color: text1.text.isEmpty && text2.text.isEmpty && text3.text.isEmpty && text4.text.isEmpty
                           ? const Color(0xffF8F7FC)
                           : const Color(0xff32856E),
                       borderRadius: BorderRadius.circular(6),
@@ -374,12 +327,7 @@ class _ClinicDetailsState extends State<ClinicDetails> with AppBarMixin {
                         'Save',
                         style: GoogleFonts.montserrat(
                           fontWeight: FontWeight.w500,
-                          color: text1.text.isEmpty &&
-                                  text2.text.isEmpty &&
-                                  text3.text.isEmpty &&
-                                  text4.text.isEmpty
-                              ? Colors.grey
-                              : Colors.white,
+                          color: text1.text.isEmpty && text2.text.isEmpty && text3.text.isEmpty && text4.text.isEmpty ? Colors.grey : Colors.white,
                         ),
                       ),
                     ),

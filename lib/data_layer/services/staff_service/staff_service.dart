@@ -23,19 +23,13 @@ class StaffServices {
 
   Future<List<Staff>> fetchStaffs() async {
     await fetchToken();
-
     try {
-      final response = await HttpService.get(
-          ApiEndPoint.getStaffs(clinicId: clinicId), token);
-      log(response.data.toString());
-
+      final response = await HttpService.get(ApiEndPoint.getStaffs(clinicId: clinicId), token);
       if (response.statusCode == 200) {
         Map<String, dynamic> jsonResponse = response.data;
-
         if (jsonResponse.containsKey('data')) {
           List<dynamic> dataList = jsonResponse['data'];
-          List<Staff> staffList =
-              dataList.map((json) => Staff.fromJson(json)).toList();
+          List<Staff> staffList = dataList.map((json) => Staff.fromJson(json)).toList();
           return staffList;
         } else {
           throw 'Key "data" not found in response';
@@ -61,8 +55,7 @@ class StaffServices {
         }
       } else {
         if (kDebugMode) {
-          print(
-              'Delete Staff request failed with status: ${response.statusCode}');
+          print('Delete Staff request failed with status: ${response.statusCode}');
         }
       }
     } catch (e) {
@@ -72,8 +65,7 @@ class StaffServices {
     }
   }
 
-  Future<CreateStaffResponse> createStaff(
-      CreateStaff createStaff, BuildContext context) async {
+  Future<CreateStaffResponse> createStaff(CreateStaff createStaff, BuildContext context) async {
     await fetchToken();
 
     final response = await HttpService.post(

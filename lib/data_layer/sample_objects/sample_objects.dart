@@ -24,17 +24,7 @@ class SampleObjects {
     const LabTest(name: "Sugar level"),
   ];
 
-  static List<String> dosageFrequency = [
-    'SOS',
-    'Stat',
-    '1-1-1',
-    '1-0-1',
-    '1-0-0',
-    '0-0-1',
-    '0-1-0',
-    '0-1-1',
-    'Other'
-  ];
+  static List<String> dosageFrequency = ['SOS', 'Stat', '1-1-1', '1-0-1', '1-0-0', '0-0-1', '0-1-0', '0-1-1', 'Other'];
 
   static final List<Allergy> allergies = [
     Allergy(id: const Uuid().v4(), name: 'Peanut Allergy'),
@@ -142,7 +132,7 @@ class SampleObjects {
     'Empty stomach',
   ];
 
-  static final List<Drug> drugs = [
+  /*static final List<Drug> drugs = [
     Drug(
       name: "Paracetamol",
       contents: "Acetaminophen 500mg",
@@ -272,7 +262,7 @@ class SampleObjects {
       contents: "Gliclazide 80mg",
       type: "tab",
     ),
-  ];
+  ];*/
 
   static final appointmentResponseObject = Appointment.fromJson({
     "_id": "668d61afdbdcdf6632e7a792",
@@ -287,26 +277,10 @@ class SampleObjects {
     "patientId": "668d6129dbdcdf6632e7a73a",
     "id": "668d61afdbdcdf6632e7a792",
     "appointmentLogs": [
-      {
-        'time': "2023-07-23T09:40:00",
-        'message':
-            "Appointment of 25 July, 2023 at 6:30pm in the evening has been cancelled."
-      },
-      {
-        'time': "2023-07-12T10:28:00",
-        'message':
-            "Appointment of 12 July, 2023 is rescheduled to 25 July, 2023 at 6:30pm in the evening."
-      },
-      {
-        'time': "2023-07-10T11:43:00",
-        'message':
-            "Follow-up appointment scheduled on 12 July, 2023 at 3:20pm in the afternoon."
-      },
-      {
-        'time': "2023-07-05T12:26:00",
-        'message':
-            "Appointment scheduled on 10 July, 2023 at 3:20pm in the afternoon."
-      },
+      {'time': "2023-07-23T09:40:00", 'message': "Appointment of 25 July, 2023 at 6:30pm in the evening has been cancelled."},
+      {'time': "2023-07-12T10:28:00", 'message': "Appointment of 12 July, 2023 is rescheduled to 25 July, 2023 at 6:30pm in the evening."},
+      {'time': "2023-07-10T11:43:00", 'message': "Follow-up appointment scheduled on 12 July, 2023 at 3:20pm in the afternoon."},
+      {'time': "2023-07-05T12:26:00", 'message': "Appointment scheduled on 10 July, 2023 at 3:20pm in the afternoon."},
     ].map((map) => AppointmentLog.fromMap(map)).toList()
   });
 

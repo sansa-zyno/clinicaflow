@@ -28,12 +28,18 @@ class Symptom {
     );
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toSxMap() {
     return <String, dynamic>{
       'name': name,
-      'timePeriod': timePeriod,
-      'timeUnit': timeUnit,
-      'privateNote': privateNote,
+      'duration': {"value": timePeriod, "unit": timeUnit},
+      'notes': privateNote,
+    };
+  }
+
+  Map<String, dynamic> toDxMap() {
+    return <String, dynamic>{
+      'name': name,
+      'notes': privateNote,
     };
   }
 
@@ -41,9 +47,9 @@ class Symptom {
     return Symptom(
       name: map['name'] as String,
       type: type,
-      timePeriod: map['timePeriod'] != null ? map['timePeriod'] as int : null,
-      timeUnit: map['timeUnit'] != null ? map['timeUnit'] as String : null,
-      privateNote: map['privateNote'] != null ? map['privateNote'] as String : null,
+      timePeriod: map['duration'] != null ? map['duration']['value'] as int : null,
+      timeUnit: map['duration'] != null ? map['duration']['unit'] as String : null,
+      privateNote: map['notes'] != null ? map['notes'] as String : null,
     );
   }
 

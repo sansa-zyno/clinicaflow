@@ -1,11 +1,6 @@
 class ScheduleHelper {
   ScheduleHelper();
-  List<String> followUpDurations = [
-    'None',
-    'After 3 days',
-    'After a week',
-    'Custom'
-  ];
+  List<String> followUpDurations = ['None', 'After 3 days', 'After a week', 'Custom'];
 
   String selectedFollowUpDuration = 'None';
   String? selectedFollowUpTime;
@@ -14,7 +9,6 @@ class ScheduleHelper {
 
   Map<String, dynamic> toMap() {
     return {
-      // "followUpDurations": followUpDurations,
       "selectedFollowUpDuration": selectedFollowUpDuration,
       "selectedFollowUpTime": selectedFollowUpTime,
       "notifyOnWhatsapp": notifyOnWhatsapp,

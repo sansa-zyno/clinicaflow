@@ -4,7 +4,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:healtether_clinic_app/Screens/AppointmentScreen/appointment_screen.dart';
-import 'package:healtether_clinic_app/Screens/ScheduleAppointment/add_personl_detail_screen.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/home_page_bottom_nav_cubit/home_page_bottom_nav_cubit.dart';
 import 'package:healtether_clinic_app/constants/constants.dart';
 import 'package:healtether_clinic_app/constants/app_text.dart';
@@ -52,8 +51,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 height: 60,
                 color: const Color(0xffF5F5F5),
                 child: const Padding(
-                  padding:
-                      EdgeInsets.only(top: 10, bottom: 10, left: 10, right: 30),
+                  padding: EdgeInsets.only(top: 10, bottom: 10, left: 10, right: 30),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -67,11 +65,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           child: TextField(
                             decoration: InputDecoration(
                               hintText: AppText.quickSearch,
-                              hintStyle: TextStyle(
-                                  fontFamily: 'Poppins',
-                                  color: Colors.grey,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400),
+                              hintStyle: TextStyle(fontFamily: 'Poppins', color: Colors.grey, fontSize: 16, fontWeight: FontWeight.w400),
                               border: InputBorder.none,
                             ),
                           ),
@@ -121,19 +115,6 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return const AddPersonalDetailsScreen();
-          }));
-        },
-        backgroundColor: const Color(0xff32856E),
-        shape: const CircleBorder(),
-        child: Icon(
-          MdiIcons.accountMultiplePlus,
-          color: Colors.white,
-        ),
-      ),
     );
   }
 }
@@ -169,8 +150,7 @@ class _InfoCardState extends State<InfoCard> {
               children: [
                 const CircleAvatar(
                   radius: 28,
-                  backgroundImage:
-                      AssetImage('assets/homeimages/Ellipse 763.png'),
+                  backgroundImage: AssetImage('assets/homeimages/Ellipse 763.png'),
                 ),
                 const SizedBox(
                   width: 10,
@@ -263,9 +243,7 @@ class _BottomBarChatState extends State<BottomBarChat> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset(_selectedIndex == 0
-                    ? 'assets/homeimages/icon_home.png'
-                    : 'assets/homeimages/Group.png'),
+                Image.asset(_selectedIndex == 0 ? 'assets/homeimages/icon_home.png' : 'assets/homeimages/Group.png'),
                 Text(
                   'Home',
                   style: GoogleFonts.montserrat(
@@ -281,8 +259,7 @@ class _BottomBarChatState extends State<BottomBarChat> {
             onTap: () {
               setState(() {
                 _selectedIndex = 1;
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (context) {
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                   return const AppointmentScreen();
                 }));
               });
@@ -290,9 +267,7 @@ class _BottomBarChatState extends State<BottomBarChat> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset(_selectedIndex == 1
-                    ? 'assets/homeimages/Vector (9).png'
-                    : 'assets/homeimages/Group (1).png'),
+                Image.asset(_selectedIndex == 1 ? 'assets/homeimages/Vector (9).png' : 'assets/homeimages/Group (1).png'),
                 Text(
                   'Appointments',
                   style: GoogleFonts.montserrat(
@@ -311,9 +286,7 @@ class _BottomBarChatState extends State<BottomBarChat> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset(_selectedIndex == 2
-                    ? 'assets/homeimages/Vector (10).png'
-                    : 'assets/homeimages/Vector (4).png'),
+                Image.asset(_selectedIndex == 2 ? 'assets/homeimages/Vector (10).png' : 'assets/homeimages/Vector (4).png'),
                 Text(
                   'Chat',
                   style: GoogleFonts.montserrat(
@@ -332,9 +305,7 @@ class _BottomBarChatState extends State<BottomBarChat> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset(_selectedIndex == 3
-                    ? 'assets/homeimages/Vector (11).png'
-                    : 'assets/homeimages/Vector (5).png'),
+                Image.asset(_selectedIndex == 3 ? 'assets/homeimages/Vector (11).png' : 'assets/homeimages/Vector (5).png'),
                 Text(
                   'Notifications',
                   style: GoogleFonts.montserrat(

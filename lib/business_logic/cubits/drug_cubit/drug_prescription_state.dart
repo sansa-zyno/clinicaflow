@@ -8,7 +8,7 @@ class DrugPrescriptionState {
   final List<Drug>? frequentlySearchedDrugs; // this field stores the frequently searched drugs
   final List<Drug>? suggestedDrugs; // this field stores the suggested drugs
   final List<Drug>? drugs; // this field stores the result of drug search
-  final Map<String, List<Drug>>? savedDrugs; // this field stores the drugs saved by the doctor: key= patientId, value: List<Drugs>
+  final List<Drug>? savedDrugs; // this field stores the drugs saved by the doctor: key= patientId, value: List<Drugs>
   DrugPrescriptionState({
     required this.state,
     this.message,
@@ -26,7 +26,7 @@ class DrugPrescriptionState {
     frequentlySearchedDrugs,
     List<Drug>? suggestedDrugs,
     List<Drug>? drugs,
-    Map<String, List<Drug>>? savedDrugs,
+    List<Drug>? savedDrugs,
   }) {
     return DrugPrescriptionState(
       state: state ?? this.state,
@@ -35,7 +35,7 @@ class DrugPrescriptionState {
       frequentlySearchedDrugs: frequentlySearchedDrugs ?? this.frequentlySearchedDrugs,
       suggestedDrugs: suggestedDrugs ?? this.suggestedDrugs,
       drugs: drugs ?? this.drugs,
-      savedDrugs: savedDrugs ?? this.savedDrugs,
+      savedDrugs: savedDrugs,
     );
   }
 

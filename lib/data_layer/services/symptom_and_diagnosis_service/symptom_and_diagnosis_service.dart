@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:developer' as dev;
+import 'package:dio/dio.dart';
 import 'package:healtether_clinic_app/constants/api.dart';
 import 'package:healtether_clinic_app/data_layer/models/helper_models/error_model.dart';
 import 'package:healtether_clinic_app/data_layer/models/response_models/symptoms_and_diagnoses_response.dart';
@@ -53,6 +56,55 @@ class SymptomAndDiagnosisService extends BaseService {
       return symptoms;
     } else {
       throw 'Failed to load data: ${response.statusCode}';
+    }
+  }
+
+  Future<Map<String, List<Symptom>>> ddxPredictions(List selectedSymptoms, List selectedDiagnosis) async {
+    final response = await HttpService.dio.post(ApiEndPoint.symptomsAndDiagnosisPredictionAI,
+        data: {"input_symptoms": selectedSymptoms, "input_diagnoses": selectedDiagnosis, "n_diseases": 6, "n_symptoms": 6, "min_symptoms": 2},
+        options: Options(
+          contentType: Headers.formUrlEncodedContentType,
+          headers: {'Content-Type': 'application/json; charset=UTF-8'},
+        ));
+    if (response.statusCode == 200) {
+      Map<String, dynamic> jsonResponse = response.data;
+      List<Symptom> associatedSymptoms = (jsonResponse['Associated Symptoms'] as List).map((item) => Symptom(name: item, type: 'Sx')).toList();
+      List<Symptom> differentialDiagnosis = (jsonResponse['Differential Diagnoses'] as List).map((item) => Symptom(name: item, type: 'Dx')).toList();
+
+      return {'Sx': associatedSymptoms, 'Dx': differentialDiagnosis};
+    } else {
+      throw 'Failed to load data: ${response.statusCode}';
+    }
+  }
+
+  Future<String> postSymtomsAndDiagnostics(
+      {required String patientId, required String appointmentId, required List symptoms, required List diagnosis}) async {
+    await fetchToken();
+    final response = await HttpService.post(
+      ApiEndPoint.postSymtomsAndDiagnostics(patientId: patientId, clientId: clinicId, appointmentId: appointmentId),
+      token,
+      {"symptoms": symptoms, "diagnosis": diagnosis},
+    );
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return response.data['message'];
+    } else {
+      throw 'Failed to save data: ${response.statusCode}';
+    }
+  }
+
+  Future<Map<String, List<Symptom>?>> getSavedSymptomsAndDiagnosis({required String appointmentId}) async {
+    await fetchToken();
+    final response = await HttpService.get(ApiEndPoint.getWholePrescriptionsAndVitals(appointmentId: appointmentId, clientId: clinicId), token);
+    if (response.statusCode == 200) {
+      if (response.data['prescriptions'] != null) {
+        List<Symptom>? symptoms = (response.data['prescriptions']['symptoms'] as List?)?.map((e) => Symptom.fromMap(e, 'Sx')).toList();
+        List<Symptom>? diagnosis = (response.data['prescriptions']['diagnosis'] as List?)?.map((e) => Symptom.fromMap(e, 'Dx')).toList();
+        return {"symptoms": symptoms, "diagnosis": diagnosis};
+      } else {
+        return {"symptoms": null, "diagnosis": null};
+      }
+    } else {
+      throw 'Failed to retrieve data: ${response.statusCode}';
     }
   }
 }

@@ -6,6 +6,7 @@ class LabTestState {
   final List<LabTest>? recommendedTests;
   final List<LabTest>? frequentlySearchedTests;
   final List<LabTest>? availableTests;
+  final List<LabTest>? savedTests;
   LabTestState(
       {required this.state,
       this.availableTests = const [
@@ -23,14 +24,21 @@ class LabTestState {
         LabTest(name: "Sugar level"),
       ],
       this.frequentlySearchedTests,
-      this.recommendedTests});
+      this.recommendedTests,
+      this.savedTests});
 
-  LabTestState copyWith(
-      {LabTestStates? state, List<LabTest>? availableTests, List<LabTest>? recommendedTests, List<LabTest>? frequentlySearchedTests}) {
+  LabTestState copyWith({
+    LabTestStates? state,
+    List<LabTest>? availableTests,
+    List<LabTest>? recommendedTests,
+    List<LabTest>? frequentlySearchedTests,
+    List<LabTest>? savedTests,
+  }) {
     return LabTestState(
         state: state ?? this.state,
         availableTests: availableTests ?? this.availableTests,
         recommendedTests: recommendedTests ?? this.recommendedTests,
-        frequentlySearchedTests: frequentlySearchedTests ?? this.frequentlySearchedTests);
+        frequentlySearchedTests: frequentlySearchedTests ?? this.frequentlySearchedTests,
+        savedTests: savedTests);
   }
 }

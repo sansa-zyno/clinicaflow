@@ -9,6 +9,7 @@ class MyElevatedButton extends StatelessWidget {
     required this.text,
     this.textStyle,
     this.height,
+    this.padding,
     required this.onPressed,
   });
 
@@ -17,6 +18,7 @@ class MyElevatedButton extends StatelessWidget {
   final TextStyle? textStyle;
   final Color? backgroundColor;
   final double? height;
+  final EdgeInsetsGeometry? padding;
 
   @override
   Widget build(BuildContext context) {
@@ -24,18 +26,13 @@ class MyElevatedButton extends StatelessWidget {
       height: height,
       child: ElevatedButton(
           style: ButtonStyle(
-              backgroundColor: MaterialStatePropertyAll(
-                  backgroundColor ?? AppColors.darkTeal),
-              shape: MaterialStatePropertyAll(RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(7)))),
+              padding: MaterialStatePropertyAll(padding),
+              backgroundColor: MaterialStatePropertyAll(backgroundColor ?? AppColors.greenColor),
+              shape: MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)))),
           onPressed: onPressed,
           child: Text(text,
-              style: GoogleFonts.urbanist(
-                  textStyle: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14)
-                      .merge(textStyle)))),
+              style:
+                  GoogleFonts.urbanist(textStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14).merge(textStyle)))),
     );
   }
 }

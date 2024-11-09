@@ -22,6 +22,20 @@ class HistoryItem {
     );
   }
 
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'name': name,
+      "duration": () {
+        if (year.isNotEmpty) {
+          return {"value": int.parse(year), "unit": int.parse(year) == 1 ? "Year" : "Years"};
+        } else {
+          return {"value": 0, "unit": ""};
+        }
+      }(),
+      "notes": ""
+    };
+  }
+
   factory HistoryItem.empty() {
     return HistoryItem(id: const Uuid().v4(), name: '', year: '');
   }

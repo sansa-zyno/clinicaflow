@@ -34,7 +34,7 @@ class _PrivacyNotesSheetState extends State<PrivacyNotesSheet> {
     return SingleChildScrollView(
       reverse: true,
       child: Container(
-        height: MediaQuery.of(context).size.height * 0.6 + MediaQuery.of(context).viewInsets.bottom,
+        height: MediaQuery.of(context).size.height * 0.65 + MediaQuery.of(context).viewInsets.bottom,
         color: Colors.transparent,
         child: Stack(
           children: [
@@ -42,7 +42,7 @@ class _PrivacyNotesSheetState extends State<PrivacyNotesSheet> {
               bottom: 0,
               child: Container(
                 width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height * 0.6 + MediaQuery.of(context).viewInsets.bottom,
+                height: MediaQuery.of(context).size.height * 0.65 + MediaQuery.of(context).viewInsets.bottom,
                 decoration: const ShapeDecoration(
                   color: Colors.white,
                   shape: RoundedRectangleBorder(

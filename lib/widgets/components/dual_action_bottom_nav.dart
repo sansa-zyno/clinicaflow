@@ -3,12 +3,7 @@ import 'package:healtether_clinic_app/constants/app_colors.dart';
 import 'package:healtether_clinic_app/widgets/buttons/my_elevated_button.dart';
 
 class DualActionBottomNav extends StatelessWidget {
-  const DualActionBottomNav(
-      {super.key,
-      required this.text,
-      required this.focusedText,
-      required this.onPressed,
-      required this.onFocusedPressed});
+  const DualActionBottomNav({super.key, required this.text, required this.focusedText, required this.onPressed, required this.onFocusedPressed});
   final String text;
   final String focusedText;
   final void Function() onPressed;
@@ -24,17 +19,18 @@ class DualActionBottomNav extends StatelessWidget {
             Expanded(
               child: MyElevatedButton(
                 text: text,
-                textStyle: const TextStyle(color: AppColors.eerieBlack),
-                height: 61,
+                textStyle: const TextStyle(color: AppColors.eerieBlack, fontSize: 15),
+                height: 58,
                 onPressed: onPressed,
-                backgroundColor: const Color(0xFFF5F5F5),
+                backgroundColor: AppColors.whiteSmoke,
               ),
             ),
             const SizedBox(width: 8),
             Expanded(
               child: MyElevatedButton(
                 text: focusedText,
-                height: 61,
+                textStyle: const TextStyle(fontSize: 15),
+                height: 58,
                 onPressed: onFocusedPressed,
               ),
             ),

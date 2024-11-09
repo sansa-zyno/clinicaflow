@@ -26,7 +26,7 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
           icon: const Icon(Icons.arrow_back),
         ),
         automaticallyImplyLeading: false,
-        actions: [
+        /*actions: [
           if (currentPageIndex > 1)
             TextButton(
               onPressed: () {},
@@ -40,7 +40,7 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
               onPressed: () {},
               icon: const Icon(Icons.more_vert),
             ),
-        ],
+        ],*/
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -51,12 +51,7 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
               controller: pageController,
               count: 5,
               effect: const ExpandingDotsEffect(
-                  expansionFactor: 5,
-                  dotColor: Color(0XFF5351C7),
-                  strokeWidth: 3,
-                  dotHeight: 8,
-                  dotWidth: 8,
-                  paintStyle: PaintingStyle.fill),
+                  expansionFactor: 5, dotColor: Color(0XFF5351C7), strokeWidth: 3, dotHeight: 8, dotWidth: 8, paintStyle: PaintingStyle.fill),
             ),
           ),
           const SizedBox(
@@ -64,8 +59,7 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
           ),
           Expanded(
             child: SizedBox(
-              height: MediaQuery.of(context).size.height *
-                  0.7, // Adjust the height as needed
+              height: MediaQuery.of(context).size.height * 0.7, // Adjust the height as needed
               child: PageView(
                 controller: pageController,
                 scrollDirection: Axis.horizontal,

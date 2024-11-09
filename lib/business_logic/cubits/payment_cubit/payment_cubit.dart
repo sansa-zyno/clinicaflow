@@ -19,8 +19,7 @@ class PaymentCubit extends Cubit<PaymentState> {
 
       final payments = await service.fetchPayment();
 
-      emit(state.copyWith(
-          state: PaymentStates.paymentsFetched, payments: payments));
+      emit(state.copyWith(state: PaymentStates.paymentsFetched, payments: payments));
     } catch (e) {
       emit(state.copyWith(state: PaymentStates.fetchingPaymentsFailed));
       log('Error fetching payments: $e');

@@ -9,6 +9,7 @@ enum AppRoutes {
   paymentRecords,
   patientAnalysis,
   appointment,
+  scheduleAppointment,
   appointmentSuccess,
   chat,
   notification,
@@ -24,8 +25,7 @@ enum AppRoutes {
   notificationsSettings,
   appPermissionsSettings,
   feedBack,
-  addPersonalDetails,
-  symptomsTest,
+  pastMedicalHistory,
   vitals,
   createDigitalPrescription,
   paymentReceipt,
@@ -54,4 +54,5 @@ enum AppRoutes {
   addMembersScreen,
   labInvestigations,
   drugPrescription,
+  prescriptionPreview
 }

@@ -7,14 +7,12 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:healtether_clinic_app/Screens/AppointmentScreen/appointment_detail.dart';
 import 'package:healtether_clinic_app/Screens/AppointmentScreen/widgets/custom_textfield.dart';
-import 'package:healtether_clinic_app/Screens/ManageStaff/staff_records_screen.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/staff_cubit/staff_cubit.dart';
 import 'package:healtether_clinic_app/data_layer/models/appointment_slot/appointment_slot.dart';
 import 'package:healtether_clinic_app/data_layer/models/appointment_slot/time_slot.dart';
 import 'package:healtether_clinic_app/data_layer/models/day.dart';
 import 'package:healtether_clinic_app/constants/app_icons.dart';
 import 'package:healtether_clinic_app/data_layer/models/staff_model/create_staff_model.dart';
-import 'package:healtether_clinic_app/data_layer/models/staff_model/staff_model.dart';
 import 'package:healtether_clinic_app/data_layer/services/shared_preferences_service.dart';
 import 'package:healtether_clinic_app/utils/enums/bloc_enums.dart';
 import 'package:healtether_clinic_app/utils/enums/route_enums.dart';
@@ -114,366 +112,372 @@ class _AppointmentSettingsState extends State<AppointmentSettings> with AppBarMi
               style: TextStyle(color: Color(0XFF4646B5), fontSize: 18),
             ),
           ),*/
-          IconButton(
+          /* IconButton(
             onPressed: () {},
             icon: const Icon(Icons.more_vert),
-          ),
+          ),*/
         ],
       ),
-      body: BlocBuilder<StaffCubit, StaffState>(builder: (context, state) {
-        if (state.errorMessage != null) {
-          return Center(child: Text('Error: ${state.errorMessage}'));
-        }
-        return SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SmoothPageIndicator(
-                  controller: pageController,
-                  count: 5,
-                  effect: const ExpandingDotsEffect(
-                    expansionFactor: 5,
-                    dotColor: Color(0XFF5351C7),
-                    strokeWidth: 3,
-                    dotHeight: 8,
-                    dotWidth: 8,
-                    paintStyle: PaintingStyle.fill,
+      body: BlocListener<StaffCubit, StaffState>(
+        listener: (context, state) {
+          dev.log(state.state.name);
+          if (state.state == StaffStates.staffCreated) {
+            Navigator.pop(context);
+            Navigator.pop(context);
+            Navigator.pop(context);
+            Navigator.pop(context);
+            Navigator.pop(context);
+            Navigator.pop(context);
+            context.pushNamed(AppRoutes.manageStaff.name);
+          }
+        },
+        child: BlocBuilder<StaffCubit, StaffState>(builder: (context, state) {
+          if (state.errorMessage != null) {
+            return Center(child: Text('Error: ${state.errorMessage}'));
+          }
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SmoothPageIndicator(
+                    controller: pageController,
+                    count: 5,
+                    effect: const ExpandingDotsEffect(
+                      expansionFactor: 5,
+                      dotColor: Color(0XFF5351C7),
+                      strokeWidth: 3,
+                      dotHeight: 8,
+                      dotWidth: 8,
+                      paintStyle: PaintingStyle.fill,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 10),
-                const Text(
-                  'Appointment Settings',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
+                  const SizedBox(height: 10),
+                  const Text(
+                    'Appointment Settings',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                    ),
                   ),
-                ),
-                const SizedBox(
-                  height: 6,
-                ),
-                //start here
-                ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: appointmentSlots.length,
-                    itemBuilder: (context, mainIndex) {
-                      appointmentDuration = TextEditingController(text: appointmentSlots[mainIndex].duration);
-                      return Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Visibility(
-                            visible: idx != mainIndex, //if index not equal
-                            child: Container(
-                                padding: const EdgeInsets.all(8),
-                                // width: double.maxFinite,
-                                decoration: BoxDecoration(color: AppColors.whiteSmoke, borderRadius: BorderRadius.circular(8)),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text("For ${daysSet[mainIndex].map((e) => e.day.capitalize[0]).join(', ')}"),
-                                    GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            idx = mainIndex;
-                                          });
-                                        },
-                                        child: AppIcons.arrowDropDown)
-                                  ],
-                                )),
-                          ),
-                          const SizedBox(height: 8),
-                          Visibility(
-                            visible: idx == mainIndex, //if index is equal
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 8),
-                              decoration: decoration,
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  // for | up arrow
-                                  Row(
+                  const SizedBox(
+                    height: 6,
+                  ),
+                  //start here
+                  ListView.builder(
+                      physics: NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: appointmentSlots.length,
+                      itemBuilder: (context, appointmentIndex) {
+                        appointmentDuration = TextEditingController(text: appointmentSlots[appointmentIndex].duration);
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Visibility(
+                              visible: idx != appointmentIndex, //if index not equal
+                              child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  // width: double.maxFinite,
+                                  decoration: BoxDecoration(color: AppColors.whiteSmoke, borderRadius: BorderRadius.circular(8)),
+                                  child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text(
-                                        "For",
-                                        style: GoogleFonts.urbanist(
-                                            textStyle: TextStyle(color: AppColors.eerieBlack, fontWeight: FontWeight.w500, fontSize: 17)),
-                                      ),
+                                      Text("For ${daysSet[appointmentIndex].map((e) => e.day.capitalize[0]).join(', ')}"),
                                       GestureDetector(
                                           onTap: () {
                                             setState(() {
-                                              idx = mainIndex + 1;
+                                              idx = appointmentIndex;
                                             });
                                           },
-                                          child: AppIcons.arrowUp)
+                                          child: AppIcons.arrowDropDown)
                                     ],
-                                  ).pOnly(bottom: 16),
-
-                                  ScrollableRow(
-                                      children: List<Widget>.generate(days.length, (index) {
-                                    final String day = days[index].day;
-                                    final bool selected = appointmentSlots[mainIndex].hasDay(days[index]);
-                                    bool tappable = true;
-
-                                    log("Day set: $daysSet");
-
-                                    // if day has already been set and it doesnt belong to the current selected appointment
-
-                                    if (daysSetOneList.contains(days[index]) && appointmentSlots[mainIndex].hasDay(days[index]) == false) {
-                                      // print("Aready set day: $day");
-                                      tappable = false;
-                                    }
-
-                                    // print(daysSet.contains(Day(dayOfWeek: 7)));
-
-                                    return SelectableContainer(
-                                      title: Text(
-                                        day[0].capitalize,
-                                        style: !tappable ? const TextStyle(color: AppColors.grey) : null,
-                                      ),
-                                      borderColor: tappable ? AppColors.eerieBlack : AppColors.whiteSmoke,
-                                      backgroundColor: tappable ? null : AppColors.whiteSmoke,
-                                      selectedTitle: Text(day[0].capitalize, style: TextStyle(color: Colors.white)),
-                                      onTap: () {
-                                        log("tapped: $day, selected: $selected, tappable: $tappable");
-                                        if (!tappable) {
-                                          log("cannot be tapped: $day");
-                                          return;
-                                        }
-                                        setState(() {
-                                          if (selected) {
-                                            log("Removing day");
-                                            appointmentSlots[mainIndex].removeDay(days[index]);
-                                          } else {
-                                            log("Adding day");
-                                            appointmentSlots[mainIndex].addDay(days[index]);
-                                          }
-                                        });
-                                      },
-                                      selected: selected,
-                                    ).pSymmetric(horizontal: 2);
-                                  })).pOnly(bottom: 16),
-
-                                  //? CONTAINER WITH TIME SLOTS
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                    constraints: BoxConstraints(minHeight: 0, maxHeight: MediaQuery.of(context).size.height / 2),
-                                    decoration: decoration,
-                                    child: SingleChildScrollView(
-                                        // itemCount: appointmentSlots.length,
-                                        child: Column(children: [
-                                      //? LIST OF TIME SLOTS
-                                      ...List<Widget>.generate(appointmentSlots[mainIndex].timeSlots.length, (index) {
-                                        final tSlot = appointmentSlots[mainIndex].timeSlots[index];
-
-                                        return Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text("Slot ${index + 1}",
-                                                style: GoogleFonts.urbanist(
-                                                    textStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 17, height: 22.78 / 17))),
-                                            const SizedBox(height: 8),
-                                            TimeSlotItem(
-                                                slot: tSlot,
-                                                onTap: () => {},
-                                                /*updateSelectedAppointmentSlot(
-                                                        appointmentSlots[
-                                                            mainIndex],
-                                                        mainIndex),*/
-                                                selected: appointmentSlots[mainIndex].timeSlots[index] == tSlot,
-                                                onStartChanged: (newTime) {
-                                                  updateTimeSlot(appointmentSlots[mainIndex], index,
-                                                      appointmentSlots[mainIndex].timeSlots[index].copyWith(start: newTime));
-                                                },
-                                                onFinishChanged: (newTime) {
-                                                  // update the timeslot
-                                                  updateTimeSlot(appointmentSlots[mainIndex], index,
-                                                      appointmentSlots[mainIndex].timeSlots[index].copyWith(finish: newTime));
-                                                },
-                                                showDelete: appointmentSlots.length > 1,
-                                                onDelete: () {
-                                                  deleteAppointmentTimeSlot(appointmentSlots[mainIndex], index);
-                                                }).pOnly(bottom: 16),
-                                          ],
-                                        );
-                                      }),
-
-                                      // const SizedBox(height: 16),
-
-                                      //? ADD NEW SLOT
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.end,
-                                        children: [
-                                          MyTextButton(
-                                              text: 'Add slot',
-                                              onTap: () {
-                                                log("Add slot");
-                                                setState(() {
-                                                  appointmentSlots[mainIndex].timeSlots.add(TimeSlot(Uuid().v4()));
-                                                });
-                                              }),
-                                        ],
-                                      )
-                                    ])),
-                                  ),
-
-                                  //? APPOINTMENT DURATION
-                                  Row(
-                                    children: [
-                                      // text
-                                      SectionText2("Appointment duration"),
-
-                                      const SizedBox(
-                                        width: 12,
-                                      ),
-
-                                      // duration textfield
-                                      Expanded(child: Builder(builder: (context) {
-                                        return CustomTextField(
-                                            keyBoardType: TextInputType.number,
-                                            inputFormatters: [LengthLimitingTextInputFormatter(2), FilteringTextInputFormatter.digitsOnly],
-                                            controller: appointmentDuration,
-                                            hintText: '',
-                                            onChanged: (x) {
-                                              appointmentSlots[mainIndex].duration = x;
+                                  )),
+                            ),
+                            const SizedBox(height: 8),
+                            Visibility(
+                              visible: idx == appointmentIndex, //if index is equal
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 8),
+                                decoration: decoration,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    // for | up arrow
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "For",
+                                          style: GoogleFonts.urbanist(
+                                              textStyle: TextStyle(color: AppColors.eerieBlack, fontWeight: FontWeight.w500, fontSize: 17)),
+                                        ),
+                                        GestureDetector(
+                                            onTap: () {
+                                              setState(() {
+                                                idx = appointmentIndex + 1;
+                                              });
                                             },
-                                            height: 54);
-                                      })),
+                                            child: AppIcons.arrowUp)
+                                      ],
+                                    ).pOnly(bottom: 16),
 
-                                      const SizedBox(
-                                        width: 8,
-                                      ),
+                                    ScrollableRow(
+                                        children: List<Widget>.generate(days.length, (index) {
+                                      final String day = days[index].day;
+                                      final bool selected = appointmentSlots[appointmentIndex].hasDay(days[index]);
+                                      bool tappable = true;
 
-                                      // unit(minutes)
-                                      Text(
-                                        "Minutes",
-                                        style: GoogleFonts.roboto(textStyle: TextStyle(fontSize: 14, height: 17.16 / 14)),
-                                      )
-                                    ],
-                                  ).pSymmetric(horizontal: 0, vertical: 16),
+                                      log("Day set: $daysSet");
 
-                                  // delete | preview
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                    children: [
-                                      // delete
-                                      // MyElevatedButton(
-                                      //   text: "Delete",
-                                      //   backgroundColor: Colors.white,
+                                      // if day has already been set and it doesnt belong to the current selected appointment
 
-                                      //   onPressed: ,
-                                      //   height: 46,
-                                      // ),
+                                      if (daysSetOneList.contains(days[index]) && appointmentSlots[appointmentIndex].hasDay(days[index]) == false) {
+                                        // print("Aready set day: $day");
+                                        tappable = false;
+                                      }
 
-                                      MyTextButton(
-                                        text: "Delete",
-                                        textStyle: TextStyle(color: AppColors.eerieBlack, fontWeight: FontWeight.w600),
-                                        onTap: () => deleteAppointment(appointmentSlots[mainIndex], mainIndex),
-                                      ),
+                                      // print(daysSet.contains(Day(dayOfWeek: 7)));
 
-                                      // preview
-                                      MyElevatedButton(
-                                        text: "Preview",
-                                        backgroundColor: AppColors.whiteSmoke,
-                                        textStyle: TextStyle(color: AppColors.eerieBlack),
-                                        onPressed: () {
-                                          timeSlots = generateTimeSlots(mainIndex, timeSlotTitle);
-                                          if (timeSlots.isNotEmpty) {
-                                            showTimeSlot(mainIndex);
+                                      return SelectableContainer(
+                                        title: Text(
+                                          day[0].capitalize,
+                                          style: !tappable ? const TextStyle(color: AppColors.grey) : null,
+                                        ),
+                                        borderColor: tappable ? AppColors.eerieBlack : AppColors.whiteSmoke,
+                                        backgroundColor: tappable ? null : AppColors.whiteSmoke,
+                                        selectedTitle: Text(day[0].capitalize, style: TextStyle(color: Colors.white)),
+                                        onTap: () {
+                                          log("tapped: $day, selected: $selected, tappable: $tappable");
+                                          if (!tappable) {
+                                            log("cannot be tapped: $day");
+                                            return;
                                           }
+                                          setState(() {
+                                            if (selected) {
+                                              log("Removing day");
+                                              appointmentSlots[appointmentIndex].removeDay(days[index]);
+                                            } else {
+                                              log("Adding day");
+                                              appointmentSlots[appointmentIndex].addDay(days[index]);
+                                            }
+                                          });
                                         },
-                                        height: 46,
-                                      ),
-                                    ],
-                                  )
-                                ],
+                                        selected: selected,
+                                      ).pSymmetric(horizontal: 2);
+                                    })).pOnly(bottom: 16),
+
+                                    //? CONTAINER WITH TIME SLOTS
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                      constraints: BoxConstraints(minHeight: 0, maxHeight: MediaQuery.of(context).size.height / 2),
+                                      decoration: decoration,
+                                      child: SingleChildScrollView(
+                                          // itemCount: appointmentSlots.length,
+                                          child: Column(children: [
+                                        //? LIST OF TIME SLOTS
+                                        ...List<Widget>.generate(appointmentSlots[appointmentIndex].timeSlots.length, (index) {
+                                          final tSlot = appointmentSlots[appointmentIndex].timeSlots[index];
+
+                                          return Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text("Slot ${index + 1}",
+                                                  style: GoogleFonts.urbanist(
+                                                      textStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 17, height: 22.78 / 17))),
+                                              const SizedBox(height: 8),
+                                              TimeSlotItem(
+                                                  slot: tSlot,
+                                                  onTap: () => {},
+                                                  /*updateSelectedAppointmentSlot(
+                                                          appointmentSlots[
+                                                              mainIndex],
+                                                          mainIndex),*/
+                                                  selected: appointmentSlots[appointmentIndex].timeSlots[index] == tSlot,
+                                                  onStartChanged: (newTime) {
+                                                    updateTimeSlot(appointmentSlots[appointmentIndex], index,
+                                                        appointmentSlots[appointmentIndex].timeSlots[index].copyWith(start: newTime));
+                                                  },
+                                                  onFinishChanged: (newTime) {
+                                                    // update the timeslot
+                                                    updateTimeSlot(appointmentSlots[appointmentIndex], index,
+                                                        appointmentSlots[appointmentIndex].timeSlots[index].copyWith(finish: newTime));
+                                                  },
+                                                  showDelete: appointmentSlots.length > 1,
+                                                  onDelete: () {
+                                                    deleteAppointmentTimeSlot(appointmentSlots[appointmentIndex], index);
+                                                  }).pOnly(bottom: 16),
+                                            ],
+                                          );
+                                        }),
+
+                                        // const SizedBox(height: 16),
+
+                                        //? ADD NEW SLOT
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.end,
+                                          children: [
+                                            MyTextButton(
+                                                text: 'Add slot',
+                                                onTap: () {
+                                                  log("Add slot");
+                                                  setState(() {
+                                                    appointmentSlots[appointmentIndex].timeSlots.add(TimeSlot(Uuid().v4()));
+                                                  });
+                                                }),
+                                          ],
+                                        )
+                                      ])),
+                                    ),
+
+                                    //? APPOINTMENT DURATION
+                                    Row(
+                                      children: [
+                                        // text
+                                        SectionText2("Appointment duration"),
+
+                                        const SizedBox(
+                                          width: 12,
+                                        ),
+
+                                        // duration textfield
+                                        Expanded(child: Builder(builder: (context) {
+                                          return CustomTextField(
+                                              keyBoardType: TextInputType.number,
+                                              inputFormatters: [LengthLimitingTextInputFormatter(2), FilteringTextInputFormatter.digitsOnly],
+                                              controller: appointmentDuration,
+                                              hintText: '',
+                                              onChanged: (x) {
+                                                appointmentSlots[appointmentIndex].duration = x;
+                                              },
+                                              height: 54);
+                                        })),
+
+                                        const SizedBox(
+                                          width: 8,
+                                        ),
+
+                                        // unit(minutes)
+                                        Text(
+                                          "Minutes",
+                                          style: GoogleFonts.roboto(textStyle: TextStyle(fontSize: 14, height: 17.16 / 14)),
+                                        )
+                                      ],
+                                    ).pSymmetric(horizontal: 0, vertical: 16),
+
+                                    // delete | preview
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                      children: [
+                                        // delete
+                                        // MyElevatedButton(
+                                        //   text: "Delete",
+                                        //   backgroundColor: Colors.white,
+
+                                        //   onPressed: ,
+                                        //   height: 46,
+                                        // ),
+
+                                        MyTextButton(
+                                          text: "Delete",
+                                          textStyle: TextStyle(color: AppColors.eerieBlack, fontWeight: FontWeight.w600),
+                                          onTap: () => deleteAppointment(appointmentSlots[appointmentIndex]),
+                                        ),
+
+                                        // preview
+                                        MyElevatedButton(
+                                          text: "Preview",
+                                          backgroundColor: AppColors.whiteSmoke,
+                                          textStyle: TextStyle(color: AppColors.eerieBlack),
+                                          onPressed: () {
+                                            timeSlots = generateTimeSlots(appointmentIndex, timeSlotTitle);
+                                            if (timeSlots.isNotEmpty) {
+                                              showTimeSlot(appointmentIndex);
+                                            }
+                                          },
+                                          height: 46,
+                                        ),
+                                      ],
+                                    )
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                        ],
-                      );
-                    }),
-                //end here
-
-                const SizedBox(
-                  height: 20,
-                ),
-                MyTextButton(
-                    text: 'Schedule for the other days',
-                    onTap: () {
-                      if (daysSetOneList.length < 7) {
-                        appointmentSlots.add(
-                          AppointmentSlot(
-                            id: Uuid().v4(),
-                            timeSlots: [TimeSlot(Uuid().v4())],
-                            duration: '',
-                            days: [],
-                          ),
+                          ],
                         );
-                        idx = appointmentSlots.length - 1;
-                        setState(() {});
-                        //log("Schedule days");
-                      }
-                    }),
-                SizedBox(height: 50),
-                state.state == StaffStates.creatingStaff
-                    ? Center(child: CircularProgressIndicator())
-                    : GestureDetector(
-                        onTap: () async {
-                          if (appointmentSlots.isNotEmpty) {
-                            String clinicId = '';
-                            clinicId = (await SharedPrefService.getClinicId())!;
-                            widget.createStaff.availableTimeSlot = appointmentSlots;
-                            widget.createStaff.clientId = clinicId;
-                            context.read<StaffCubit>().createStaff(widget.createStaff, context).then((_) {
-                              if (state.errorMessage == null) {
-                                Navigator.pop(context);
-                                Navigator.pop(context);
-                                Navigator.pop(context);
-                                Navigator.pop(context);
-                                Navigator.pop(context);
-                                Navigator.pop(context);
-                                context.pushNamed(AppRoutes.manageStaff.name);
-                              }
-                            });
-                          } else {
-                            showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertDialog(
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                    content: Text("Please add schedules"),
-                                  );
-                                });
-                          }
-                        },
-                        child: Container(
-                          height: 52,
-                          margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: AppColors.greenColor,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Center(
-                            child: Text(
-                              AppText.save,
-                              style: GoogleFonts.montserrat(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.whiteColor,
+                      }),
+                  //end here
+
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  MyTextButton(
+                      text: 'Schedule for the other days',
+                      onTap: () {
+                        if (daysSetOneList.length < 7) {
+                          appointmentSlots.add(
+                            AppointmentSlot(
+                              id: Uuid().v4(),
+                              timeSlots: [TimeSlot(Uuid().v4())],
+                              duration: '',
+                              days: [],
+                            ),
+                          );
+                          idx = appointmentSlots.length - 1;
+                          setState(() {});
+                          //log("Schedule days");
+                        }
+                      }),
+                  SizedBox(height: 50),
+                  state.state == StaffStates.creatingStaff
+                      ? Center(child: CircularProgressIndicator())
+                      : GestureDetector(
+                          onTap: () async {
+                            if (appointmentSlots.isNotEmpty) {
+                              String clinicId = '';
+                              clinicId = (await SharedPrefService.getClinicId())!;
+                              widget.createStaff.availableTimeSlot = appointmentSlots;
+                              widget.createStaff.clientId = clinicId;
+                              widget.createStaff.createdOn = DateTime.now().toIso8601String();
+                              widget.createStaff.modifiedOn = DateTime.now().toIso8601String();
+                              context.read<StaffCubit>().createStaff(widget.createStaff, context);
+                            } else {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                      content: Text("Please add schedules"),
+                                    );
+                                  });
+                            }
+                          },
+                          child: Container(
+                            height: 52,
+                            margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: AppColors.greenColor,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Center(
+                              child: Text(
+                                AppText.save,
+                                style: GoogleFonts.montserrat(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.whiteColor,
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-              ],
+                ],
+              ),
             ),
-          ),
-        );
-      }),
+          );
+        }),
+      ),
     );
   }
 
@@ -559,7 +563,7 @@ class _AppointmentSettingsState extends State<AppointmentSettings> with AppBarMi
         });
   }
 
-  void deleteAppointment(AppointmentSlot slot, int index) {
+  void deleteAppointment(AppointmentSlot slot) {
     setState(() {
       if (appointmentSlots.length > 1) {
         appointmentSlots.remove(slot);

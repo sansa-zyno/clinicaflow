@@ -14,15 +14,14 @@ class AppointmentServices {
     log('CLINIC_ID ' + clinicId);
   }
 
-  Future<AppointmentModel> fetchAppointments() async {
+  Future<AppointmentModel> fetchAppointments({required String status}) async {
     await fetchToken();
     if (clinicId == "") {
       return AppointmentModel();
     }
 
     try {
-      final response = await HttpService.get(
-          ApiEndPoint.getAppointments(clinicId: clinicId), token);
+      final response = await HttpService.get(ApiEndPoint.getAppointments(clinicId: clinicId, status: status), token);
 
       if (response.statusCode == 200) {
         Map<String, dynamic> jsonResponse = response.data;
@@ -37,7 +36,7 @@ class AppointmentServices {
     }
   }
 
-  Future<void> bookAppointment({
+  Future<String> bookAppointment({
     required String mobile,
     required String name,
     required String gender,
@@ -71,7 +70,7 @@ class AppointmentServices {
         "clinicPatientId": clinicPatientId
       }
     };
-    log(mobile);
+    /*log(mobile);
     log(name);
     log(gender);
     log(age);
@@ -80,9 +79,10 @@ class AppointmentServices {
     log(timeSlot);
     log(reason);
     log(virtualConsultation);
+    log(patientId);
     log(doctorId);
     log(doctorName);
-    log(clinicPatientId);
+    log(clinicPatientId);*/
 
     final response = await HttpService.post(
       ApiEndPoint.createAppointment,
@@ -92,8 +92,10 @@ class AppointmentServices {
 
     if (response.statusCode == 200) {
       print('Appointment created successfully.');
+      return response.data['data']['patientId'];
     } else {
       print('Failed to create appointment: ${response.data}');
+      return '';
     }
   }
 
@@ -127,10 +129,9 @@ class AppointmentServices {
     }
   }*/
 
-  Future<List<Map<String, String>>> fetchDoctors() async {
+  /*Future<List<Map<String, String>>> fetchDoctors() async {
     await fetchToken();
-    final response = await HttpService.get(
-        ApiEndPoint.getDoctors(clinicId: clinicId), token);
+    final response = await HttpService.get(ApiEndPoint.getDoctors(clinicId: clinicId), token);
 
     if (response.statusCode == 200) {
       final data = response.data;
@@ -154,17 +155,15 @@ class AppointmentServices {
     } else {
       throw Exception('Failed to load doctors');
     }
-  }
+  }*/
 
   Future<List<Map<String, dynamic>>> fetchDoctorsWithTimeSlots() async {
     await fetchToken();
-    final response = await HttpService.get(
-        ApiEndPoint.getDoctorsWithTimeSlots(clinicId: clinicId), token);
+    final response = await HttpService.get(ApiEndPoint.getDoctorsWithTimeSlots(clinicId: clinicId), token);
 
     if (response.statusCode == 200) {
       final data = response.data;
-      List<Map<String, dynamic>> doctorsList =
-          List<Map<String, dynamic>>.from(data);
+      List<Map<String, dynamic>> doctorsList = List<Map<String, dynamic>>.from(data);
       log(doctorsList.toString());
       return doctorsList;
     } else {

@@ -17,11 +17,11 @@ class Address {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['house'] = house;
-    data['street'] = street;
-    data['landmarks'] = landmarks;
-    data['city'] = city;
-    data['pincode'] = pincode;
+    data['house'] = house ?? '';
+    data['street'] = street ?? '';
+    data['landmarks'] = landmarks ?? '';
+    data['city'] = city ?? '';
+    data['pincode'] = pincode ?? '';
     return data;
   }
 }

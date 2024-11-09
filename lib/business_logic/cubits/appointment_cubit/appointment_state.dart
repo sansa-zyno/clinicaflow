@@ -5,19 +5,20 @@ class AppointmentState {
   final AppointmentStates state;
   List<Appointment>? appointments;
   int totalCount;
+  String? patientId;
 
-  AppointmentState(
-      {required this.state, this.totalCount = 0, this.appointments});
+  AppointmentState({required this.state, this.totalCount = 0, this.appointments, this.patientId});
 
   AppointmentState copyWith({
     AppointmentStates? state,
     List<Appointment>? appointments,
     int? totalCount,
+    String? patientId,
   }) {
     return AppointmentState(
-      state: state ?? this.state,
-      appointments: appointments ?? this.appointments,
-      totalCount: totalCount ?? this.totalCount,
-    );
+        state: state ?? this.state,
+        appointments: appointments ?? this.appointments,
+        totalCount: totalCount ?? this.totalCount,
+        patientId: patientId ?? this.patientId);
   }
 }

@@ -1,3 +1,4 @@
+import 'dart:developer' as dev;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -6,6 +7,7 @@ import 'package:healtether_clinic_app/Screens/AppointmentScreen/widgets/custom_t
 import 'package:healtether_clinic_app/Screens/DigitalScreensAll/symptoms_diagnosis/create_digital_prescription_screens.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/lab_test_cubit/lab_test_cubit.dart';
 import 'package:healtether_clinic_app/constants/app_constants.dart';
+import 'package:healtether_clinic_app/data_layer/models/appointment_models/appointment_model.dart';
 import 'package:healtether_clinic_app/data_layer/models/lab_tests/lab_tests.dart';
 import 'package:healtether_clinic_app/constants/constants.dart';
 import 'package:healtether_clinic_app/utils/enums/bloc_enums.dart';
@@ -14,13 +16,15 @@ import 'package:healtether_clinic_app/utils/helper_functions/log.dart';
 import 'package:healtether_clinic_app/widgets/buttons/my_selectable_container.dart';
 import 'package:healtether_clinic_app/widgets/components/dual_action_bottom_nav.dart';
 import 'package:healtether_clinic_app/widgets/components/my_search_bar.dart';
+import 'package:healtether_clinic_app/widgets/components/vitals_and_past_history_end_drawer.dart';
 import 'package:healtether_clinic_app/widgets/section_text.dart';
 import 'package:healtether_clinic_app/widgets/text_list_tile.dart';
 
 class LabInvestigationsScreen extends StatefulWidget {
-  final List<LabTest> selectedTests;
+  final Appointment appointment;
+  final List<LabTest>? selectedTests;
 
-  const LabInvestigationsScreen({Key? key, required this.selectedTests}) : super(key: key);
+  const LabInvestigationsScreen({Key? key, required this.appointment, this.selectedTests}) : super(key: key);
 
   @override
   State<LabInvestigationsScreen> createState() => _LabInvestigationsScreenState();
@@ -28,17 +32,18 @@ class LabInvestigationsScreen extends StatefulWidget {
 
 class _LabInvestigationsScreenState extends State<LabInvestigationsScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  bool hasNavigated = false;
   OverlayEntry? _overlayEntry;
   LayerLink layerLink = LayerLink();
 
   late List<LabTest> selectedTests;
-  late List<LabTest> recommendedTests;
+  //late List<LabTest> recommendedTests;
   late List<LabTest> frequentlySearchedTests;
 
   @override
   void initState() {
     super.initState();
-    selectedTests = List<LabTest>.from(widget.selectedTests);
+    selectedTests = List<LabTest>.from(widget.selectedTests ?? []);
     //context.read<LabTestCubit>().fetchRecommendedTests();
     context.read<LabTestCubit>().fetchFrequentlySearchedTests();
   }
@@ -93,7 +98,7 @@ class _LabInvestigationsScreenState extends State<LabInvestigationsScreen> {
                           buildActionButton(
                               text: "Done",
                               onTap: () {
-                                newTest = newTest.copyWith(note: [notes.text]);
+                                newTest = newTest.copyWith(note: notes.text);
 
                                 if (selectedTests.contains(newTest)) {
                                   int index = selectedTests.indexOf(newTest);
@@ -159,99 +164,125 @@ class _LabInvestigationsScreenState extends State<LabInvestigationsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      appBar: AppBar(
-        // leadingWidth: 30,
-        automaticallyImplyLeading: true,
-        title: Text(
-          AppText.digitalPrescription,
-          style: GoogleFonts.urbanist(
-            textStyle: const TextStyle(
-              fontSize: 20,
-              fontFamily: 'Urbanist',
-              fontWeight: FontWeight.w500,
-              height: 1.25,
-              color: AppColors.lightBlueColor,
+    return PopScope(
+      onPopInvoked: (x) {
+        context.read<LabTestCubit>().getSavedLabTests(appointmentId: widget.appointment.id!);
+        context.pop();
+      },
+      canPop: false,
+      child: Scaffold(
+        key: _scaffoldKey,
+        appBar: AppBar(
+          // leadingWidth: 30,
+          automaticallyImplyLeading: true,
+          title: Text(
+            AppText.digitalPrescription,
+            style: GoogleFonts.urbanist(
+              textStyle: const TextStyle(
+                fontSize: 20,
+                fontFamily: 'Urbanist',
+                fontWeight: FontWeight.w500,
+                height: 1.25,
+                color: AppColors.lightBlueColor,
+              ),
             ),
           ),
+          backgroundColor: AppColors.whitColor,
+          actions: [
+            IconButton(
+              onPressed: _toggleDrawer,
+              icon: const Icon(Icons.menu),
+            ),
+          ],
         ),
-        backgroundColor: AppColors.whitColor,
-        actions: [
-          IconButton(
-            onPressed: _toggleDrawer,
-            icon: const Icon(Icons.menu),
-          ),
-        ],
-      ),
-      //endDrawer: const VitalsAndPastHistoryEndDrawer(),
-      body: SingleChildScrollView(
-        child: BlocBuilder<LabTestCubit, LabTestState>(builder: (context, state) {
-          return Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 16.0, right: 16, top: 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 15),
-
-                    //? HEADER -> LAB INVESTIGATION
-                    const SectionText(
-                      "lab investigation",
-                      underlineWidth: double.maxFinite,
-                      underlineColor: AppColors.eerieBlack,
-                    ).pSymmetric(horizontal: 8),
-
-                    const SizedBox(height: 10),
-
-                    //? SEARCH BAR
-                    CompositedTransformTarget(
-                      link: layerLink,
-                      child: MySearchBar(
-                          searchController: searchController,
-                          fillColor: AppColors.whiteSmoke,
-                          hintText: "Search by tests or domain",
-                          onChanged: (value) {
-                            context.read<LabTestCubit>().searchTests(value);
-                            if (_overlayEntry == null) {
-                              _showOverlay(context, buildTypingView());
-                            } else {
-                              _removeOverlay();
-                              _showOverlay(context, buildTypingView());
-                            }
-                          },
-                          focusNode: focusNode),
-                    ),
-
-                    Text("${selectedTests.length} selected",
-                            style: GoogleFonts.roboto(
-                                textStyle: const TextStyle(color: AppColors.grey2, fontWeight: FontWeight.w500, fontSize: 13, height: 15.6 / 13)))
-                        .pOnly(top: 4, bottom: 8),
-
-                    buildNotTypingView(state)
-                  ],
-                ),
-              ),
-            ],
-          );
-        }),
-      ),
-      bottomNavigationBar: selectedTests.isNotEmpty
-          ? DualActionBottomNav(
-              text: "Clear",
-              focusedText: "Save",
-              onPressed: () {
-                setState(() {
-                  selectedTests.clear();
-                });
-              },
-              onFocusedPressed: () {
-                log("Commit selected tests");
-
+        endDrawer: VitalsAndPastHistoryEndDrawer(appointment: widget.appointment),
+        body: SingleChildScrollView(
+          child: BlocListener<LabTestCubit, LabTestState>(
+            listener: (context, state) {
+              if (state.state == LabTestStates.labTestsPosted && !hasNavigated) {
+                dev.log(state.state.toString());
+                hasNavigated = true;
+                context.read<LabTestCubit>().getSavedLabTests(appointmentId: widget.appointment.id!);
                 context.pop();
+              }
+            },
+            child: BlocBuilder<LabTestCubit, LabTestState>(builder: (context, state) {
+              return Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16.0, right: 16, top: 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 15),
+
+                        //? HEADER -> LAB INVESTIGATION
+                        const SectionText(
+                          "lab investigation",
+                          underlineWidth: double.maxFinite,
+                          underlineColor: AppColors.eerieBlack,
+                        ).pSymmetric(horizontal: 8),
+
+                        const SizedBox(height: 10),
+
+                        //? SEARCH BAR
+                        CompositedTransformTarget(
+                          link: layerLink,
+                          child: MySearchBar(
+                              searchController: searchController,
+                              fillColor: AppColors.whiteSmoke,
+                              hintText: "Search by tests or domain",
+                              onChanged: (value) {
+                                context.read<LabTestCubit>().searchTests(value);
+                                if (_overlayEntry == null) {
+                                  _showOverlay(context, buildTypingView());
+                                } else {
+                                  _removeOverlay();
+                                  _showOverlay(context, buildTypingView());
+                                }
+                              },
+                              focusNode: focusNode),
+                        ),
+
+                        Text("${selectedTests.length} selected",
+                                style: GoogleFonts.roboto(
+                                    textStyle: const TextStyle(color: AppColors.grey2, fontWeight: FontWeight.w500, fontSize: 13, height: 15.6 / 13)))
+                            .pOnly(top: 4, bottom: 8),
+
+                        buildNotTypingView(state)
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            }),
+          ),
+        ),
+        bottomNavigationBar: selectedTests.isNotEmpty
+            ? BlocBuilder<LabTestCubit, LabTestState>(builder: (context, state) {
+                if (state.state == LabTestStates.postingLabTests) {
+                  return const SizedBox(height: 100, child: Center(child: CircularProgressIndicator()));
+                } else {
+                  return DualActionBottomNav(
+                      text: "Clear All",
+                      focusedText: "Save",
+                      onPressed: () {
+                        setState(() {
+                          selectedTests.clear();
+                        });
+                      },
+                      onFocusedPressed: () {
+                        dev.log(selectedTests.map((e) => e.toMap()).toList().toString());
+                        hasNavigated = false;
+                        context.read<LabTestCubit>().postLabTest(
+                            patientId: widget.appointment.patientId!,
+                            appointmentId: widget.appointment.id!,
+                            labTest: selectedTests.map((e) => e.toMap()).toList());
+                      });
+                }
               })
-          : null,
+            : null,
+      ),
     );
   }
 

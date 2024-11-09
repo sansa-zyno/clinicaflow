@@ -11,69 +11,6 @@ class DrugPrescriptionCubit extends Cubit<DrugPrescriptionState> {
 
   DrugPrescriptionService service = DrugPrescriptionService();
 
-  void saveDrug({required String patientId, required Drug drug}) {
-    final Map<String, List<Drug>> savedDrugs = state.savedDrugs ?? {};
-
-    emit(state.copyWith(state: DrugPrescriptionStates.savingDrugs));
-
-    if (savedDrugs.isEmpty) {
-      savedDrugs.addAll({
-        patientId: [drug]
-      });
-    } else {
-      if (savedDrugs.containsKey(patientId)) {
-        savedDrugs[patientId] = [...savedDrugs[patientId]!, drug];
-      } else {
-        savedDrugs.addAll({
-          patientId: [drug]
-        });
-      }
-    }
-
-    emit(state.copyWith(state: DrugPrescriptionStates.drugsSaved, savedDrugs: savedDrugs));
-  }
-
-  List<Drug>? getSavedDrugs(patientId) {
-    return state.savedDrugs?[patientId];
-  }
-
-  void removeSavedDrug(patientId, Drug drug) {
-    emit(state.copyWith(state: DrugPrescriptionStates.removingDrug));
-    List<Drug> drugs = state.savedDrugs?[patientId] ?? [];
-
-    Map<String, List<Drug>> newSavedDrugs = state.savedDrugs ?? {};
-
-    drugs.remove(drug);
-    newSavedDrugs[patientId] = drugs;
-
-    emit(state.copyWith(
-      state: DrugPrescriptionStates.drugRemoved,
-      savedDrugs: newSavedDrugs,
-    ));
-  }
-
-  void clearSavedDrugs(patientId) {
-    emit(state.copyWith(state: DrugPrescriptionStates.clearingSavedDrugs));
-    if (state.savedDrugs?.containsKey(patientId) == true) {
-      state.savedDrugs?[patientId] = [];
-    }
-
-    emit(state.copyWith(state: DrugPrescriptionStates.savedDrugsCleared));
-  }
-
-  /*void searchDrugs(String query) {
-    emit(state.copyWith(state: DrugPrescriptionStates.fetchingDrugs));
-
-    final List<Drug> drugs = SampleObjects.drugs.where((drug) {
-      final String modifiedQuery = '${drug.name} ${drug.contents}';
-      final regex = RegExp(query, caseSensitive: false);
-
-      return regex.hasMatch(modifiedQuery);
-    }).toList();
-
-    emit(state.copyWith(state: DrugPrescriptionStates.drugsFetched, drugs: drugs));
-  }*/
-
   void fetchFrequentlySearchedDrugs() async {
     emit(state.copyWith(state: DrugPrescriptionStates.fetchingFrequentlySearchedDrugs));
 
@@ -82,8 +19,7 @@ class DrugPrescriptionCubit extends Cubit<DrugPrescriptionState> {
 
       emit(state.copyWith(state: DrugPrescriptionStates.frequentlySearchedDrugsFetched, frequentlySearchedDrugs: drugs));
     } catch (error) {
-      log('Failed to load appointments: $error');
-
+      log('Failed to load drugs: $error');
       emit(state.copyWith(state: DrugPrescriptionStates.frequentlySearchedDrugsFailed));
     }
   }
@@ -95,6 +31,33 @@ class DrugPrescriptionCubit extends Cubit<DrugPrescriptionState> {
       emit(state.copyWith(state: DrugPrescriptionStates.searchingForDrugsSuccess, drugs: drugs));
     } catch (e) {
       emit(state.copyWith(state: DrugPrescriptionStates.searchingForDrugsFailed));
+    }
+  }
+
+  postDrugPrescription({required String patientId, required String appointmentId, required List drugs}) async {
+    emit(state.copyWith(state: DrugPrescriptionStates.postingDrugPrescription));
+    try {
+      String message = await service.postDrugPrescription(patientId: patientId, appointmentId: appointmentId, drugs: drugs);
+      emit(state.copyWith(
+        state: DrugPrescriptionStates.drugPrescriptionPosted,
+      ));
+    } catch (error) {
+      log('Failed to save drug Prescriptions: $error');
+      emit(state.copyWith(state: DrugPrescriptionStates.postingDrugPrescriptionFailed));
+    }
+  }
+
+  getSavedDrugPrescription({required String appointmentId}) async {
+    emit(state.copyWith(state: DrugPrescriptionStates.fetchingSavedDrugPrescription));
+    try {
+      List<Drug>? result = await service.getSavedDrugPrescription(appointmentId: appointmentId);
+      emit(state.copyWith(
+        state: DrugPrescriptionStates.savedDrugPrescriptionFetched,
+        savedDrugs: result,
+      ));
+    } catch (error) {
+      log('Failed to fetch saved Drugs: $error');
+      emit(state.copyWith(state: DrugPrescriptionStates.savedDrugPrescriptionFailed));
     }
   }
 }

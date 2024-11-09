@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:healtether_clinic_app/Screens/AppointmentScreen/widgets/cancel_appoinments.dart';
 import 'package:healtether_clinic_app/Screens/AppointmentScreen/widgets/reschedule_appoinment.dart';
@@ -357,4 +357,4 @@ class _PermissionsSettingsState extends State<PermissionsSettings> {
       ),
     );
   }
-}
+}*/

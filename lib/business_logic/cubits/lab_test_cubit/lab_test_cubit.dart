@@ -32,7 +32,7 @@ class LabTestCubit extends Cubit<LabTestState> {
 
       emit(state.copyWith(state: LabTestStates.frequentlySearchedTestsFetched, frequentlySearchedTests: labTests));
     } catch (error) {
-      log('Failed to load appointments: $error');
+      log('Failed to load tests: $error');
 
       emit(state.copyWith(state: LabTestStates.frequentlySearchedTestsFailed));
     }
@@ -51,6 +51,34 @@ class LabTestCubit extends Cubit<LabTestState> {
           }).toList()));
     } catch (e) {
       emit(state.copyWith(state: LabTestStates.searchingForTestsFailed));
+    }
+  }
+
+  postLabTest({required String patientId, required String appointmentId, required List labTest}) async {
+    emit(state.copyWith(state: LabTestStates.postingLabTests));
+    try {
+      String message = await service.postLabTest(patientId: patientId, appointmentId: appointmentId, labTests: labTest);
+      emit(state.copyWith(
+        state: LabTestStates.labTestsPosted,
+      ));
+    } catch (error) {
+      log('Failed to load ddxPredictions: $error');
+
+      emit(state.copyWith(state: LabTestStates.postingLabTestsFailed));
+    }
+  }
+
+  getSavedLabTests({required String appointmentId}) async {
+    emit(state.copyWith(state: LabTestStates.fetchingSavedTests));
+    try {
+      List<LabTest>? result = await service.getSavedLabTests(appointmentId: appointmentId);
+      emit(state.copyWith(
+        state: LabTestStates.savedTestsFetched,
+        savedTests: result,
+      ));
+    } catch (error) {
+      log('Failed to fetch saved Tests: $error');
+      emit(state.copyWith(state: LabTestStates.savedTestsFailed));
     }
   }
 }

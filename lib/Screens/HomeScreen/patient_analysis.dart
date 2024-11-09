@@ -49,8 +49,7 @@ class _PatientAnalysisState extends State<PatientAnalysis> {
   ];
   final List<String> dateOptions = ['Today', 'Monthly', 'Weekly', 'Custom'];
   String containerText = 'kimjones@ybl';
-  TextEditingController additionalAnotherNumberController =
-      TextEditingController();
+  TextEditingController additionalAnotherNumberController = TextEditingController();
 
   bool showAnotherNumber = false;
 
@@ -93,8 +92,7 @@ class _PatientAnalysisState extends State<PatientAnalysis> {
       "startDate": formatDate(
         DateTime(DateTime.now().year, DateTime.now().day, 6),
       ),
-      "endDate":
-          formatDate(DateTime(DateTime.now().year, DateTime.now().day, 22)),
+      "endDate": formatDate(DateTime(DateTime.now().year, DateTime.now().day, 22)),
       "clinicId": "662ca0a41a2431e16c41ebaa"
     };
     Map<String, String> monthlyBody = {
@@ -114,8 +112,7 @@ class _PatientAnalysisState extends State<PatientAnalysis> {
     if (selectedDate == 'Weekly') finalBody = weeklyBody;
     if (selectedDate == 'Custom') finalBody = customBody;
     BlocProvider.of<PatientRatioCubit>(context).fetch(finalBody!, selectedVal);
-    BlocProvider.of<PatientGenderRatioCubit>(context)
-        .fetch(finalBody, selectedVal);
+    BlocProvider.of<PatientGenderRatioCubit>(context).fetch(finalBody, selectedVal);
     BlocProvider.of<AgeRatioCubit>(context).fetch(finalBody);
     return Scaffold(
       appBar: AppBar(
@@ -199,6 +196,7 @@ class _PatientAnalysisState extends State<PatientAnalysis> {
           height: 48,
           child: ListView(
             scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 6),
             children: [
               DateCards(
                 isSelected: selectedDate == 'Today',
@@ -233,10 +231,7 @@ class _PatientAnalysisState extends State<PatientAnalysis> {
               DateCards(
                 isSelected: selectedDate == 'Custom',
                 onTap: () async {
-                  var dates = await showDateRangePicker(
-                      context: context,
-                      firstDate: DateTime(2024),
-                      lastDate: DateTime.now());
+                  var dates = await showDateRangePicker(context: context, firstDate: DateTime(2024), lastDate: DateTime.now());
                   setState(() {
                     _firstDate = dates!.start;
                     _lastDate = dates.end;
@@ -250,8 +245,7 @@ class _PatientAnalysisState extends State<PatientAnalysis> {
           ),
         ),
         const SizedBox(height: 44),
-        BlocBuilder<PatientRatioCubit, PatientRatioState>(
-            builder: (context, state) {
+        BlocBuilder<PatientRatioCubit, PatientRatioState>(builder: (context, state) {
           if (state is PatinetRatioLoadingState) {
             return const Center(
                 // child: CircularProgressIndicator(
@@ -283,10 +277,7 @@ class _PatientAnalysisState extends State<PatientAnalysis> {
             paddingvalue: 0,
             degree: 100,
             text: 'Patients Ratio',
-            dataMap: {
-              'Repeated patients': repeatedPatients,
-              'New patients': newPatients
-            },
+            dataMap: {'Repeated patients': repeatedPatients, 'New patients': newPatients},
             colorList: const [
               Color(0xff85F8D5),
               Color(0xff205C4C),
@@ -294,8 +285,7 @@ class _PatientAnalysisState extends State<PatientAnalysis> {
           );
         }),
         const SizedBox(height: 28),
-        BlocBuilder<PatientGenderRatioCubit, PatientGenderRatioState>(
-            builder: (context, state) {
+        BlocBuilder<PatientGenderRatioCubit, PatientGenderRatioState>(builder: (context, state) {
           if (state is PatinetGenderRatioLoadingState) {
             return const Center(
                 // child: CircularProgressIndicator(
@@ -313,11 +303,7 @@ class _PatientAnalysisState extends State<PatientAnalysis> {
             paddingvalue: 60,
             degree: 100,
             text: 'Gender Ratio',
-            dataMap: {
-              'Other': data![2].toDouble(),
-              'Female': data[1].toDouble(),
-              'Male': data[0].toDouble()
-            },
+            dataMap: {'Other': data![2].toDouble(), 'Female': data[1].toDouble(), 'Male': data[0].toDouble()},
             colorList: const [
               Color(0xffe205C4C),
               Color(0xff85F8D5),
@@ -423,11 +409,7 @@ class _PatientAnalysisState extends State<PatientAnalysis> {
                     60,
                     0),
                 buildPieChartCard(
-                    'Appointments booking Analysis',
-                    state.appointmentsBookingData,
-                    const [Color(0xff85F8D5), Color(0xff205C4C)],
-                    70,
-                    0),
+                    'Appointments booking Analysis', state.appointmentsBookingData, const [Color(0xff85F8D5), Color(0xff205C4C)], 70, 0),
                 buildPieChartCard(
                     'Appointments Analysis',
                     state.appointmentsAnalysisData,
@@ -530,12 +512,10 @@ class _PatientAnalysisState extends State<PatientAnalysis> {
                 color: const Color(0xffF5F5F5),
                 width: 220,
                 child: Padding(
-                  padding: const EdgeInsets.only(
-                      top: 18, bottom: 10, left: 10, right: 30),
+                  padding: const EdgeInsets.only(top: 18, bottom: 10, left: 10, right: 30),
                   child: Text(
                     containerText,
-                    style: GoogleFonts.montserrat(
-                        color: Colors.black, fontWeight: FontWeight.w500),
+                    style: GoogleFonts.montserrat(color: Colors.black, fontWeight: FontWeight.w500),
                   ),
                 ),
               ),
@@ -599,11 +579,11 @@ class _PatientAnalysisState extends State<PatientAnalysis> {
                         children: [
                           Icon(
                             Icons.add,
-                            color: AppColors.blueColor,
+                            color: AppColors.blueViolet,
                           ),
                           Text(
                             'Add another number',
-                            style: TextStyle(color: AppColors.blueColor),
+                            style: TextStyle(color: AppColors.blueViolet),
                           ),
                         ],
                       ),
@@ -612,7 +592,7 @@ class _PatientAnalysisState extends State<PatientAnalysis> {
                         child: Container(
                           height: 2,
                           width: screenSize.width * 0.5,
-                          color: AppColors.blueColor,
+                          color: AppColors.blueViolet,
                         ),
                       ),
                     ],
@@ -644,11 +624,7 @@ class _PatientAnalysisState extends State<PatientAnalysis> {
             degree: -120,
             text: 'Mode of payments',
             dataMap: {'Cash': 10, 'Card': 32, 'UPI': 58},
-            colorList: [
-              Color(0xff205C4C),
-              Color(0xff85F8D5),
-              Color(0xff44B092)
-            ],
+            colorList: [Color(0xff205C4C), Color(0xff85F8D5), Color(0xff44B092)],
           ),
           const SizedBox(
             height: 28,
@@ -678,6 +654,7 @@ class _PatientAnalysisState extends State<PatientAnalysis> {
     return SizedBox(
       height: 48,
       child: ListView.builder(
+        padding: const EdgeInsets.symmetric(horizontal: 6),
         scrollDirection: Axis.horizontal,
         itemCount: dateOptions.length,
         itemBuilder: (context, index) {
@@ -696,8 +673,7 @@ class _PatientAnalysisState extends State<PatientAnalysis> {
     );
   }
 
-  Widget buildPieChartCard(String text, Map<String, double> dataMap,
-      List<Color> colorList, double degree, double paddingValue) {
+  Widget buildPieChartCard(String text, Map<String, double> dataMap, List<Color> colorList, double degree, double paddingValue) {
     if (dataMap.isNotEmpty) {
       return Column(
         children: [
@@ -716,8 +692,7 @@ class _PatientAnalysisState extends State<PatientAnalysis> {
     }
   }
 
-  Widget buildBarChartCard(String text, Map<String, double> dataMap,
-      List<Color> colorList, double paddingValue) {
+  Widget buildBarChartCard(String text, Map<String, double> dataMap, List<Color> colorList, double paddingValue) {
     if (dataMap.isNotEmpty) {
       return Column(
         children: [

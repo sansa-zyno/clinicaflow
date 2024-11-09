@@ -23,17 +23,14 @@ class BirthDateContainer extends StatelessWidget {
         color: const Color(0xffF5F5F5),
         width: MediaQuery.of(context).size.width * width,
         child: Padding(
-          padding:
-              const EdgeInsets.only(top: 15, bottom: 10, left: 10, right: 10),
+          padding: const EdgeInsets.only(top: 15, bottom: 10, left: 10, right: 10),
           child: Row(
             children: [
               Expanded(
                 child: Text(
-                  selectedDate != null
-                      ? '${selectedDate!.year}-${selectedDate!.month}-${selectedDate!.day}'
-                      : text,
+                  selectedDate != null ? '${selectedDate!.year}-${selectedDate!.month}-${selectedDate!.day}' : text,
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: 14,
                     fontWeight: FontWeight.w500,
                     color: selectedDate != null ? Colors.black : Colors.grey,
                   ),
@@ -78,17 +75,14 @@ class BirthDate extends StatelessWidget {
         color: const Color(0xffF5F5F5),
         width: MediaQuery.of(context).size.width * width,
         child: Padding(
-          padding:
-              const EdgeInsets.only(top: 15, bottom: 10, left: 10, right: 10),
+          padding: const EdgeInsets.only(top: 15, bottom: 10, left: 10, right: 10),
           child: Row(
             children: [
               Expanded(
                 child: Text(
-                  selectedDate != null
-                      ? '${selectedDate!.day}-${selectedDate!.month}-${selectedDate!.year}'
-                      : text,
+                  selectedDate != null ? '${selectedDate!.day}-${selectedDate!.month}-${selectedDate!.year}' : text,
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: 14,
                     fontWeight: FontWeight.w500,
                     color: selectedDate != null ? Colors.black : Colors.grey,
                   ),

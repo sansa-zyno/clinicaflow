@@ -1,7 +1,5 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:healtether_clinic_app/constants/app_colors.dart';
@@ -35,7 +33,6 @@ class _WelcomeState extends State<Welcome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15),
         child: Column(
@@ -50,10 +47,7 @@ class _WelcomeState extends State<Welcome> {
                 Text(
                   'Welcome To Our Community',
                   style: GoogleFonts.urbanist(
-                    textStyle: const TextStyle(
-                        fontSize: 21,
-                        fontWeight: FontWeight.w400,
-                        color: AppColors.eerieBlack),
+                    textStyle: const TextStyle(fontSize: 21, fontWeight: FontWeight.w400, color: AppColors.eerieBlack),
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -63,10 +57,7 @@ class _WelcomeState extends State<Welcome> {
               child: Text(
                 'We need some details to get you sign up!',
                 style: GoogleFonts.roboto(
-                  textStyle: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: AppColors.lightGrey8),
+                  textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColors.lightGrey8),
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -75,10 +66,7 @@ class _WelcomeState extends State<Welcome> {
               child: Text(
                 'This will take just a moment',
                 style: GoogleFonts.roboto(
-                  textStyle: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: AppColors.lightGrey8),
+                  textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColors.lightGrey8),
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -89,10 +77,7 @@ class _WelcomeState extends State<Welcome> {
             Text(
               'Select Clinic *',
               style: GoogleFonts.roboto(
-                textStyle: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: AppColors.grey4),
+                textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColors.grey4),
               ),
               textAlign: TextAlign.center,
             ),
@@ -102,8 +87,7 @@ class _WelcomeState extends State<Welcome> {
             InkWell(
               onTap: () {
                 if (userModel != null) {
-                  showSwitchClinicsBottomSheet(
-                      context, userModel!.linkedClinics);
+                  showSwitchClinicsBottomSheet(context, userModel!.linkedClinics);
                 }
               },
               child: Container(
@@ -116,15 +100,11 @@ class _WelcomeState extends State<Welcome> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        selectedClinic == null
-                            ? "Empty"
-                            : selectedClinic!['clinicName'],
+                        selectedClinic == null ? "Empty" : selectedClinic!['clinicName'],
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
-                          color: selectedClinic == null
-                              ? Colors.grey
-                              : Colors.black,
+                          color: selectedClinic == null ? Colors.grey : Colors.black,
                         ),
                       ),
                       const Icon(Icons.keyboard_arrow_down_outlined)
@@ -139,23 +119,22 @@ class _WelcomeState extends State<Welcome> {
             Container(
               height: 52,
               decoration: BoxDecoration(
-                color: const Color(0xFF32856E),
+                color: AppColors.darkTeal,
                 borderRadius: BorderRadius.circular(7),
               ),
               child: Center(
                 child: TextButton(
                   onPressed: () async {
                     if (selectedClinic != null) {
-                      await SharedPrefService.setClinicId(
-                          selectedClinic!['_id']);
+                      await SharedPrefService.setClinicId(selectedClinic!['_id']);
                       log(selectedClinic!['_id']);
                       context.goNamed(AppRoutes.homePageView.name);
                     }
                   },
-                  child: Text(
+                  child: const Text(
                     'Let\'s go',
                     style: TextStyle(
-                      color: const Color(0xFFFFFFFF),
+                      color: Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
                     ),
@@ -190,9 +169,7 @@ class _WelcomeState extends State<Welcome> {
               Container(
                 height: 2,
                 width: 55,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: const Color(0xFF52CFAC)),
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), color: AppColors.greenLightColor),
               ),
               const SizedBox(
                 height: 9,
@@ -209,11 +186,12 @@ class _WelcomeState extends State<Welcome> {
                           context.pop();
                         },
                         child: Container(
+                          height: 52,
                           padding: const EdgeInsets.only(left: 8.0),
                           margin: const EdgeInsets.only(bottom: 8.0),
                           width: double.infinity,
                           decoration: BoxDecoration(
-                            color: AppColors.white1Color,
+                            color: AppColors.whiteSmoke,
                             borderRadius: BorderRadius.circular(2),
                           ),
                           child: Row(
@@ -226,19 +204,14 @@ class _WelcomeState extends State<Welcome> {
                                     const CircleAvatar(
                                       backgroundColor: Colors.white,
                                       radius: 20,
-                                      backgroundImage: AssetImage(
-                                          'assets/homeimages/image 6 (3).png'),
+                                      backgroundImage: AssetImage('assets/homeimages/image 6 (3).png'),
                                     ),
                                     const SizedBox(
                                       width: 5,
                                     ),
                                     Text(
-                                      linkedClinics[index]['clinic']
-                                          ['clinicName'],
-                                      style: GoogleFonts.montserrat(
-                                          color: Colors.black,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500),
+                                      linkedClinics[index]['clinic']?['clinicName'] ?? '',
+                                      style: GoogleFonts.montserrat(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w500),
                                     ),
                                   ],
                                 ),
