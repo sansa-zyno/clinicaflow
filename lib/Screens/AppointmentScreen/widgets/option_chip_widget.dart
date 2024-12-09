@@ -4,13 +4,13 @@ import 'package:healtether_clinic_app/Screens/DigitalScreensAll/vitals_screen/ot
 Widget buildOptionChip(BuildContext context, String option) {
   return GestureDetector(
     onTap: () {
-      Navigator.push(
+      /* Navigator.push(
         context,
         MaterialPageRoute(
             builder: (context) => const OtherVitalsScreen(
                   appointmentId: '',
                 )),
-      );
+      );*/
     },
     child: Container(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),

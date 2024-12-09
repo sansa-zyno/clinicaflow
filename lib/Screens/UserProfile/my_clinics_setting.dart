@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:healtether_clinic_app/constants/api.dart';
 import 'package:healtether_clinic_app/data_layer/models/user_model/user_model.dart';
 import 'package:healtether_clinic_app/data_layer/services/shared_preferences_service.dart';
 import 'package:healtether_clinic_app/utils/enums/route_enums.dart';
@@ -35,7 +36,7 @@ class _MyClinicsSettingState extends State<MyClinicsSetting> with AppBarMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(context, title: "Clinic Settings", automaticallyImplyLeading: true, showDefaultActions: false),
+      appBar: buildAppBar(context, title: "Clinic Settings", showDefaultActions: false),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15),
         child: Column(
@@ -84,20 +85,32 @@ class _MyClinicsSettingState extends State<MyClinicsSetting> with AppBarMixin {
                                   children: [
                                     Row(
                                       children: [
-                                        const CircleAvatar(
+                                        CircleAvatar(
                                           backgroundColor: Colors.white,
                                           radius: 20,
-                                          backgroundImage: AssetImage('assets/homeimages/image 6 (3).png'),
+                                          child: (userModel?.linkedClinics[index]['clinic']?['logo'] ?? '') == ''
+                                              ? Image.asset(
+                                                  'assets/homeimages/image 6 (3).png',
+                                                  height: 100,
+                                                  width: 100,
+                                                  fit: BoxFit.cover,
+                                                )
+                                              : Image.network(
+                                                  "${ApiEndPoint.logoBaseUrl}${userModel?.linkedClinics[index]['clinic']?['logo']}",
+                                                  height: 100,
+                                                  width: 100,
+                                                ),
+                                          //backgroundImage: AssetImage('assets/homeimages/image 6 (3).png'),
                                         ),
                                         SizedBox(
                                           width: 8,
                                         ),
                                         Text(
-                                          userModel?.linkedClinics[index]['clinic']['clinicName'] ?? '',
+                                          userModel?.linkedClinics[index]['clinic']?['clinicName'] ?? '',
                                           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.eerieBlack),
                                         ),
                                         Spacer(),
-                                        (userModel?.linkedClinics[index]['clinic']['_id'] ?? -1) == activeClinicId
+                                        (userModel?.linkedClinics[index]['clinic']?['_id'] ?? -1) == activeClinicId
                                             ? Container(
                                                 padding: EdgeInsets.all(5),
                                                 decoration: BoxDecoration(color: AppColors.whiteSmoke3, borderRadius: BorderRadius.circular(5)),

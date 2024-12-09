@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:healtether_clinic_app/Screens/DigitalScreensAll/vitals_screen/smoking_screen.dart';
 import 'package:healtether_clinic_app/Screens/DigitalScreensAll/vitals_screen/alcohol_screen.dart';
-import 'package:healtether_clinic_app/Screens/DigitalScreensAll/save_past_history_screen.dart';
 import 'package:healtether_clinic_app/constants/app_colors.dart';
 import 'aerobic_screen.dart';
 

@@ -25,25 +25,6 @@ class Allergy {
     this.createdAt,
     this.updatedAt,
   });
-  //{
-  //      "_id": "66b4aef576b4a71047281bf9",
-  //      "name": "Egg Allergy",
-  //      "appointment_id": "612341234123412341234156",
-  //      "user_id": "612341234123412341234156",
-  //      "clinic_id": "612341234123412341234156",
-  //      "is_deleted": false,
-  //      "created_by": {
-  //          "id": "662ca0ab1a2431e16c41ebae",
-  //          "name": "Venkatesh Raja"
-  //      },
-  //      "updated_by": {
-  //          "id": "662ca0ab1a2431e16c41ebae",
-  //          "name": "Venkatesh Raja"
-  //      },
-  //      "createdAt": "2024-08-08T11:41:41.582Z",
-  //      "updatedAt": "2024-08-08T11:41:41.582Z",
-  //      "__v": 0
-  //  },
 
   Allergy copyWith({
     String? id,

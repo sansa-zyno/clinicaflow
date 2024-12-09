@@ -16,12 +16,12 @@ class PatientResponse {
     totalCount = json['totalCount'];
   }
 
-  Map<String, dynamic> toJson() {
+  /*Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
     data['totalCount'] = totalCount;
     return data;
-  }
+  }*/
 }

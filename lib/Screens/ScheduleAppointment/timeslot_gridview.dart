@@ -27,17 +27,10 @@ class _TimeSlotGridViewState extends State<TimeSlotGridView> {
   //getting one of the availableTimeSlots
   Map<String, dynamic> filterAppointments(int i) {
     if (widget.availableTimeSlots != null) {
-      List<TimeSlot> res = List<Map<String, dynamic>>.from(
-              widget.availableTimeSlots![i]['timeSlot'])
-          .map((e) => TimeSlot.fromJson(jsonEncode(e)))
-          .toList();
-      res = res
-          .where((element) => element.start != null && element.finish != null)
-          .toList();
-      return {
-        "_duration": widget.availableTimeSlots![i]['slotDuration'].toString(),
-        "_timeSlots": res
-      };
+      List<TimeSlot> res =
+          List<Map<String, dynamic>>.from(widget.availableTimeSlots![i]['timeSlot']).map((e) => TimeSlot.fromJson(jsonEncode(e))).toList();
+      res = res.where((element) => element.start != null && element.finish != null).toList();
+      return {"_duration": widget.availableTimeSlots![i]['slotDuration'].toString(), "_timeSlots": res};
     } else {
       return {"_duration": '', "_timeSlots": []};
     }
@@ -83,8 +76,7 @@ class _TimeSlotGridViewState extends State<TimeSlotGridView> {
       }
       log(dayText);
       for (int i = 0; i < widget.availableTimeSlots!.length; i++) {
-        if ((widget.availableTimeSlots![i]['weekDay'] as List)
-            .contains(dayText)) {
+        if ((widget.availableTimeSlots![i]['weekDay'] as List).contains(dayText)) {
           appointmentIndex = i;
           timeSlots = generateTimeSlots(appointmentIndex, timeSlotTitle);
         }
@@ -106,8 +98,7 @@ class _TimeSlotGridViewState extends State<TimeSlotGridView> {
                       timeSlotTitle = timeSlotTitle - 1;
                       if (timeSlotTitle >= 0) {
                         log(timeSlots.toString());
-                        timeSlots =
-                            generateTimeSlots(appointmentIndex, timeSlotTitle);
+                        timeSlots = generateTimeSlots(appointmentIndex, timeSlotTitle);
                         //context.pop();
                         //showTimeSlot();
                         setState(() {});
@@ -121,17 +112,12 @@ class _TimeSlotGridViewState extends State<TimeSlotGridView> {
               Text('Slot ${timeSlotTitle + 1}'),
               InkWell(
                 onTap: () {
-                  if (timeSlotTitle <
-                      filterAppointments(appointmentIndex)['_timeSlots']
-                          .length) {
+                  if (timeSlotTitle < filterAppointments(appointmentIndex)['_timeSlots'].length) {
                     timeSlotTitle = timeSlotTitle + 1;
-                    if (timeSlotTitle <
-                        filterAppointments(appointmentIndex)['_timeSlots']
-                            .length) {
+                    if (timeSlotTitle < filterAppointments(appointmentIndex)['_timeSlots'].length) {
                       log(timeSlots.toString());
                       log(timeSlotTitle.toString());
-                      timeSlots =
-                          generateTimeSlots(appointmentIndex, timeSlotTitle);
+                      timeSlots = generateTimeSlots(appointmentIndex, timeSlotTitle);
                       setState(() {});
                       //context.pop();
                       //showTimeSlot();
@@ -155,10 +141,7 @@ class _TimeSlotGridViewState extends State<TimeSlotGridView> {
               child: GridView.builder(
                   itemCount: timeSlots.length,
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 5.0,
-                      crossAxisSpacing: 15,
-                      mainAxisSpacing: 12),
+                      crossAxisCount: 2, childAspectRatio: 5.0, crossAxisSpacing: 15, mainAxisSpacing: 12),
                   itemBuilder: (ctx, index) => GestureDetector(
                         onTap: () {
                           idx = index;
@@ -168,8 +151,7 @@ class _TimeSlotGridViewState extends State<TimeSlotGridView> {
                         },
                         child: Container(
                           decoration: BoxDecoration(
-                              color:
-                                  idx == index ? const Color(0xff198E79) : null,
+                              color: idx == index ? const Color(0xff198E79) : null,
                               border: Border.all(color: Color(0xffE1E1E1)),
                               borderRadius: BorderRadius.circular(8)),
                           child: Center(
@@ -178,8 +160,7 @@ class _TimeSlotGridViewState extends State<TimeSlotGridView> {
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
-                                color:
-                                    idx == index ? Colors.white : Colors.black,
+                                color: idx == index ? Colors.white : Colors.black,
                               ),
                             ),
                           ),
@@ -194,50 +175,66 @@ class _TimeSlotGridViewState extends State<TimeSlotGridView> {
 
   List<String> generateTimeSlots(int appointmentIndex, int timeSlotIndex) {
     List<String> timeSlots = [];
-    if (filterAppointments(appointmentIndex)['_timeSlots'].isNotEmpty &&
-        filterAppointments(appointmentIndex)['_duration'].isNotEmpty) {
-      String startTimeText = filterAppointments(appointmentIndex)['_timeSlots']
-                  [timeSlotIndex]
-              .start
-              ?.format(context) ??
-          '';
-      String endTimeText = filterAppointments(appointmentIndex)['_timeSlots']
-                  [timeSlotIndex]
-              .finish
-              ?.format(context) ??
-          '';
-      int interval =
-          int.parse(filterAppointments(appointmentIndex)['_duration']);
+    if ((filterAppointments(appointmentIndex)['_timeSlots'] as List<TimeSlot>).isNotEmpty &&
+        (filterAppointments(appointmentIndex)['_duration'] as String).isNotEmpty) {
+      String startTimeText = filterAppointments(appointmentIndex)['_timeSlots'][timeSlotIndex].start?.format(context) ?? '';
+      String endTimeText = filterAppointments(appointmentIndex)['_timeSlots'][timeSlotIndex].finish?.format(context) ?? '';
+      int interval = int.parse(filterAppointments(appointmentIndex)['_duration']);
       int startHour;
       int startMin;
       int endHour;
       int endMin;
+      log('start-time   ${startTimeText.toLowerCase()}');
+      log('end-time   ${endTimeText.toLowerCase()}');
       if (startTimeText.toLowerCase().contains('am')) {
+        //am
         String time = startTimeText.split(' ')[0];
         startHour = int.parse(time.split(':')[0]);
+        if (startHour == 12) {
+          //12:00 am == 0 hour in 24 hours clock
+          startHour = 0;
+        }
         startMin = int.parse(time.split(':')[1]);
       } else {
+        //pm
         String time = startTimeText.split(' ')[0];
         startHour = int.parse(time.split(':')[0]);
-        startHour = startHour + 12;
+        if (startHour == 12) {
+          //avoid 24:00 which is 12:00 am
+          startHour = startHour;
+        } else {
+          //24 hours equivalent
+          startHour = startHour + 12;
+        }
         startMin = int.parse(time.split(':')[1]);
       }
       if (endTimeText.toLowerCase().contains('am')) {
+        //am
         String time = endTimeText.split(' ')[0];
         endHour = int.parse(time.split(':')[0]);
+        if (endHour == 12) {
+          //12:00 am == 0 hour in 24 hours clock
+          endHour = 0;
+        }
         endMin = int.parse(time.split(':')[1]);
       } else {
+        //pm
         String time = endTimeText.split(' ')[0];
         endHour = int.parse(time.split(':')[0]);
-        endHour = endHour + 12;
+        if (endHour == 12) {
+          //avoid 24:00 which is 12:00 am
+          endHour = endHour;
+        } else {
+          //24 hours equivalent
+          endHour = endHour + 12;
+        }
         endMin = int.parse(time.split(':')[1]);
       }
       DateTime startTime = DateTime(2024, 1, 1, startHour, startMin);
       DateTime endTime = DateTime(2024, 1, 1, endHour, endMin);
       while (startTime.isBefore(endTime)) {
         DateTime nextTime = startTime.add(Duration(minutes: interval));
-        timeSlots.add(
-            "${DateFormat('h:mm a').format(startTime)} - ${DateFormat('h:mm a').format(nextTime)}");
+        timeSlots.add("${DateFormat('h:mm a').format(startTime)} - ${DateFormat('h:mm a').format(nextTime)}");
         startTime = nextTime;
       }
     }

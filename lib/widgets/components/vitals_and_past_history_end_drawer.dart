@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:healtether_clinic_app/data_layer/models/appointment_models/appointment_model.dart';
+import 'package:healtether_clinic_app/utils/enums/bloc_enums.dart';
 import 'package:healtether_clinic_app/utils/enums/route_enums.dart';
+import '../../business_logic/cubits/past_medical_history_cubit/past_medical_history_cubit.dart';
+import '../../business_logic/cubits/vitals_cubit/vitals_cubit.dart';
 
 class VitalsAndPastHistoryEndDrawer extends StatefulWidget {
   final Appointment appointment;
-  const VitalsAndPastHistoryEndDrawer({super.key, required this.appointment});
+  const VitalsAndPastHistoryEndDrawer({
+    super.key,
+    required this.appointment,
+  });
 
   @override
   State<VitalsAndPastHistoryEndDrawer> createState() => _VitalsAndPastHistoryEndDrawerState();
@@ -14,8 +21,15 @@ class VitalsAndPastHistoryEndDrawer extends StatefulWidget {
 
 class _VitalsAndPastHistoryEndDrawerState extends State<VitalsAndPastHistoryEndDrawer> {
   double get height => MediaQuery.of(context).size.height;
-
   double get width => MediaQuery.of(context).size.width;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    // context.read<PastMedicalHistoryCubit>().getPastMedicalHistory(patientId: widget.appointment.patientId!);
+    // context.read<VitalsCubit>().getSavedVitals(appointmentId: widget.appointment.id!);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,38 +53,323 @@ class _VitalsAndPastHistoryEndDrawerState extends State<VitalsAndPastHistoryEndD
                   shadowColor: const Color(0xFFFFFFFF),
                   surfaceTintColor: const Color(0xFFFFFFFF),
                   color: const Color(0xFFFFFFFF),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                  child: BlocBuilder<VitalsCubit, VitalsState>(builder: (context, state) {
+                    if (state.state == VitalsStates.fetchingVitals) {
+                      return Center(child: CircularProgressIndicator());
+                    } else {
+                      return Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            const Text(
-                              'Vitals',
-                              style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Color(0xff0C091F)),
-                            ),
-                            InkWell(
-                              onTap: () {
-                                context.pushNamed(AppRoutes.vitals.name, extra: {
-                                  'appointment': widget.appointment,
-                                  'vitals': [],
-                                });
-                              },
-                              child: Column(
-                                children: [
-                                  const Text(
-                                    'Edit',
-                                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Color(0xff5351C7)),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Vitals',
+                                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Color(0xff0C091F)),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    context.pushNamed(AppRoutes.vitals.name, extra: {
+                                      'appointment': widget.appointment,
+                                      'vitals': state.savedVital,
+                                    });
+                                  },
+                                  child: Column(
+                                    children: [
+                                      const Text(
+                                        'Edit',
+                                        style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Color(0xff5351C7)),
+                                      ),
+                                      Container(
+                                        height: 1,
+                                        width: 30,
+                                        decoration: const BoxDecoration(
+                                          color: Color(0xff5351C7),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  Container(
-                                    height: 1,
-                                    width: 30,
-                                    decoration: const BoxDecoration(
-                                      color: Color(0xff5351C7),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    padding: const EdgeInsets.only(left: 4),
+                                    height: 75,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: const Color(0xFFF7F7F7),
+                                    ),
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'SpO2',
+                                          style: GoogleFonts.roboto(
+                                            textStyle: const TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w500,
+                                              color: Color(0xff413D56),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Center(
+                                          child: Image.asset("assets/homeimages/Vector (4).png"),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Center(
+                                          child: Text(
+                                            state.savedVital?.spo2?.toString() ?? '0',
+                                            style: GoogleFonts.roboto(
+                                              textStyle: const TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w500,
+                                                color: Color(0xff0C091F),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                Expanded(
+                                  child: Container(
+                                    height: 75,
+                                    padding: const EdgeInsets.only(left: 4),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: const Color(0xffF5F5F5),
+                                    ),
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'BP',
+                                          style: GoogleFonts.roboto(
+                                            textStyle: const TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w500,
+                                              color: Color(0xff413D56),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Center(
+                                          child: Image.asset("assets/homeimages/Vector (5).png"),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Center(
+                                          child: Text(
+                                            '${state.savedVital?.bloodPressure?.systolic?.toString() ?? '0'}/${state.savedVital?.bloodPressure?.diastolic?.toString() ?? '0'}',
+                                            style: GoogleFonts.roboto(
+                                              textStyle: const TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w500,
+                                                color: Color(0xff0C091F),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                Expanded(
+                                  child: Container(
+                                    height: 75,
+                                    padding: const EdgeInsets.only(left: 4),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: const Color(0xffF5F5F5),
+                                    ),
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Heart rate',
+                                          style: GoogleFonts.roboto(
+                                            textStyle: const TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w500,
+                                              color: Color(0xff413D56),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Center(
+                                          child: Image.asset("assets/homeimages/Vector (6).png"),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Center(
+                                          child: Text(
+                                            state.savedVital?.pulseRate?.toString() ?? '0',
+                                            style: GoogleFonts.roboto(
+                                              textStyle: const TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w500,
+                                                color: Color(0xff0C091F),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                Expanded(
+                                  child: Container(
+                                    height: 75,
+                                    padding: const EdgeInsets.only(left: 4),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: const Color(0xffF5F5F5),
+                                    ),
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'BG',
+                                          style: GoogleFonts.roboto(
+                                            textStyle: const TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w500,
+                                              color: Color(0xff413D56),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Center(
+                                          child: Image.asset("assets/homeimages/droplet-outline.png"),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Center(
+                                          child: Text(
+                                            '0',
+                                            style: GoogleFonts.roboto(
+                                              textStyle: const TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w500,
+                                                color: Color(0xff0C091F),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 152),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Container(
+                                      height: 75,
+                                      padding: const EdgeInsets.only(left: 4),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        color: const Color(0xffF5F5F5),
+                                      ),
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Ht',
+                                            style: GoogleFonts.roboto(
+                                              textStyle: const TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w500,
+                                                color: Color(0xff413D56),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Center(
+                                            child: Image.asset("assets/homeimages/Vector (7).png"),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Center(
+                                            child: Text(
+                                              state.savedVital?.height?.toString() ?? '0',
+                                              style: GoogleFonts.roboto(
+                                                textStyle: const TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Color(0xff0C091F),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Expanded(
+                                    child: Container(
+                                      height: 75,
+                                      padding: const EdgeInsets.only(left: 4),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        color: const Color(0xffF5F5F5),
+                                      ),
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Wt',
+                                            style: GoogleFonts.roboto(
+                                              textStyle: const TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w500,
+                                                color: Color(0xff413D56),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Center(
+                                            child: Image.asset("assets/homeimages/Vector (8).png"),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Center(
+                                            child: Text(
+                                              state.savedVital?.weight?.toString() ?? '0',
+                                              style: GoogleFonts.roboto(
+                                                textStyle: const TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Color(0xff0C091F),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -78,443 +377,71 @@ class _VitalsAndPastHistoryEndDrawerState extends State<VitalsAndPastHistoryEndD
                             ),
                           ],
                         ),
-                        const SizedBox(height: 16),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Container(
-                                padding: const EdgeInsets.only(left: 4),
-                                height: 75,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: const Color(0xFFF7F7F7),
-                                ),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'SpO2',
-                                      style: GoogleFonts.roboto(
-                                        textStyle: const TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w500,
-                                          color: Color(0xff413D56),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Center(
-                                      child: Image.asset("assets/homeimages/Vector (4).png"),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Center(
-                                      child: Text(
-                                        '97',
-                                        style: GoogleFonts.roboto(
-                                          textStyle: const TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w500,
-                                            color: Color(0xff0C091F),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 6),
-                            Expanded(
-                              child: Container(
-                                height: 75,
-                                padding: const EdgeInsets.only(left: 4),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: const Color(0xffF5F5F5),
-                                ),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'BP',
-                                      style: GoogleFonts.roboto(
-                                        textStyle: const TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w500,
-                                          color: Color(0xff413D56),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Center(
-                                      child: Image.asset("assets/homeimages/Vector (5).png"),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Center(
-                                      child: Text(
-                                        '80/120',
-                                        style: GoogleFonts.roboto(
-                                          textStyle: const TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w500,
-                                            color: Color(0xff0C091F),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 6),
-                            Expanded(
-                              child: Container(
-                                height: 75,
-                                padding: const EdgeInsets.only(left: 4),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: const Color(0xffF5F5F5),
-                                ),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Heart rate',
-                                      style: GoogleFonts.roboto(
-                                        textStyle: const TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w500,
-                                          color: Color(0xff413D56),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Center(
-                                      child: Image.asset("assets/homeimages/Vector (6).png"),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Center(
-                                      child: Text(
-                                        '80',
-                                        style: GoogleFonts.roboto(
-                                          textStyle: const TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w500,
-                                            color: Color(0xff0C091F),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 6),
-                            Expanded(
-                              child: Container(
-                                height: 75,
-                                padding: const EdgeInsets.only(left: 4),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: const Color(0xffF5F5F5),
-                                ),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'BG',
-                                      style: GoogleFonts.roboto(
-                                        textStyle: const TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w500,
-                                          color: Color(0xff413D56),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Center(
-                                      child: Image.asset("assets/homeimages/droplet-outline.png"),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Center(
-                                      child: Text(
-                                        '150',
-                                        style: GoogleFonts.roboto(
-                                          textStyle: const TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w500,
-                                            color: Color(0xff0C091F),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 152),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  height: 75,
-                                  padding: const EdgeInsets.only(left: 4),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    color: const Color(0xffF5F5F5),
-                                  ),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Ht',
-                                        style: GoogleFonts.roboto(
-                                          textStyle: const TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w500,
-                                            color: Color(0xff413D56),
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Center(
-                                        child: Image.asset("assets/homeimages/Vector (7).png"),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Center(
-                                        child: Text(
-                                          '160',
-                                          style: GoogleFonts.roboto(
-                                            textStyle: const TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w500,
-                                              color: Color(0xff0C091F),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 6),
-                              Expanded(
-                                child: Container(
-                                  height: 75,
-                                  padding: const EdgeInsets.only(left: 4),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    color: const Color(0xffF5F5F5),
-                                  ),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Wt',
-                                        style: GoogleFonts.roboto(
-                                          textStyle: const TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w500,
-                                            color: Color(0xff413D56),
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Center(
-                                        child: Image.asset("assets/homeimages/Vector (8).png"),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Center(
-                                        child: Text(
-                                          '60',
-                                          style: GoogleFonts.roboto(
-                                            textStyle: const TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w500,
-                                              color: Color(0xff0C091F),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                      );
+                    }
+                  }),
                 ),
               ),
               const SizedBox(height: 15),
-              Material(
-                elevation: 8,
-                shadowColor: const Color(0xFFFFFFFF),
-                surfaceTintColor: const Color(0xFFFFFFFF),
-                color: const Color(0xFFFFFFFF),
-                borderRadius: const BorderRadius.all(Radius.circular(20)),
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Past History',
-                            style: GoogleFonts.urbanist(
-                              textStyle: const TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xff0C091F),
-                              ),
-                            ),
-                          ),
-                          InkWell(
-                            onTap: () {
-                              context.pushNamed(AppRoutes.pastMedicalHistory.name, extra: {
-                                'appointment': widget.appointment,
-                                'pastHistory': [],
-                                'familyHistory': [],
-                                'pastProcedures': [],
-                                'allergies': [],
-                                'medicalHistory': [],
-                              });
-                            },
-                            child: Column(
+              SizedBox(
+                height: 640 - (height * 0.27) - 15,
+                child: Material(
+                  elevation: 8,
+                  shadowColor: const Color(0xFFFFFFFF),
+                  surfaceTintColor: const Color(0xFFFFFFFF),
+                  color: const Color(0xFFFFFFFF),
+                  borderRadius: const BorderRadius.all(Radius.circular(20)),
+                  child: BlocBuilder<PastMedicalHistoryCubit, PastMedicalHistoryState>(builder: (context, state) {
+                    if (state.state == PastMedicalHistoryStates.fetchingPastMedicalHistory) {
+                      return Center(child: CircularProgressIndicator());
+                    } else {
+                      return Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Text('Edit', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Color(0xff5351C7))),
-                                Container(
-                                  height: 1,
-                                  width: 30,
-                                  decoration: const BoxDecoration(
-                                    color: Color(0xff5351C7),
+                                Text(
+                                  'Past History',
+                                  style: GoogleFonts.urbanist(
+                                    textStyle: const TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.w500,
+                                      color: Color(0xff0C091F),
+                                    ),
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    context.pushNamed(AppRoutes.pastMedicalHistory.name, extra: {
+                                      'appointment': widget.appointment,
+                                      'pastHistory': state.pastHistory,
+                                      'familyHistory': state.familyHistory,
+                                      'pastProcedureHistory': state.pastProcedureHistory,
+                                      'allergies': state.allergies,
+                                      'medication': state.medication,
+                                    });
+                                  },
+                                  child: Column(
+                                    children: [
+                                      const Text('Edit', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Color(0xff5351C7))),
+                                      Container(
+                                        height: 1,
+                                        width: 30,
+                                        decoration: const BoxDecoration(
+                                          color: Color(0xff5351C7),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'Family History',
-                        style: GoogleFonts.urbanist(
-                          textStyle: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xff868686),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Container(
-                        width: width,
-                        height: 52,
-                        padding: const EdgeInsets.only(top: 15, left: 10),
-                        decoration: const BoxDecoration(
-                          color: Color(0xffF7F7F7),
-                          borderRadius: BorderRadius.all(Radius.circular(8)),
-                        ),
-                        child: const Text(
-                          'Asthma, Hypertension',
-                          style: TextStyle(
-                            fontFamily: 'Urbanist',
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: Color(0xff0C091F),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Medical Procedures',
-                        style: GoogleFonts.urbanist(
-                          textStyle: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xff868686),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Container(
-                        width: width,
-                        height: 52,
-                        padding: const EdgeInsets.only(top: 15, left: 10),
-                        decoration: const BoxDecoration(
-                          color: Color(0xffF7F7F7),
-                          borderRadius: BorderRadius.all(Radius.circular(8)),
-                        ),
-                        child: const Text(
-                          'Heart Surgery',
-                          style: TextStyle(
-                            fontFamily: 'Urbanist',
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: Color(0xff0C091F),
-                          ),
-                        ),
-                        // onTap: () {},
-                        // contentPadding: const EdgeInsets.symmetric(
-                        //     horizontal: 10.0, vertical: 2.0),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'Medication',
-                        style: GoogleFonts.urbanist(
-                          textStyle: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xff868686),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Container(
-                        width: width,
-                        height: 52,
-                        padding: const EdgeInsets.only(top: 15, left: 10),
-                        decoration: const BoxDecoration(
-                          color: Color(0xffF7F7F7),
-                          borderRadius: BorderRadius.all(Radius.circular(8)),
-                        ),
-                        child: const Text(
-                          'Dolo - 650, Paracetomol',
-                          style: TextStyle(
-                            fontFamily: 'Urbanist',
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: Color(0xff0C091F),
-                          ),
-                        ),
-                        // onTap: () {},
-                        // contentPadding: const EdgeInsets.symmetric(
-                        //     horizontal: 8.0, vertical: 2.0),
-                      ),
-                      SizedBox(height: height * 0.04),
-                      RichText(
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: 'Allergies - ',
+                            const SizedBox(height: 10),
+                            Text(
+                              'Family History',
                               style: GoogleFonts.urbanist(
                                 textStyle: const TextStyle(
                                   fontSize: 15,
@@ -523,23 +450,34 @@ class _VitalsAndPastHistoryEndDrawerState extends State<VitalsAndPastHistoryEndD
                                 ),
                               ),
                             ),
-                            const TextSpan(
-                                text: 'Pollen, Sunlight',
-                                style: TextStyle(
-                                  fontFamily: 'Urbanist',
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400,
-                                  color: Color(0xff0C091F),
-                                )),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      RichText(
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: 'Phobias/Fears - ',
+                            const SizedBox(height: 10),
+                            Container(
+                              width: width,
+                              height: 52,
+                              padding: const EdgeInsets.only(top: 15, left: 10),
+                              decoration: const BoxDecoration(
+                                color: Color(0xffF7F7F7),
+                                borderRadius: BorderRadius.all(Radius.circular(8)),
+                              ),
+                              child: Row(
+                                  children: List.generate(
+                                state.familyHistory?.length ?? 0,
+                                (index) => Expanded(
+                                  child: Text(
+                                    state.familyHistory![index].name,
+                                    style: const TextStyle(
+                                      fontFamily: 'Urbanist',
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w400,
+                                      color: Color(0xff0C091F),
+                                    ),
+                                  ),
+                                ),
+                              )),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Medical Procedures',
                               style: GoogleFonts.urbanist(
                                 textStyle: const TextStyle(
                                   fontSize: 15,
@@ -548,20 +486,103 @@ class _VitalsAndPastHistoryEndDrawerState extends State<VitalsAndPastHistoryEndD
                                 ),
                               ),
                             ),
-                            const TextSpan(
-                              text: 'Pollen, Sunlight',
-                              style: TextStyle(
-                                fontFamily: 'Urbanist',
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400,
-                                color: Color(0xff0C091F),
+                            const SizedBox(height: 8),
+                            Container(
+                              width: width,
+                              height: 52,
+                              padding: const EdgeInsets.only(top: 15, left: 10),
+                              decoration: const BoxDecoration(
+                                color: Color(0xffF7F7F7),
+                                borderRadius: BorderRadius.all(Radius.circular(8)),
+                              ),
+                              child: Row(
+                                  children: List.generate(
+                                state.pastProcedureHistory?.length ?? 0,
+                                (index) => Expanded(
+                                  child: Text(
+                                    state.pastProcedureHistory![index].name,
+                                    style: const TextStyle(
+                                      fontFamily: 'Urbanist',
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w400,
+                                      color: Color(0xff0C091F),
+                                    ),
+                                  ),
+                                ),
+                              )),
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              'Medication',
+                              style: GoogleFonts.urbanist(
+                                textStyle: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500,
+                                  color: Color(0xff868686),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Container(
+                              width: width,
+                              height: 52,
+                              padding: const EdgeInsets.only(top: 15, left: 10),
+                              decoration: const BoxDecoration(
+                                color: Color(0xffF7F7F7),
+                                borderRadius: BorderRadius.all(Radius.circular(8)),
+                              ),
+                              child: Row(
+                                  children: List.generate(
+                                state.medication?.length ?? 0,
+                                (index) => Expanded(
+                                  child: Text(
+                                    state.medication![index].name,
+                                    style: const TextStyle(
+                                      fontFamily: 'Urbanist',
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w400,
+                                      color: Color(0xff0C091F),
+                                    ),
+                                  ),
+                                ),
+                              )),
+                            ),
+                            SizedBox(height: height * 0.04),
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: 'Allergies - ',
+                                    style: GoogleFonts.urbanist(
+                                      textStyle: const TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w500,
+                                        color: Color(0xff868686),
+                                      ),
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    children: List.generate(
+                                      state.allergies?.length ?? 0,
+                                      (index) => TextSpan(
+                                        text: state.allergies![index].name,
+                                        style: const TextStyle(
+                                          fontFamily: 'Urbanist',
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w400,
+                                          color: Color(0xff0C091F),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
                         ),
-                      ),
-                    ],
-                  ),
+                      );
+                    }
+                  }),
                 ),
               ),
             ],

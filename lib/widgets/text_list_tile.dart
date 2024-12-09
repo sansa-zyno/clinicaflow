@@ -4,8 +4,17 @@ import 'package:healtether_clinic_app/constants/app_colors.dart';
 import 'package:healtether_clinic_app/utils/extensions.dart/widget_extensions.dart';
 
 class TextListTile extends StatelessWidget {
-  const TextListTile(
-      {super.key, required this.text, required this.onTap, this.padding, this.backgroundColor, this.maxLines, this.leading, this.overflow});
+  const TextListTile({
+    super.key,
+    required this.text,
+    required this.onTap,
+    this.padding,
+    this.backgroundColor,
+    this.maxLines,
+    this.leading,
+    this.overflow,
+    this.height,
+  });
 
   final void Function()? onTap;
   final String text;
@@ -14,13 +23,14 @@ class TextListTile extends StatelessWidget {
   final int? maxLines;
   final TextOverflow? overflow;
   final Widget? leading;
+  final double? height;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        // height: 60,
+        height: height,
         width: MediaQuery.of(context).size.width - 32,
         decoration: BoxDecoration(
           color: backgroundColor ?? AppColors.whiteSmoke,

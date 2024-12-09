@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import 'package:healtether_clinic_app/Screens/AppointmentScreen/appoinment_detail_screen.dart';
 
 class RescheduleAppointmentScreen extends StatefulWidget {
@@ -284,4 +284,4 @@ class _ScheduleNewAppointmentScreenState extends State<RescheduleAppointmentScre
       ),
     );
   }
-}
+}*/

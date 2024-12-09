@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:healtether_clinic_app/data_layer/models/template_form_data/template_form_data.dart';
 import 'package:healtether_clinic_app/utils/enums/bloc_enums.dart';
 import 'package:healtether_clinic_app/utils/helper_functions/log.dart';
@@ -20,11 +18,13 @@ class SettingsCubit extends HydratedCubit<SettingsState> {
     final newState = state.copyWith(state: SettingsStates.useAiPredictiveSearchUpdated, useAiPredictiveSearch: value);
     emit(newState);
   }
+
   // modify previewPrescriptionbeforePrint;
   void updatePreviewPrescriptionbeforePrint(bool value) {
     final newState = state.copyWith(state: SettingsStates.previewPrescriptionbeforePrintUpdated, previewPrescriptionbeforePrint: value);
     emit(newState);
   }
+
   // modify notifyUserOnWhatsapp;
   void updateNotifyUserOnWhatsapp(bool value) {
     final newState = state.copyWith(state: SettingsStates.notifyUserOnWhatsappUpdated, notifyUserOnWhatsapp: value);

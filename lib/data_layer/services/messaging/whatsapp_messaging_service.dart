@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:dio/dio.dart';
 import 'package:healtether_clinic_app/constants/api.dart';
 import 'package:healtether_clinic_app/data_layer/services/http.service.dart';
@@ -9,7 +8,6 @@ class WhatSappMessagingService {
   String clinicId = "";
   Future<void> fetchClinic() async {
     clinicId = await SharedPrefService.getClinicId() ?? "";
-    log('CLINIC_ID ' + clinicId);
   }
 
   Future<bool> sendWhatsappMsg({required String phoneNo, required String message}) async {

@@ -10,8 +10,6 @@ class AppointmentServices {
   Future<void> fetchToken() async {
     token = await SharedPrefService.getAccessToken() ?? "";
     clinicId = await SharedPrefService.getClinicId() ?? "";
-    log('TOKEN ' + token);
-    log('CLINIC_ID ' + clinicId);
   }
 
   Future<AppointmentModel> fetchAppointments({required String status}) async {
@@ -92,7 +90,7 @@ class AppointmentServices {
 
     if (response.statusCode == 200) {
       print('Appointment created successfully.');
-      return response.data['data']['patientId'];
+      return response.data['data']['id'];
     } else {
       print('Failed to create appointment: ${response.data}');
       return '';
@@ -168,6 +166,89 @@ class AppointmentServices {
       return doctorsList;
     } else {
       throw Exception('Failed to load doctors');
+    }
+  }
+
+  Future<String?> reScheduleAppointment({required String id, required String appointmentDate, required String timeSlot}) async {
+    await fetchToken();
+    final response = await HttpService.post(ApiEndPoint.reSchedule, token, {
+      "data": {
+        "id": id,
+        "appointmentDate": appointmentDate,
+        "timeSlot": timeSlot,
+      }
+    });
+    if (response.statusCode == 200) {
+      //log(response.data.toString());
+      return response.data['description'];
+    } else {
+      throw Exception('Failed to reschedule appointment');
+    }
+  }
+
+  Future<String?> cancellAppointment({required String id}) async {
+    await fetchToken();
+    final response = await HttpService.post(ApiEndPoint.cancell, token, {
+      "data": {
+        "id": id,
+      }
+    });
+    if (response.statusCode == 200) {
+      // log(response.data.toString());
+      return response.data['description'];
+    } else {
+      throw Exception('Failed to cancell appointment');
+    }
+  }
+
+  Future<String?> followupAppointment({required String id, required String appointmentDate, required String timeSlot}) async {
+    await fetchToken();
+    final response = await HttpService.post(ApiEndPoint.followUp, token, {
+      "data": {
+        "id": id,
+        "appointmentDate": appointmentDate,
+        "timeSlot": timeSlot,
+      }
+    });
+    if (response.statusCode == 200) {
+      //log(response.data.toString());
+      return response.data['description'];
+    } else {
+      throw Exception('Failed to follow up appointment');
+    }
+  }
+
+  Future<Appointment> getAppointmentById({required String id}) async {
+    await fetchToken();
+    try {
+      final response = await HttpService.get(ApiEndPoint.getAppointmentById(id: id), token);
+      if (response.statusCode == 200) {
+        Map<String, dynamic> jsonResponse = response.data;
+        return Appointment.fromJson(jsonResponse);
+      } else {
+        log('Failed to get appointment details: ${response.statusCode}');
+        throw 'Failed to get appointment details: ${response.statusCode}';
+      }
+    } catch (e) {
+      log('Exception during getAppointmentById: $e');
+      throw 'Failed to get appointment details: $e';
+    }
+  }
+
+  Future<Map> getCompletedAndRemainingAppointmentCount({required String date}) async {
+    await fetchToken();
+    try {
+      final response = await HttpService.get(ApiEndPoint.getAppointmentCount(clinicId: clinicId, date: date), token);
+      if (response.statusCode == 200) {
+        Map<String, dynamic> jsonResponse = response.data;
+        return {'received': jsonResponse['received'], 'completed': jsonResponse['completed']};
+      } else {
+        log('Failed to get appointment count: ${response.statusCode}');
+        throw 'Failed to get appointment count: ${response.statusCode}';
+      }
+    } catch (e) {
+      log('Exception during get appointment count: $e');
+      throw 'Failed to get appointment count: $e';
     }
   }
 }

@@ -5,8 +5,7 @@ class SymptomsAndDiagnosisState {
   final SymptomsAndDiagnosisStates state;
   final String? message;
   final List<Symptom>? frequentlySearchedSymptoms;
-  final List<Symptom>? associatedSymptoms;
-  final List<Symptom>? differentialDiagnosis;
+  final List<Diagnosis>? differentialDiagnosis;
   final List<Symptom>? savedSymptoms;
   final List<Symptom>? savedDiagnosis;
   final AppError? error;
@@ -14,7 +13,6 @@ class SymptomsAndDiagnosisState {
     required this.state,
     this.message,
     this.frequentlySearchedSymptoms,
-    this.associatedSymptoms,
     this.differentialDiagnosis,
     this.savedSymptoms,
     this.savedDiagnosis,
@@ -25,8 +23,7 @@ class SymptomsAndDiagnosisState {
     SymptomsAndDiagnosisStates? state,
     String? message,
     List<Symptom>? frequentlySearchedSymptoms,
-    List<Symptom>? associatedSymptoms,
-    List<Symptom>? differentialDiagnosis,
+    List<Diagnosis>? differentialDiagnosis,
     List<Symptom>? savedSymptoms,
     List<Symptom>? savedDiagnosis,
     AppError? error,
@@ -35,8 +32,7 @@ class SymptomsAndDiagnosisState {
       state: state ?? this.state,
       message: message ?? this.message,
       frequentlySearchedSymptoms: frequentlySearchedSymptoms ?? this.frequentlySearchedSymptoms,
-      associatedSymptoms: associatedSymptoms ?? this.associatedSymptoms,
-      differentialDiagnosis: differentialDiagnosis ?? this.differentialDiagnosis,
+      differentialDiagnosis: differentialDiagnosis,
       savedSymptoms: savedSymptoms,
       savedDiagnosis: savedDiagnosis,
       error: error ?? this.error,
@@ -45,6 +41,6 @@ class SymptomsAndDiagnosisState {
 
   @override
   String toString() {
-    return 'SymptomsAndDiagnosisState(state: $state, message: $message, frequentlySearchedSymptoms: $frequentlySearchedSymptoms, associatedSymptoms: $associatedSymptoms, differentialDiagnosis: $differentialDiagnosis, error: $error)';
+    return 'SymptomsAndDiagnosisState(state: $state, message: $message, frequentlySearchedSymptoms: $frequentlySearchedSymptoms,  differentialDiagnosis: $differentialDiagnosis, error: $error)';
   }
 }

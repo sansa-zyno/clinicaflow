@@ -17,44 +17,48 @@ class AppointmentModel {
     totalCount = json['totalCount'];
   }
 
-  Map<String, dynamic> toJson() {
+  /*Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
     data['totalCount'] = totalCount;
     return data;
-  }
+  }*/
 }
 
 class Appointment {
   final String? sId;
   final String? mobile;
   final String? name;
+  final int? age;
+  final String? gender;
   final String? appointmentDate;
   final String? timeSlot;
   final bool? virtualConsultation;
+  final bool? paymentStatus;
   final String? doctorName;
   final String? patientId;
+  final String? clinicPatientId;
   final String? id;
   final List<AppointmentLog>? appointmentLogs;
-  final int? age;
-  final String? gender;
 
-  String? get getPatientId => patientId?.substring(patientId!.length - 6);
+  //String? get getPatientId => patientId?.substring(patientId!.length - 6);
 
   const Appointment(
       {this.sId,
       this.mobile,
       this.name,
+      this.age,
+      this.gender,
       this.appointmentDate,
       this.timeSlot,
       this.virtualConsultation,
+      this.paymentStatus,
       this.doctorName,
       this.patientId,
+      this.clinicPatientId,
       this.appointmentLogs,
-      this.age,
-      this.gender,
       this.id});
 
   factory Appointment.fromJson(Map<String, dynamic> json) {
@@ -62,18 +66,20 @@ class Appointment {
         sId: json['_id'],
         mobile: json['mobile'],
         name: json['name'],
+        age: json['age'],
+        gender: json['gender'],
         appointmentDate: json['appointmentDate'],
         timeSlot: json['timeSlot'],
         virtualConsultation: json['virtualConsultation'],
+        paymentStatus: json['paymentStatus'],
         doctorName: json['doctorName'],
         patientId: json['patientId'],
+        clinicPatientId: json['clinicPatientId'],
         appointmentLogs: json["appointmentLogs"],
-        age: json['age'],
-        gender: json['gender'],
         id: json['id']);
   }
 
-  Map<String, dynamic> toJson() {
+  /* Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['_id'] = sId;
     data['mobile'] = mobile;
@@ -85,7 +91,7 @@ class Appointment {
     data['patientId'] = patientId;
     data['id'] = id;
     return data;
-  }
+  }*/
 }
 
 class AppointmentLog with TimeParserMixin {
@@ -114,6 +120,5 @@ class AppointmentLog with TimeParserMixin {
 
   String toJson() => json.encode(toMap());
 
-  factory AppointmentLog.fromJson(String source) =>
-      AppointmentLog.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory AppointmentLog.fromJson(String source) => AppointmentLog.fromMap(json.decode(source) as Map<String, dynamic>);
 }

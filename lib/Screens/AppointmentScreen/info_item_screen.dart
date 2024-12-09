@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import 'package:healtether_clinic_app/constants/constants.dart';
 
 class InfoItem extends StatelessWidget {
@@ -44,4 +44,4 @@ class InfoItem extends StatelessWidget {
       ),
     );
   }
-}
+}*/

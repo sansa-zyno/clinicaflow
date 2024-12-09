@@ -11,8 +11,6 @@ class DrugPrescriptionService {
   Future<void> fetchToken() async {
     token = await SharedPrefService.getAccessToken() ?? "";
     clinicId = await SharedPrefService.getClinicId() ?? "";
-    log('TOKEN ' + token);
-    log('CLINIC_ID ' + clinicId);
   }
 
   Future<List<Drug>> getFrequentlySearchedDrugs() async {
@@ -47,12 +45,26 @@ class DrugPrescriptionService {
     }
   }
 
-  Future<String> postDrugPrescription({required String patientId, required String appointmentId, required List drugs}) async {
+  Future<String> postDrugPrescription({
+    required String patientId,
+    required String appointmentId,
+    required List<Map<String, dynamic>> drugs,
+    required String patientAdvice,
+    required String privateNotes,
+    required String followupDate,
+    required String followupTimeSlot,
+  }) async {
     await fetchToken();
     final response = await HttpService.post(
       ApiEndPoint.postDrugs(patientId: patientId, clientId: clinicId, appointmentId: appointmentId),
       token,
-      {"drugs": drugs},
+      {
+        "drugs": drugs,
+        "patientAdvice": patientAdvice,
+        "privateNotes": privateNotes,
+        "followUpDate": followupDate,
+        "followUpTimeSlot": followupTimeSlot,
+      },
     );
     if (response.statusCode == 200 || response.statusCode == 201) {
       return response.data['message'];
@@ -61,13 +73,24 @@ class DrugPrescriptionService {
     }
   }
 
-  Future<List<Drug>?> getSavedDrugPrescription({required String appointmentId}) async {
+  Future<Map<String, dynamic>?> getSavedDrugPrescription({required String appointmentId}) async {
     await fetchToken();
     final response = await HttpService.get(ApiEndPoint.getWholePrescriptionsAndVitals(appointmentId: appointmentId, clientId: clinicId), token);
     if (response.statusCode == 200) {
       if (response.data['prescriptions'] != null) {
         List<Drug>? drugs = (response.data['prescriptions']['drugPrescriptions'] as List?)?.map((e) => Drug.fromMap(e)).toList();
-        return drugs;
+        String? patientAdvice = response.data['prescriptions']['patientAdvice'];
+        String? privacyNotes = response.data['prescriptions']['privacyNotes'];
+        String? followUpDate = response.data['prescriptions']['followUpDate'];
+        String? followUpTimeSlot = response.data['prescriptions']['followUpTimeSlot'];
+
+        return {
+          'drugs': drugs,
+          'patientAdvice': patientAdvice,
+          'privacyNotes': privacyNotes,
+          'followUpDate': followUpDate,
+          'followUpTimeSlot': followUpTimeSlot,
+        };
       } else {
         return null;
       }

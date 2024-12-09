@@ -11,7 +11,6 @@ import 'package:healtether_clinic_app/business_logic/cubits/analytics/patient_an
 import 'package:healtether_clinic_app/business_logic/cubits/appointment_cubit/appointment_cubit.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/drug_cubit/drug_prescription_cubit.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/home_page_bottom_nav_cubit/home_page_bottom_nav_cubit.dart';
-import 'package:healtether_clinic_app/business_logic/cubits/is_edit_cubit/is_edit_cubit.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/lab_test_cubit/lab_test_cubit.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/messaging/whatsapp/whatsapp_messaging_cubit.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/past_medical_history_cubit/past_medical_history_cubit.dart';
@@ -54,7 +53,6 @@ void main() async {
         BlocProvider(create: (context) => PatientRecordsCubit()),
         BlocProvider(create: (context) => SettingsCubit()),
         BlocProvider(create: (context) => ProfileImageCubit()),
-        BlocProvider(create: (context) => IsEditCubit()),
         BlocProvider(create: (context) => PatientRatioCubit(AnalyticsService())),
         BlocProvider(create: (context) => PatientGenderRatioCubit(AnalyticsService())),
         BlocProvider(create: (context) => AgeRatioCubit(AnalyticsService())),
@@ -81,6 +79,7 @@ class MyApp extends StatelessWidget {
           scaffoldBackgroundColor: Colors.white,
           appBarTheme: const AppBarTheme(backgroundColor: Colors.white, surfaceTintColor: Colors.white),
           bottomSheetTheme: const BottomSheetThemeData(backgroundColor: Colors.white, surfaceTintColor: Colors.white),
+          dialogTheme: const DialogTheme(backgroundColor: Colors.white, surfaceTintColor: Colors.white),
           textTheme: GoogleFonts.poppinsTextTheme(),
           // switchTheme: SwitchThemeData(),
           timePickerTheme: const TimePickerThemeData(

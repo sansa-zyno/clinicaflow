@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:healtether_clinic_app/constants/api.dart';
 import 'package:healtether_clinic_app/constants/app_colors.dart';
 import 'package:healtether_clinic_app/data_layer/models/user_model/user_model.dart';
 import 'package:healtether_clinic_app/data_layer/services/shared_preferences_service.dart';
@@ -201,10 +202,22 @@ class _WelcomeState extends State<Welcome> {
                                 fit: BoxFit.scaleDown,
                                 child: Row(
                                   children: [
-                                    const CircleAvatar(
+                                    CircleAvatar(
                                       backgroundColor: Colors.white,
                                       radius: 20,
-                                      backgroundImage: AssetImage('assets/homeimages/image 6 (3).png'),
+                                      child: (linkedClinics[index]['clinic']?['logo'] ?? '') == ''
+                                          ? Image.asset(
+                                              'assets/homeimages/image 6 (3).png',
+                                              height: 100,
+                                              width: 100,
+                                              fit: BoxFit.cover,
+                                            )
+                                          : Image.network(
+                                              "${ApiEndPoint.logoBaseUrl}${linkedClinics[index]['clinic']?['logo']}",
+                                              height: 100,
+                                              width: 100,
+                                            ),
+                                      //backgroundImage: AssetImage('assets/homeimages/image 6 (3).png'),
                                     ),
                                     const SizedBox(
                                       width: 5,

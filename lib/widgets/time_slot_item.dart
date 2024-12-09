@@ -67,8 +67,7 @@ class _TimeSlotItemState extends State<TimeSlotItem> with UiInfoMixin {
                 hintText: 'From',
                 onTap: () async {
                   log("Start pressed");
-                  final TimeOfDay? selectedTime =
-                      await pickTime(context, returnTimeObject: true);
+                  final TimeOfDay? selectedTime = await pickTime(context, returnTimeObject: true);
 
                   if (selectedTime != null) {
                     setState(() {
@@ -106,8 +105,7 @@ class _TimeSlotItemState extends State<TimeSlotItem> with UiInfoMixin {
                   child: TimeSlotTextField(
                 controller: finishController,
                 onTap: () async {
-                  final TimeOfDay? selectedTime =
-                      await pickTime(context, returnTimeObject: true);
+                  final TimeOfDay? selectedTime = await pickTime(context, returnTimeObject: true);
 
                   if (selectedTime != null) {
                     setState(() {
@@ -133,9 +131,11 @@ class _TimeSlotItemState extends State<TimeSlotItem> with UiInfoMixin {
 
         // delete
         Opacity(
-            opacity: widget.showDelete ? 1 : 0.5,
+            opacity: widget.showDelete ? 1 : 0,
             child: GestureDetector(
-                onTap: widget.onDelete, child: const Icon(Icons.delete)))
+              onTap: widget.onDelete,
+              child: const Icon(Icons.delete),
+            ))
       ],
     );
   }

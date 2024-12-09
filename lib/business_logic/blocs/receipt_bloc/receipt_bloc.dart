@@ -12,26 +12,23 @@ part 'receipt_state.dart';
 
 class ReceiptBloc extends Bloc<ReceiptEvent, ReceiptState> {
   ReceiptBloc() : super(ReceiptInitial()) {
-    
     on<InitialLoadEvent>(initialLoadEvent);
     on<InitializePaymentEvent>(initializePaymentEvent);
   }
 
   FutureOr<void> initialLoadEvent(InitialLoadEvent event, Emitter<ReceiptState> emit) {
+    final List<Payment> paymentList = event.items
+        .map((e) => Payment(
+            treatmentName: e.treatmentController.text,
+            quantity: double.parse(e.quantityController.text),
+            amount: double.parse(e.amountController.text),
+            discount: double.parse(e.rateController.text)))
+        .toList();
 
-
-   final List<Payment> paymentList= event.items.map((e) => Payment(treatmentName: e.treatmentController.text, quantity:double.parse(e.quantityController.text), Amount: double.parse(e.amountController.text), discount: double.parse(e.rateController.text))).toList();
-     
-  emit(ReceiptLoadedState(payments: paymentList));
-
-
-
+    emit(ReceiptLoadedState(payments: paymentList));
   }
 
   FutureOr<void> initializePaymentEvent(InitializePaymentEvent event, Emitter<ReceiptState> emit) {
-
-
-
     emit(PaymentSuccessfullState());
   }
 }

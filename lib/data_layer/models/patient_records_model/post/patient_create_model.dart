@@ -39,61 +39,33 @@ class PatientCreate {
       this.modifiedOn,
       this.clientId});
 
-  PatientCreate.fromJson(Map<String, dynamic> json) {
-    firstName = json['firstName'];
-    lastName = json['lastName'];
-    patientId = json['patientId'];
-    age = json['age'];
-    height = json['height'];
-    weight = json['weight'];
-    birthday = json['birthday'];
-    gender = json['gender'];
-    mobile = json['mobile'];
-    email = json['email'];
-    if (json['address'] != null) {
-      address = AddressPatient.fromJson(json['address']);
-    } else {
-      address = null;
-    }
-    documentType = json['documentType'];
-    documentNumber = json['documentNumber'];
-    if (json['documents'] != null) {
-      documents = <DocumentsPatient>[];
-      json['documents'].forEach((v) {
-        documents!.add(DocumentsPatient.fromJson(v));
-      });
-    }
-    createdOn = json['createdOn'];
-    modifiedOn = json['modifiedOn'];
-    clientId = json['clientId'];
-  }
-
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
+    data['patientId'] = patientId;
     data['firstName'] = firstName;
     data['lastName'] = lastName;
-    data['patientId'] = patientId;
-    data['age'] = age;
-    data['height'] = height;
-    data['weight'] = weight;
+    data['age'] = int.parse(age ?? "0");
+    data['height'] = int.parse(height ?? "0");
+    data['weight'] = int.parse(weight ?? "0");
     data['birthday'] = birthday;
     data['gender'] = gender;
     data['mobile'] = mobile;
-    data['email'] = email;
+    data['email'] = email ?? "";
     if (address != null) {
       data['address'] = address!.toJson();
+    } else {
+      data['address'] = AddressPatient().toJson();
     }
-    data['documentType'] = documentType;
-    data['documentNumber'] = documentNumber;
+    data['documentType'] = documentType ?? "";
+    data['documentNumber'] = documentNumber ?? "";
     if (documents != null) {
       data['documents'] = documents!.map((v) => v.toJson()).toList();
+    } else {
+      data['documents'] = [];
     }
     data['createdOn'] = createdOn;
     data['modifiedOn'] = modifiedOn;
     data['clientId'] = clientId;
-    final Map<String, dynamic> finalData = <String, dynamic>{
-      "patientData": data
-    };
-    return finalData;
+    return data;
   }
 }

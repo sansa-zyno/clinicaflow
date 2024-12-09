@@ -15,6 +15,7 @@ import 'package:healtether_clinic_app/utils/enums/bloc_enums.dart';
 import 'package:healtether_clinic_app/utils/enums/route_enums.dart';
 import 'package:healtether_clinic_app/utils/snackbar.dart';
 import '../../business_logic/cubits/appointment_cubit/appointment_cubit.dart';
+import '../../data_layer/models/appointment_models/appointment_model.dart';
 import '../../data_layer/services/appointment_service/appointment_service.dart';
 import 'doctor_dropDown.dart';
 import 'package:flutter/services.dart';
@@ -242,22 +243,28 @@ class _ScheduleAppointmentScreenState extends State<ScheduleAppointmentScreen> {
             : selectedPatientOption?.patientId //Existing patient with Existing number
       };
       AppointmentCubit appointmentCubit = BlocProvider.of<AppointmentCubit>(context);
+
       await appointmentCubit.createAppointment(map);
       if (appointmentCubit.state.state == AppointmentStates.appointmentsCreated) {
-        appointmentCubit.fetchAppointments(status: 'Upcoming');
-        map['patientId'] = appointmentCubit.state.patientId;
-        //saveMobileNumber(mobileNumberController.text);
-        mobileNumberController.text = '';
-        firstNameController.text = '';
-        ageController.text = '';
-        appointmentBriefController.text = '';
-        genderText = null;
-        _dob = null;
-        _appointmentDate = null;
-        selectedDoctor = null;
-        _selectedTimeSlot = null;
-        isVirtual = false;
-        context.pushNamed(AppRoutes.appointmentSuccess.name, extra: map);
+        String appointmentId = appointmentCubit.state.id!;
+        await appointmentCubit.getAppointmentById(id: appointmentId);
+        if (appointmentCubit.state.state == AppointmentStates.appointmentByIdFetched) {
+          Appointment appointmentDetails = appointmentCubit.state.appointmentDetails!;
+          mobileNumberController.text = '';
+          firstNameController.text = '';
+          ageController.text = '';
+          appointmentBriefController.text = '';
+          genderText = null;
+          _dob = null;
+          _appointmentDate = null;
+          selectedDoctor = null;
+          _selectedTimeSlot = null;
+          isVirtual = false;
+          appointmentCubit.fetchAppointments(status: 'Upcoming');
+          context.pushNamed(AppRoutes.appointmentSuccess.name, extra: appointmentDetails);
+        } else if (appointmentCubit.state.state == AppointmentStates.fetchingAppointmentByIdFailed) {
+          showSnackbar('An error occured while scheduling appointment', context);
+        }
       } else if (appointmentCubit.state.state == AppointmentStates.creatingAppointmentsFailed) {
         showSnackbar('Error scheduling appointment', context);
       }
@@ -573,7 +580,7 @@ class _ScheduleAppointmentScreenState extends State<ScheduleAppointmentScreen> {
               ),
               const SizedBox(height: 16),
               BlocBuilder<AppointmentCubit, AppointmentState>(builder: (context, data) {
-                return data.state == AppointmentStates.creatingAppointments
+                return data.state == AppointmentStates.creatingAppointments || data.state == AppointmentStates.fetchingAppointmentById
                     ? const Center(
                         child: CircularProgressIndicator(
                           color: Color(0xff03BF9C),

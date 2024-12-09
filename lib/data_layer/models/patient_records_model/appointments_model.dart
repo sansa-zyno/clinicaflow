@@ -7,14 +7,15 @@ class Appointments {
   String? patientId;
   String? id;
 
-  Appointments(
-      {this.appointmentDate,
-        this.timeSlot,
-        this.reason,
-        this.paymentStatus,
-        this.doctorName,
-        this.patientId,
-        this.id});
+  Appointments({
+    this.appointmentDate,
+    this.timeSlot,
+    this.reason,
+    this.paymentStatus,
+    this.doctorName,
+    this.patientId,
+    this.id,
+  });
 
   Appointments.fromJson(Map<String, dynamic> json) {
     appointmentDate = json['appointmentDate'];

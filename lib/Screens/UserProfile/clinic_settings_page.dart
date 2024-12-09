@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:healtether_clinic_app/constants/api.dart';
 import 'package:healtether_clinic_app/data_layer/models/helper_models/schedule_helper.dart';
 import 'package:healtether_clinic_app/data_layer/models/user_model/user_model.dart';
 import 'package:healtether_clinic_app/data_layer/services/shared_preferences_service.dart';
@@ -8,7 +9,6 @@ import 'package:healtether_clinic_app/utils/enums/route_enums.dart';
 import 'package:healtether_clinic_app/utils/extensions.dart/widget_extensions.dart';
 import 'package:healtether_clinic_app/utils/mixins/app_bar_mixin.dart';
 import 'package:healtether_clinic_app/widgets/text_list_tile.dart';
-
 import '../../constants/constants.dart';
 
 class ClinicSettings extends StatefulWidget {
@@ -41,7 +41,7 @@ class _ClinicSettingsState extends State<ClinicSettings> with AppBarMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(context, title: "Clinic Settings", automaticallyImplyLeading: true, showDefaultActions: false),
+      appBar: buildAppBar(context, title: "Clinic Settings", showDefaultActions: false),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -54,10 +54,22 @@ class _ClinicSettingsState extends State<ClinicSettings> with AppBarMixin {
                 children: [
                   Row(
                     children: [
-                      const CircleAvatar(
+                      CircleAvatar(
                         backgroundColor: Colors.white,
                         radius: 20,
-                        backgroundImage: AssetImage('assets/homeimages/image 6 (3).png'),
+                        child: (widget.selectedClinic['logo'] ?? '') == ''
+                            ? Image.asset(
+                                'assets/homeimages/image 6 (3).png',
+                                height: 100,
+                                width: 100,
+                                fit: BoxFit.cover,
+                              )
+                            : Image.network(
+                                "${ApiEndPoint.logoBaseUrl}${widget.selectedClinic['logo']}",
+                                height: 100,
+                                width: 100,
+                              ),
+                        //backgroundImage: AssetImage('assets/homeimages/image 6 (3).png'),
                       ),
                       SizedBox(
                         width: 8,

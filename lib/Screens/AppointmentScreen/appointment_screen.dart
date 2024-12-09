@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:healtether_clinic_app/Screens/AppointmentScreen/widgets/info_card_screen.dart';
-import 'package:healtether_clinic_app/Screens/Models/schedule_date.dart';
+import 'package:healtether_clinic_app/widgets/schedule_date.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/appointment_cubit/appointment_cubit.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/home_page_bottom_nav_cubit/home_page_bottom_nav_cubit.dart';
 import 'package:healtether_clinic_app/constants/constants.dart';
 import 'package:healtether_clinic_app/utils/enums/bloc_enums.dart';
-import 'package:healtether_clinic_app/utils/helper_functions/log.dart';
 
 class AppointmentScreen extends StatefulWidget {
   const AppointmentScreen({super.key});
@@ -22,10 +21,8 @@ class AppointmentScreenState extends State<AppointmentScreen> {
   @override
   void initState() {
     super.initState();
-
     context.read<HomePageBottomNavCubit>().onPageChanged(1);
     context.read<AppointmentCubit>().fetchAppointments(status: selectedDate);
-    log("Initstate called");
   }
 
   @override
@@ -184,7 +181,6 @@ class AppointmentScreenState extends State<AppointmentScreen> {
                           height: MediaQuery.of(context).size.height / 2,
                           child: const Center(child: CircularProgressIndicator()),
                         ),
-
                       if (state.appointments?.isEmpty == true)
                         SizedBox(
                           height: MediaQuery.of(context).size.height / 2,
@@ -193,22 +189,7 @@ class AppointmentScreenState extends State<AppointmentScreen> {
                       if (state.appointments?.isNotEmpty == true)
                         InfoCard(
                           appointments: state.appointments!,
-                        ),
-                      // SizedBox(
-                      //   height: 12,
-                      // ),
-                      // InfoCard(),
-                      // SizedBox(
-                      //   height: 12,
-                      // ),
-                      // InfoCard(),
-                      // SizedBox(
-                      //   height: 12,
-                      // ),
-                      // InfoCard(),
-                      // SizedBox(
-                      //   height: 12,
-                      // ),
+                        )
                     ],
                   ),
                 ),

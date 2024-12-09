@@ -1,22 +1,50 @@
 import 'dart:developer';
 import 'dart:io';
+import 'package:healtether_clinic_app/data_layer/models/drug_model/drug_model.dart';
+import 'package:healtether_clinic_app/data_layer/models/prescription/prescription_report.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart' as mt;
 import 'package:flutter_file_dialog/flutter_file_dialog.dart';
+import 'package:healtether_clinic_app/constants/api.dart';
 import 'package:healtether_clinic_app/constants/app_colors.dart';
 import 'package:healtether_clinic_app/utils/mixins/ui_info_mixin.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/widgets.dart';
 import 'package:pdf/pdf.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
 class PrescriptionPdf with UiInfoMixin {
-  generate(mt.BuildContext context) async {
+  generate(mt.BuildContext context, {required PrescriptionReport prescriptionReport}) async {
     final Directory? directory;
     //final ByteData fontData = await rootBundle.load('assets/fonts/Outfit/static/Outfit-Regular.ttf');
     //final ttf = pw.Font.ttf(fontData.buffer.asByteData());
-    final image = MemoryImage(
-      (await rootBundle.load('assets/homeimages/Ellipse 250.png')).buffer.asUint8List(),
-    );
+    var image;
+    if ((prescriptionReport.clinic?.logo ?? '') == '') {
+      image = MemoryImage(
+        (await rootBundle.load('assets/homeimages/Ellipse 250.png')).buffer.asUint8List(),
+      );
+    } else {
+      // Construct the URL
+      final String imageUrl = "${ApiEndPoint.logoBaseUrl}${prescriptionReport.clinic!.logo}";
+
+      try {
+        // Fetch image from URL
+        final http.Response response = await http.get(Uri.parse(imageUrl));
+        if (response.statusCode == 200) {
+          // Convert response body to Uint8List
+          image = MemoryImage(response.bodyBytes);
+        } else {
+          throw Exception('Failed to load image: ${response.statusCode}');
+        }
+      } catch (e) {
+        log('Error loading image: $e');
+        image = MemoryImage(
+          (await rootBundle.load('assets/homeimages/Ellipse 250.png')).buffer.asUint8List(),
+        );
+      }
+    }
+
     try {
       final pdf = Document();
       pdf.addPage(MultiPage(
@@ -40,7 +68,8 @@ class PrescriptionPdf with UiInfoMixin {
                       children: [
                         Image(
                           image,
-                          width: 90,
+                          height: 60,
+                          width: 60,
                           fit: BoxFit.contain,
                         ),
                         SizedBox(
@@ -51,14 +80,14 @@ class PrescriptionPdf with UiInfoMixin {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Kim Jones Clinic',
+                                prescriptionReport.clinic?.clinicName ?? 'N/A',
                                 style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                               ),
                               SizedBox(
                                 height: 6,
                               ),
                               Text(
-                                'Dr. Ajit Bhaia , Neurologist',
+                                'Dr. ${prescriptionReport.doctorName ?? 'N/A'}',
                                 style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                               ),
                               SizedBox(
@@ -68,13 +97,13 @@ class PrescriptionPdf with UiInfoMixin {
                                 children: [
                                   Expanded(
                                     child: Text(
-                                      'MBBS | FCPS (Neurology) | MRCP (Ireland) | MRCP (UK)America Board Of Electro Diagnostic Medicine',
+                                      prescriptionReport.doctorId?.specialization ?? 'N/A',
                                       style: TextStyle(fontSize: 12),
                                     ),
                                   ),
                                 ],
                               ),
-                              SizedBox(
+                              /* SizedBox(
                                 height: 6,
                               ),
                               Row(
@@ -88,7 +117,7 @@ class PrescriptionPdf with UiInfoMixin {
                                     style: TextStyle(fontSize: 12),
                                   )
                                 ],
-                              )
+                              )*/
                             ],
                           ),
                         )
@@ -102,7 +131,7 @@ class PrescriptionPdf with UiInfoMixin {
                       Expanded(
                           flex: 2,
                           child: Text(
-                            'Patient details: Jane Doe, Female, 36 yrs, 9653256421',
+                            'Patient details: ${prescriptionReport.patientName}, ${prescriptionReport.patientGender}, ${prescriptionReport.patientAge} yrs, ${prescriptionReport.patientMobile}',
                             style: TextStyle(fontSize: 12),
                           )),
                       SizedBox(
@@ -114,11 +143,11 @@ class PrescriptionPdf with UiInfoMixin {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Date: 27 June, 2024, 04:37pm',
+                              'Date: ${DateFormat('dd MMM, yyyy, hh:mm a').format(prescriptionReport.appointmentDate!)}',
                               style: TextStyle(fontSize: 12),
                             ),
                             Text(
-                              'Patient ID: 100325',
+                              'Patient ID: ${prescriptionReport.clinicPatientId}',
                               style: TextStyle(fontSize: 12),
                             )
                           ],
@@ -127,7 +156,7 @@ class PrescriptionPdf with UiInfoMixin {
                     ],
                   ),
                 ),
-                Padding(
+                /*Padding(
                     padding: EdgeInsets.all(8),
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Text(
@@ -144,46 +173,38 @@ class PrescriptionPdf with UiInfoMixin {
                             style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                           ),
                           Row(
-                              children: List.generate(['Asthma, ', 'Hypertension'].length,
-                                  (index) => Text(['Asthma, ', 'Hypertension'][index], style: TextStyle(fontSize: 12))))
+                              children: List.generate(medicalHistory?['familyHistory']?.length ?? 0,
+                                  (index) => Text(medicalHistory?['familyHistory']![index].name ?? '', style: const TextStyle(fontSize: 12))))
                         ],
                       ),
                       Row(
                         children: [
                           Text('Medical Procedures: ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                           Row(
-                              children:
-                                  List.generate(['Heart Sugery'].length, (index) => Text(['Heart Sugery'][index], style: TextStyle(fontSize: 12))))
+                              children: List.generate(medicalHistory?['pastProcedureHistory']?.length ?? 0,
+                                  (index) => Text(medicalHistory?['pastProcedureHistory']![index].name ?? '', style: const TextStyle(fontSize: 12))))
                         ],
                       ),
                       Row(
                         children: [
                           Text('Medication: ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                           Row(
-                              children: List.generate(['Dolo 600mg, ', 'Paracetamol'].length,
-                                  (index) => Text(['Dolo 600mg, ', 'Paracetamol'][index], style: TextStyle(fontSize: 12))))
+                              children: List.generate(medicalHistory?['medication']?.length ?? 0,
+                                  (index) => Text(medicalHistory?['medication']![index].name ?? '', style: const TextStyle(fontSize: 12))))
                         ],
                       ),
                       Row(
                         children: [
                           Text('Allergies: ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                           Row(
-                              children: List.generate(
-                                  ['Pollen, ', 'Sunlight'].length, (index) => Text(['Pollen, ', 'Sunlight'][index], style: TextStyle(fontSize: 12))))
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Text('Phobias/Fears: ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                          Row(
-                              children: List.generate(
-                                  ['Pollen, ', 'Sunlight'].length, (index) => Text(['Pollen, ', 'Sunlight'][index], style: TextStyle(fontSize: 12))))
+                              children: List.generate(medicalHistory?['allergies']?.length ?? 0,
+                                  (index) => Text(medicalHistory?['allergies']![index].name ?? '', style: const TextStyle(fontSize: 12))))
                         ],
                       ),
                     ])),
                 SizedBox(
                   height: 15,
-                ),
+                ),*/
                 Padding(
                     padding: EdgeInsets.all(8),
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -194,44 +215,75 @@ class PrescriptionPdf with UiInfoMixin {
                       Row(
                         children: [
                           Text(
-                            'Family history: ',
+                            'Blood Pressure: ',
                             style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                           ),
-                          Row(
-                              children: List.generate(['Asthma, ', 'Hypertension'].length,
-                                  (index) => Text(['Asthma, ', 'Hypertension'][index], style: TextStyle(fontSize: 12))))
+                          Text(
+                              '${prescriptionReport.vitals?.bloodPressure?.systolic ?? ''}/${prescriptionReport.vitals?.bloodPressure?.diastolic ?? ''} mm Hg',
+                              style: const TextStyle(fontSize: 12))
                         ],
                       ),
                       Row(
                         children: [
-                          Text('Medical Procedures: ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                          Row(
-                              children:
-                                  List.generate(['Heart Sugery'].length, (index) => Text(['Heart Sugery'][index], style: TextStyle(fontSize: 12))))
+                          Text(
+                            'SpO2 levels: ',
+                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                          ),
+                          Text('${prescriptionReport.vitals?.spo2 ?? ''} %', style: const TextStyle(fontSize: 12))
                         ],
                       ),
                       Row(
                         children: [
-                          Text('Medication: ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                          Row(
-                              children: List.generate(['Dolo 600mg, ', 'Paracetamol'].length,
-                                  (index) => Text(['Dolo 600mg, ', 'Paracetamol'][index], style: TextStyle(fontSize: 12))))
+                          Text(
+                            'Pulse Rate: ',
+                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                          ),
+                          Text('${prescriptionReport.vitals?.pulseRate ?? ''} beats/min', style: const TextStyle(fontSize: 12))
                         ],
                       ),
                       Row(
                         children: [
-                          Text('Allergies: ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                          Row(
-                              children: List.generate(
-                                  ['Pollen, ', 'Sunlight'].length, (index) => Text(['Pollen, ', 'Sunlight'][index], style: TextStyle(fontSize: 12))))
+                          Text(
+                            'Respiratory Rate: ',
+                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                          ),
+                          Text('${prescriptionReport.vitals?.respiratoryRate ?? ''} beats/min', style: const TextStyle(fontSize: 12))
                         ],
                       ),
                       Row(
                         children: [
-                          Text('Phobias/Fears: ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                          Row(
-                              children: List.generate(
-                                  ['Pollen, ', 'Sunlight'].length, (index) => Text(['Pollen, ', 'Sunlight'][index], style: TextStyle(fontSize: 12))))
+                          Text(
+                            'Temperature: ',
+                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                          ),
+                          Text('${prescriptionReport.vitals?.temperature ?? ''} \u2109', style: const TextStyle(fontSize: 12))
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            'RBS: ',
+                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                          ),
+                          Text('${prescriptionReport.vitals?.rbs ?? ''} mg/dL', style: const TextStyle(fontSize: 12))
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            'Height: ',
+                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                          ),
+                          Text('${prescriptionReport.vitals?.height ?? ''} cm', style: const TextStyle(fontSize: 12))
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            'Weight: ',
+                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                          ),
+                          Text('${prescriptionReport.vitals?.weight ?? ''} Kg', style: const TextStyle(fontSize: 12))
                         ],
                       ),
                     ])),
@@ -253,27 +305,24 @@ class PrescriptionPdf with UiInfoMixin {
                       Divider(
                         height: 0,
                       ),
-                      Row(
-                        children: [
-                          SizedBox(width: 150, child: Text('Fever', style: TextStyle(fontSize: 12))),
-                          SizedBox(
-                            width: 50,
-                          ),
-                          Text('Notes', style: TextStyle(fontSize: 12))
-                        ],
-                      ),
-                      SizedBox(
-                        height: 5,
-                      ),
-                      Row(
-                        children: [
-                          SizedBox(width: 150, child: Text('Fever')),
-                          SizedBox(
-                            width: 50,
-                          ),
-                          Text('Notes')
-                        ],
-                      ),
+                      ListView.builder(
+                          itemCount: prescriptionReport.prescriptions?.symptoms?.length ?? 0,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 5.0),
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                      width: 150,
+                                      child: Text(prescriptionReport.prescriptions?.symptoms?[index].name ?? '', style: TextStyle(fontSize: 12))),
+                                  SizedBox(
+                                    width: 50,
+                                  ),
+                                  Text(prescriptionReport.prescriptions?.symptoms?[index].privateNote ?? '', style: TextStyle(fontSize: 12))
+                                ],
+                              ),
+                            );
+                          }),
                     ])),
                 SizedBox(
                   height: 15,
@@ -285,7 +334,14 @@ class PrescriptionPdf with UiInfoMixin {
                       Divider(
                         height: 0,
                       ),
-                      Text('Pneumonia', style: TextStyle(fontSize: 12)),
+                      ListView.builder(
+                          itemCount: prescriptionReport.prescriptions?.diagnosis?.length ?? 0,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 5.0),
+                              child: Text(prescriptionReport.prescriptions?.diagnosis?[index].name ?? '', style: TextStyle(fontSize: 12)),
+                            );
+                          }),
                     ])),
                 SizedBox(
                   height: 15,
@@ -295,7 +351,7 @@ class PrescriptionPdf with UiInfoMixin {
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Row(
                         children: [
-                          SizedBox(width: 40, child: Text('Drugs', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold))),
+                          SizedBox(width: 100, child: Text('Drugs', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold))),
                           SizedBox(
                             width: 10,
                           ),
@@ -303,76 +359,61 @@ class PrescriptionPdf with UiInfoMixin {
                           SizedBox(
                             width: 8,
                           ),
-                          SizedBox(width: 40, child: Text('Time', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold))),
+                          SizedBox(width: 70, child: Text('Time', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold))),
                           SizedBox(
                             width: 8,
                           ),
                           SizedBox(width: 70, child: Text('Frequency', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold))),
-                          SizedBox(
+                          /*  SizedBox(
                             width: 8,
                           ),
                           SizedBox(width: 60, child: Text('Duration', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold))),
                           SizedBox(
                             width: 8,
                           ),
-                          SizedBox(width: 40, child: Text('Notes', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold))),
+                          SizedBox(width: 40, child: Text('Notes', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold))),*/
                         ],
                       ),
                       Divider(
                         height: 0,
                       ),
-                      Row(
-                        children: [
-                          SizedBox(width: 40, child: Text('Tab DOLO 500mg', style: TextStyle(fontSize: 12))),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          SizedBox(width: 50, child: Text('1', style: TextStyle(fontSize: 12))),
-                          SizedBox(
-                            width: 8,
-                          ),
-                          SizedBox(width: 40, child: Text('Before Meal', style: TextStyle(fontSize: 12))),
-                          SizedBox(
-                            width: 8,
-                          ),
-                          SizedBox(width: 70, child: Text('1-0-1', style: TextStyle(fontSize: 12))),
-                          SizedBox(
-                            width: 8,
-                          ),
-                          SizedBox(width: 60, child: Text('5 days', style: TextStyle(fontSize: 12))),
-                          SizedBox(
-                            width: 8,
-                          ),
-                          SizedBox(width: 40, child: Text('Notes', style: TextStyle(fontSize: 12))),
-                        ],
-                      ),
-                      Divider(),
-                      Row(
-                        children: [
-                          SizedBox(width: 40, child: Text('Syp Ambrodel', style: TextStyle(fontSize: 12))),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          SizedBox(width: 50, child: Text('10ml', style: TextStyle(fontSize: 12))),
-                          SizedBox(
-                            width: 8,
-                          ),
-                          SizedBox(width: 40, child: Text('After Meal', style: TextStyle(fontSize: 12))),
-                          SizedBox(
-                            width: 8,
-                          ),
-                          SizedBox(width: 70, child: Text('1-0-1', style: TextStyle(fontSize: 12))),
-                          SizedBox(
-                            width: 8,
-                          ),
-                          SizedBox(width: 60, child: Text('5 days', style: TextStyle(fontSize: 12))),
-                          SizedBox(
-                            width: 8,
-                          ),
-                          SizedBox(width: 40, child: Text('Notes', style: TextStyle(fontSize: 12))),
-                        ],
-                      ),
-                      Divider(),
+                      ListView.separated(
+                          itemCount: prescriptionReport.prescriptions?.drugPrescriptions?.length ?? 0,
+                          itemBuilder: (context, index) {
+                            Drug? drug = prescriptionReport.prescriptions?.drugPrescriptions?[index];
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 5.0),
+                              child: Row(
+                                children: [
+                                  SizedBox(width: 100, child: Text(drug?.name ?? '', style: TextStyle(fontSize: 12))),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  SizedBox(width: 50, child: Text(drug?.quantity ?? '', style: TextStyle(fontSize: 12))),
+                                  SizedBox(
+                                    width: 8,
+                                  ),
+                                  SizedBox(width: 70, child: Text(drug?.dosageTime ?? '', style: TextStyle(fontSize: 12))),
+                                  SizedBox(
+                                    width: 8,
+                                  ),
+                                  SizedBox(width: 70, child: Text(drug?.dosageFrequency ?? '', style: TextStyle(fontSize: 12))),
+                                  /*  SizedBox(
+                                    width: 8,
+                                  ),
+                                  SizedBox(
+                                      width: 60,
+                                      child:
+                                          Text('${drug.duration?['value'] ?? ''} ${drug.duration?['unit'] ?? ''}', style: TextStyle(fontSize: 12))),
+                                  SizedBox(
+                                    width: 8,
+                                  ),
+                                  SizedBox(width: 40, child: Text('Notes', style: TextStyle(fontSize: 12))),*/
+                                ],
+                              ),
+                            );
+                          },
+                          separatorBuilder: (context, index) => Divider()),
                     ])),
                 SizedBox(
                   height: 15,
@@ -384,8 +425,7 @@ class PrescriptionPdf with UiInfoMixin {
                       Divider(
                         height: 0,
                       ),
-                      Text('Eat a balanced diet with lots of fibre. Drink lots of water. Drink Electrolyte Solutions to stay hydrated',
-                          style: TextStyle(fontSize: 12)),
+                      Text(prescriptionReport.prescriptions?.patientAdvice ?? '', style: TextStyle(fontSize: 12)),
                       SizedBox(
                         height: 15,
                       ),
@@ -395,7 +435,7 @@ class PrescriptionPdf with UiInfoMixin {
                           SizedBox(
                             width: 8,
                           ),
-                          Text('None', style: TextStyle(fontSize: 12))
+                          Text(prescriptionReport.prescriptions?.followUpDate ?? '', style: TextStyle(fontSize: 12))
                         ],
                       ),
                     ])),
@@ -413,13 +453,19 @@ class PrescriptionPdf with UiInfoMixin {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
-                                children: [Text('Ph: ', style: TextStyle(fontSize: 12)), Text('9659355321', style: TextStyle(fontSize: 12))],
+                                children: [
+                                  Text('Ph: ', style: TextStyle(fontSize: 12)),
+                                  Text(prescriptionReport.clinic?.adminUserId?.mobile ?? '', style: TextStyle(fontSize: 12))
+                                ],
                               ),
                               SizedBox(
                                 height: 8,
                               ),
                               Row(
-                                children: [Text('email: ', style: TextStyle(fontSize: 12)), Text('Bhaila@gmail.com', style: TextStyle(fontSize: 12))],
+                                children: [
+                                  Text('email: ', style: TextStyle(fontSize: 12)),
+                                  Text(prescriptionReport.clinic?.adminUserId?.email ?? '', style: TextStyle(fontSize: 12))
+                                ],
                               )
                             ],
                           ),
@@ -434,12 +480,10 @@ class PrescriptionPdf with UiInfoMixin {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text('Add: ', style: TextStyle(fontSize: 12)),
-                                    Expanded(
-                                        child:
-                                            Text('123 Street near HN Market, 2nd floor, Hydrabad, Telangana, 669682', style: TextStyle(fontSize: 12)))
+                                    Expanded(child: Text(prescriptionReport.clinic?.address ?? '', style: TextStyle(fontSize: 12)))
                                   ],
                                 ),
-                                SizedBox(
+                                /* SizedBox(
                                   height: 8,
                                 ),
                                 Row(
@@ -448,7 +492,7 @@ class PrescriptionPdf with UiInfoMixin {
                                     Text('Timings: ', style: TextStyle(fontSize: 12)),
                                     Expanded(child: Text('8:30 am - 10:50 pm Mon-Fri', style: TextStyle(fontSize: 12)))
                                   ],
-                                )
+                                )*/
                               ],
                             ),
                           )

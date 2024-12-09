@@ -9,6 +9,7 @@ import 'package:healtether_clinic_app/Screens/DigitalScreensAll/symptoms_diagnos
 import 'package:healtether_clinic_app/business_logic/cubits/drug_cubit/drug_prescription_cubit.dart';
 import 'package:healtether_clinic_app/constants/app_text.dart';
 import 'package:healtether_clinic_app/data_layer/models/appointment_models/appointment_model.dart';
+import 'package:healtether_clinic_app/data_layer/models/appointment_slot/time_slot.dart';
 import 'package:healtether_clinic_app/data_layer/models/drug_model/drug_model.dart';
 import 'package:healtether_clinic_app/data_layer/sample_objects/sample_objects.dart';
 import 'package:healtether_clinic_app/constants/app_constants.dart';
@@ -20,6 +21,7 @@ import 'package:healtether_clinic_app/utils/helper_functions/log.dart';
 import 'package:healtether_clinic_app/utils/mixins/device_info_mixin.dart';
 import 'package:healtether_clinic_app/utils/mixins/time_parser_mixin.dart';
 import 'package:healtether_clinic_app/utils/mixins/ui_info_mixin.dart';
+import 'package:healtether_clinic_app/utils/snackbar.dart';
 import 'package:healtether_clinic_app/widgets/buttons/my_selectable_container.dart';
 import 'package:healtether_clinic_app/widgets/components/build_section.dart';
 import 'package:healtether_clinic_app/widgets/components/dual_action_bottom_nav.dart';
@@ -28,11 +30,13 @@ import 'package:healtether_clinic_app/widgets/components/vitals_and_past_history
 import 'package:healtether_clinic_app/widgets/section_text.dart';
 import 'package:healtether_clinic_app/widgets/buttons/my_elevated_button.dart';
 import 'package:healtether_clinic_app/widgets/text_list_tile.dart';
+import 'package:healtether_clinic_app/widgets/time_slot_item.dart';
+import 'package:intl/intl.dart';
 
 class DigitalPrecriptionScreen extends StatefulWidget {
   final Appointment appointment;
-  final List<Drug>? selectedDrugs;
-  const DigitalPrecriptionScreen({super.key, required this.appointment, this.selectedDrugs});
+  final Map<String, dynamic>? savedDrugPrescription;
+  const DigitalPrecriptionScreen({super.key, required this.appointment, this.savedDrugPrescription});
 
   @override
   State<DigitalPrecriptionScreen> createState() => _DigitalPrecriptionScreenState();
@@ -46,10 +50,11 @@ class _DigitalPrecriptionScreenState extends State<DigitalPrecriptionScreen> wit
   final FocusNode searchBarFocusNode = FocusNode();
   Map<String, DateTime?> followUpDate = {};
   TextEditingController customfollowUpDateController = TextEditingController();
-  TextEditingController followUpTimeHourController = TextEditingController();
-  TextEditingController followUpTimeMinController = TextEditingController();
-  bool isAm = false;
-  bool isPm = false;
+  //TextEditingController followUpTimeHourController = TextEditingController();
+  //TextEditingController followUpTimeMinController = TextEditingController();
+  // bool isAm = false;
+  //bool isPm = false;
+  TimeSlot timeSlot = const TimeSlot('');
   bool forceStillTyping = false;
   bool get isTyping => forceStillTyping || searchBarFocusNode.hasFocus;
   TextStyle get subtitleTextStyle => GoogleFonts.urbanist(textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14, height: 17.36 / 14));
@@ -60,7 +65,20 @@ class _DigitalPrecriptionScreenState extends State<DigitalPrecriptionScreen> wit
   void initState() {
     super.initState();
     context.read<DrugPrescriptionCubit>().fetchFrequentlySearchedDrugs();
-    selectedDrugs = widget.selectedDrugs ?? [];
+    selectedDrugs = widget.savedDrugPrescription?['drugs'] ?? [];
+    diet.text = widget.savedDrugPrescription?['patientAdvice'] ?? '';
+    otherInstructions.text = widget.savedDrugPrescription?['privateNotes'] ?? '';
+    followUpDate = widget.savedDrugPrescription?['followUpDate'] == null
+        ? {'None': null}
+        : {'Custom': DateTime.parse(widget.savedDrugPrescription?['followUpDate'])};
+    String? start = widget.savedDrugPrescription?['followUpTimeSlot'].toString().split('-')[0];
+    String? finish = widget.savedDrugPrescription?['followUpTimeSlot'].toString().split('-')[1];
+    /* if (start != null) {
+      timeSlot = timeSlot.copyWith(start: TimeOfDay.fromDateTime(DateFormat("h:mm a").parse(start.toString())));
+    } else {}
+    if (finish != null) {
+      timeSlot = timeSlot.copyWith(start: TimeOfDay.fromDateTime(DateFormat("h:mm a").parse(finish.toString())));
+    } else {}*/
   }
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -78,12 +96,11 @@ class _DigitalPrecriptionScreenState extends State<DigitalPrecriptionScreen> wit
                   forceStillTyping = false;
                   setState(() {});
                 } else {
-                  context.read<DrugPrescriptionCubit>().getSavedDrugPrescription(appointmentId: widget.appointment.id!);
                   context.pop();
                 }
               },
-              child: Padding(
-                padding: const EdgeInsets.only(left: 8),
+              child: const Padding(
+                padding: EdgeInsets.only(left: 8),
                 child: Icon(Icons.arrow_back),
               )),
           title: Text(
@@ -114,6 +131,7 @@ class _DigitalPrecriptionScreenState extends State<DigitalPrecriptionScreen> wit
             if (state.state == DrugPrescriptionStates.drugPrescriptionPosted && !hasNavigated) {
               dev.log(state.state.toString());
               hasNavigated = true;
+              showSnackbar("Drug prescription saved successfully", context);
               context.read<DrugPrescriptionCubit>().getSavedDrugPrescription(appointmentId: widget.appointment.id!);
               context.pop();
             }
@@ -173,22 +191,44 @@ class _DigitalPrecriptionScreenState extends State<DigitalPrecriptionScreen> wit
                 text: "Clear All",
                 focusedText: "Save",
                 onPressed: () {
-                  selectedDrugs.clear();
-                  setState(() {});
+                  setState(() {
+                    selectedDrugs.clear();
+                    searchController.text = "";
+                    diet.text = "";
+                    otherInstructions.text = "";
+                    followUpDate = {};
+                    customfollowUpDateController.text = "";
+                    // followUpTimeHourController.text = "";
+                    //followUpTimeMinController.text = "";
+                  });
                 },
                 onFocusedPressed: () {
-                  if (selectedDrugs != null) {
-                    dev.log(selectedDrugs.map((e) => e.toMap()).toList().toString());
+                  if (selectedDrugs.isNotEmpty) {
+                    dev.log("${timeSlot.start?.format(context) ?? ''} - ${timeSlot.finish?.format(context)}");
+                    // dev.log(selectedDrugs.map((e) => e.toMap()).toList().toString());
                     hasNavigated = false;
                     context.read<DrugPrescriptionCubit>().postDrugPrescription(
-                        patientId: widget.appointment.patientId!,
-                        appointmentId: widget.appointment.id!,
-                        drugs: selectedDrugs.map((e) => e.toMap()).toList());
+                          patientId: widget.appointment.patientId!,
+                          appointmentId: widget.appointment.id!,
+                          drugs: selectedDrugs.map((e) => e.toMap()).toList(),
+                          patientAdvice: diet.text,
+                          privateNotes: otherInstructions.text,
+                          followupDate: () {
+                            if (followUpDate.values.isNotEmpty) {
+                              //there can be only one value
+                              DateTime? date = followUpDate.values.elementAt(0);
+                              if (date != null) {
+                                return '${date.year.toString()}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+                              } else {
+                                return '';
+                              }
+                            } else {
+                              return '';
+                            }
+                          }(),
+                          followupTimeSlot: "${timeSlot.start?.format(context) ?? ''} - ${timeSlot.finish?.format(context)}",
+                        );
                   }
-                  /*if (context.read<DrugPrescriptionCubit>().getSavedDrugs(widget.appointment.patientId)?.isEmpty == true) {
-                    showSnackMessage(context, "No drugs added for this patient");
-                    return;
-                  }*/
                 });
           }
         }));
@@ -321,7 +361,7 @@ class _DigitalPrecriptionScreenState extends State<DigitalPrecriptionScreen> wit
           style: GoogleFonts.urbanist(
               textStyle: const TextStyle(color: AppColors.eerieBlack, fontWeight: FontWeight.w700, fontSize: 14, height: 17.36 / 14)),
         ).pOnly(left: 16, right: 16, bottom: 12),
-        Row(
+        /* Row(
           children: [
             Expanded(
                 child: CustomTextField(
@@ -375,7 +415,20 @@ class _DigitalPrecriptionScreenState extends State<DigitalPrecriptionScreen> wit
               ),
             )
           ],
-        ).pSymmetric(),
+        ).pSymmetric(),*/
+        TimeSlotItem(
+                slot: timeSlot,
+                onTap: () => {},
+                selected: true,
+                onStartChanged: (newTime) {
+                  timeSlot = timeSlot.copyWith(start: newTime);
+                },
+                onFinishChanged: (newTime) {
+                  timeSlot = timeSlot.copyWith(finish: newTime);
+                },
+                showDelete: false,
+                onDelete: () {})
+            .pSymmetric(),
 
         const SizedBox(
           height: 24,

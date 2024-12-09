@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:healtether_clinic_app/Screens/ChatScreen/chat_detailes_screen.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/messaging/whatsapp/whatsapp_messaging_cubit.dart';
 import 'package:healtether_clinic_app/utils/enums/bloc_enums.dart';
 import 'package:healtether_clinic_app/utils/enums/route_enums.dart';
@@ -10,9 +9,11 @@ import 'package:healtether_clinic_app/utils/mixins/ui_info_mixin.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../data_layer/models/appointment_models/appointment_model.dart';
+
 class ScheduleSuccessfullyScreen extends StatefulWidget {
-  final Map appointmentDetails;
-  const ScheduleSuccessfullyScreen({required this.appointmentDetails, Key? key}) : super(key: key);
+  final Appointment appointment;
+  const ScheduleSuccessfullyScreen({required this.appointment, Key? key}) : super(key: key);
 
   @override
   State<ScheduleSuccessfullyScreen> createState() => _ScheduleSuccessfullyScreenState();
@@ -152,7 +153,7 @@ class _ScheduleSuccessfullyScreenState extends State<ScheduleSuccessfullyScreen>
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
-                                    "${widget.appointmentDetails['name']}",
+                                    widget.appointment.name ?? '',
                                     style: GoogleFonts.roboto(
                                       textStyle: TextStyle(
                                         fontWeight: FontWeight.w500,
@@ -184,7 +185,7 @@ class _ScheduleSuccessfullyScreenState extends State<ScheduleSuccessfullyScreen>
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
-                                    "${widget.appointmentDetails['patientId']}",
+                                    widget.appointment.clinicPatientId ?? '',
                                     style: GoogleFonts.roboto(
                                       textStyle: TextStyle(
                                         fontWeight: FontWeight.w500,
@@ -216,7 +217,7 @@ class _ScheduleSuccessfullyScreenState extends State<ScheduleSuccessfullyScreen>
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
-                                    "${widget.appointmentDetails['doctorName']}",
+                                    widget.appointment.doctorName ?? '',
                                     style: GoogleFonts.roboto(
                                       textStyle: TextStyle(
                                         fontWeight: FontWeight.w500,
@@ -247,7 +248,7 @@ class _ScheduleSuccessfullyScreenState extends State<ScheduleSuccessfullyScreen>
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
-                                  '${widget.appointmentDetails['virtualConsultation'] == 'false' ? 'Physical' : 'Virtual'}',
+                                  widget.appointment.virtualConsultation == false ? 'Physical' : 'Virtual',
                                   style: GoogleFonts.roboto(
                                     textStyle: TextStyle(
                                       color: const Color(0xFF0C091F),
@@ -277,7 +278,7 @@ class _ScheduleSuccessfullyScreenState extends State<ScheduleSuccessfullyScreen>
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
-                                  DateFormat('d MMM, y').format(DateTime.parse("${widget.appointmentDetails['appointmentDate']}")),
+                                  DateFormat('d MMM, y').format(DateTime.parse(widget.appointment.appointmentDate ?? '')),
                                   style: GoogleFonts.roboto(
                                     textStyle: TextStyle(
                                       color: const Color(0xFF0C091F),
@@ -307,7 +308,7 @@ class _ScheduleSuccessfullyScreenState extends State<ScheduleSuccessfullyScreen>
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
-                                  '${widget.appointmentDetails['timeSlot']}',
+                                  widget.appointment.timeSlot ?? '',
                                   style: GoogleFonts.roboto(
                                     textStyle: TextStyle(
                                       color: const Color(0xFF0C091F),
@@ -357,11 +358,9 @@ class _ScheduleSuccessfullyScreenState extends State<ScheduleSuccessfullyScreen>
                               }));*/
 
                               String text =
-                                  'APPOINTMENT DETAILS\nPatient name: ${widget.appointmentDetails['name']}\nPatient ID: ${widget.appointmentDetails['patientId']}\nAttending Doctor: ${widget.appointmentDetails['doctorName']}\nMode: ${widget.appointmentDetails['virtualConsultation'] == 'false' ? 'Physical' : 'Virtual'}\nDate: ${DateFormat('d MMM, y').format(DateTime.parse("${widget.appointmentDetails['appointmentDate']}"))}\nTime: ${widget.appointmentDetails['timeSlot']}';
+                                  'APPOINTMENT DETAILS\nPatient name: ${widget.appointment.name}\nPatient ID: ${widget.appointment.clinicPatientId}\nAttending Doctor: ${widget.appointment.doctorName}\nMode: ${widget.appointment.virtualConsultation == false ? 'Physical' : 'Virtual'}\nDate: ${DateFormat('d MMM, y').format(DateTime.parse("${widget.appointment.appointmentDate}"))}\nTime: ${widget.appointment.timeSlot}';
                               //launchWhatsapp('+91${widget.appointmentDetails['mobile']}', text);
-                              context
-                                  .read<WhatsappMessagingCubit>()
-                                  .sendWhatsappMsg(phoneNo: '+91${widget.appointmentDetails['mobile']}', message: text);
+                              context.read<WhatsappMessagingCubit>().sendWhatsappMsg(phoneNo: '+91${widget.appointment.mobile}', message: text);
                             },
                             child: Container(
                               width: 280,

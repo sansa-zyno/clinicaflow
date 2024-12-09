@@ -6,7 +6,7 @@ class StaffState {
   // final bool isLoading;
   final StaffStates state;
   final String? errorMessage;
-  final CreateStaffResponse? createStaffResponse;
+  final String? createStaffResponse;
   StaffState({
     required this.state,
     this.errorMessage,
@@ -17,14 +17,12 @@ class StaffState {
   StaffState copyWith({
     StaffStates? state,
     String? errorMessage,
-    CreateStaffResponse? createStaffResponse,
+    String? createStaffResponse,
     List<Staff>? staffList,
   }) {
     return StaffState(
       state: state ?? this.state,
-      errorMessage: errorMessage?.isEmpty == true
-          ? null
-          : errorMessage ?? this.errorMessage,
+      errorMessage: errorMessage?.isEmpty == true ? null : errorMessage ?? this.errorMessage,
       createStaffResponse: createStaffResponse ?? this.createStaffResponse,
       staffList: staffList ?? this.staffList,
     );

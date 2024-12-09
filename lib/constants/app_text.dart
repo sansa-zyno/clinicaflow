@@ -2,6 +2,7 @@ class AppText {
   static const String notification = 'notification';
   static const String scheduleAppointment = 'Schedule Appointment';
   static const String addMember = 'Add member';
+  static const String editProfile = "Edit Profile";
   static const String skip = 'skip';
   static const String scheduleForLater = 'Schedule ForLater';
   static const String scheduleNow = 'Schedule Now';
@@ -23,8 +24,7 @@ class AppText {
   static const String pincode = 'Pin code';
   static const String save = 'Save';
   //static const String createDigitalPrescription = 'Create Digital Prescription';
-  static const String medicalConditionInvestigation =
-      'Medical Condition Investigation';
+  static const String medicalConditionInvestigation = 'Medical Condition Investigation';
   static const String pastHistory = 'Past History';
   static const String add = 'Add';
   static const String documents = 'Documents';
@@ -32,8 +32,7 @@ class AppText {
   static const String additionalID = 'Additional ID';
   static const String addAnotherID = 'Add another ID';
   static const String addDocuments = 'Add documents';
-  static const String uploadImage =
-      'Please upload image/document at size less than 50Mb';
+  static const String uploadImage = 'Please upload image/document at size less than 50Mb';
   static const String list = 'List';
   static const String paymentDetails = 'Payment Details';
   static const String upiID = 'UPI ID';
@@ -52,13 +51,13 @@ class AppText {
   static const String lastName = 'Last Name';
   static const String birthDate = 'BirthDate';
   static const String age = 'Age';
-  static const String editProfile = 'Edit Profile';
   static const String manageStaff = 'Manage Staff';
   static const String quickSearch = 'Quick Search';
   static const String staffRecords = 'Staff Records';
   static const String PERSONALDETAILS = 'PERSONAL DETAILS';
   static const String CONTACTDETAILS = 'CONTACT DETAILS';
   static const String BANKDETAILS = 'BANK DETAILS';
+  static const String DOCUMENTS = 'DOCUMENTS';
   static const String paymentReceipt = 'Payment Receipt';
 
   static const String payByCash = 'Pay By Cash';
@@ -119,7 +118,7 @@ class AppText {
   static const String addAppointment = 'Add Appointment';
   static const String attendingDoctor = 'Attending Doctor';
   static const String appointmentDetails = 'Appointment Details';
-  static const String startConsultation = 'Add records';
+  static const String addRecords = 'Add Records';
   static const String addPrescription = 'Add Prescription';
   static const String or = 'Or';
   static const String addProcedureRecord = 'Add Procedure Record';

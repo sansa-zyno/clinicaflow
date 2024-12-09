@@ -2,8 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:healtether_clinic_app/Screens/AppointmentScreen/appoinment_detail_screen.dart';
-import 'package:healtether_clinic_app/Screens/payment_records/payments_receipts_screen.dart';
 import 'package:healtether_clinic_app/business_logic/blocs/payment_bloc/payments_bloc.dart';
 import 'package:healtether_clinic_app/business_logic/blocs/receipt_bloc/receipt_bloc.dart';
 import 'package:healtether_clinic_app/constants/constants.dart';
@@ -39,12 +37,11 @@ class _PaymentsReceiptState extends State<PaymentsReceipt> {
               "AMOUNT PAID BY CASH",
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
-            const GreenLine(),
+            //const GreenLine(),
             const SizedBox(
               height: 8,
             ),
-            RowTextfield(
-                "Amount Received", _cashController, "in Rupeess    INR"),
+            RowTextfield("Amount Received", _cashController, "in Rupeess    INR"),
             const SizedBox(
               height: 8,
             ),
@@ -71,10 +68,7 @@ class _PaymentsReceiptState extends State<PaymentsReceipt> {
                 Expanded(
                   child: GestureDetector(
                     onTap: context.pop,
-                    child: const CustomButton(
-                        data: "Back",
-                        height: 50,
-                        color: Color.fromARGB(255, 223, 221, 229)),
+                    child: const CustomButton(data: "Back", height: 50, color: Color.fromARGB(255, 223, 221, 229)),
                   ),
                 )
               ],
@@ -87,8 +81,7 @@ class _PaymentsReceiptState extends State<PaymentsReceipt> {
 
   @override
   Widget build(BuildContext context) {
-    PaymentsBloc paymentsBloc =
-        BlocProvider.of<PaymentsBloc>(context, listen: false);
+    PaymentsBloc paymentsBloc = BlocProvider.of<PaymentsBloc>(context, listen: false);
     final currentstate = paymentsBloc.state;
     if (currentstate is PaymentManageState) {
       List<PaymentModel> items = currentstate.items;
@@ -158,17 +151,11 @@ class _PaymentsReceiptState extends State<PaymentsReceipt> {
               children: [
                 TextSpan(
                   text: 'Patient : ',
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500),
+                  style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w500),
                 ),
                 TextSpan(
                   text: 'Ramesh Patel',
-                  style: TextStyle(
-                      color: Color.fromARGB(255, 42, 56, 185),
-                      fontSize: 23,
-                      fontWeight: FontWeight.w500),
+                  style: TextStyle(color: Color.fromARGB(255, 42, 56, 185), fontSize: 23, fontWeight: FontWeight.w500),
                 ),
               ],
             ),
@@ -191,29 +178,19 @@ class _PaymentsReceiptState extends State<PaymentsReceipt> {
                   children: [
                     Expanded(
                       flex: 3,
-                      child: Text("Treatments",
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w600)),
+                      child: Text("Treatments", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                     ),
                     Expanded(
                       flex: 1,
-                      child: Text("Qty",
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w600)),
+                      child: Text("Qty", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                     ),
                     Expanded(
                       flex: 2,
-                      child: Text("Tax\n Amt.",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w600)),
+                      child: Text("Tax\n Amt.", textAlign: TextAlign.center, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                     ),
                     Expanded(
                       flex: 2,
-                      child: Text("Amt.",
-                          textAlign: TextAlign.right,
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w600)),
+                      child: Text("Amt.", textAlign: TextAlign.right, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                     ),
                   ],
                 ),
@@ -223,29 +200,19 @@ class _PaymentsReceiptState extends State<PaymentsReceipt> {
                 children: [
                   Expanded(
                     flex: 3,
-                    child: Text("Consultaion",
-                        style: TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.w400)),
+                    child: Text("Consultaion", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400)),
                   ),
                   Expanded(
                     flex: 1,
-                    child: Text("1",
-                        style: TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.w400)),
+                    child: Text("1", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400)),
                   ),
                   Expanded(
                     flex: 2,
-                    child: Text("50.00",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.w400)),
+                    child: Text("50.00", textAlign: TextAlign.center, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400)),
                   ),
                   Expanded(
                     flex: 2,
-                    child: Text("500.00",
-                        textAlign: TextAlign.right,
-                        style: TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.w400)),
+                    child: Text("500.00", textAlign: TextAlign.right, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400)),
                   ),
                 ],
               ),
@@ -254,29 +221,19 @@ class _PaymentsReceiptState extends State<PaymentsReceipt> {
                 children: [
                   Expanded(
                     flex: 3,
-                    child: Text("IV drip",
-                        style: TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.w400)),
+                    child: Text("IV drip", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400)),
                   ),
                   Expanded(
                     flex: 1,
-                    child: Text("1",
-                        style: TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.w400)),
+                    child: Text("1", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400)),
                   ),
                   Expanded(
                     flex: 2,
-                    child: Text("18.00",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.w400)),
+                    child: Text("18.00", textAlign: TextAlign.center, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400)),
                   ),
                   Expanded(
                     flex: 2,
-                    child: Text("50.00",
-                        textAlign: TextAlign.right,
-                        style: TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.w400)),
+                    child: Text("50.00", textAlign: TextAlign.right, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400)),
                   ),
                 ],
               ),
@@ -371,14 +328,8 @@ class _PaymentsReceiptState extends State<PaymentsReceipt> {
                 "-",
                 "556.20",
                 "INR",
-                const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                    color: Color(0xff4646B5)),
-                const TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 16,
-                    color: Color(0xff4646B5)),
+                const TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: Color(0xff4646B5)),
+                const TextStyle(fontWeight: FontWeight.w500, fontSize: 16, color: Color(0xff4646B5)),
               ),
             ),
           ]),
@@ -392,8 +343,7 @@ class _PaymentsReceiptState extends State<PaymentsReceipt> {
             buildWhen: (previous, current) => current is PaymentDoneState,
             builder: (context, state) {
               if (state is PaymentSuccessfullState) {
-                return customRow("Balance Amt.", "-", "356", "INR",
-                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold));
+                return customRow("Balance Amt.", "-", "356", "INR", const TextStyle(fontSize: 20, fontWeight: FontWeight.bold));
               }
               return Container();
             },
@@ -459,8 +409,7 @@ class _PaymentsReceiptState extends State<PaymentsReceipt> {
     );
   }
 
-  Widget customRow(String first, String second, String third, String fourth,
-      TextStyle? style) {
+  Widget customRow(String first, String second, String third, String fourth, TextStyle? style) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -500,8 +449,7 @@ class _PaymentsReceiptState extends State<PaymentsReceipt> {
     );
   }
 
-  Widget custom(String leadingText, String middleText, String trailingText,
-      String unit, TextStyle leadingTextStyle, TextStyle trailingTextStyle) {
+  Widget custom(String leadingText, String middleText, String trailingText, String unit, TextStyle leadingTextStyle, TextStyle trailingTextStyle) {
     return Row(
       children: [
         Expanded(
@@ -510,18 +458,15 @@ class _PaymentsReceiptState extends State<PaymentsReceipt> {
         ),
         Expanded(
           flex: 1,
-          child: Text(middleText,
-              textAlign: TextAlign.center, style: leadingTextStyle),
+          child: Text(middleText, textAlign: TextAlign.center, style: leadingTextStyle),
         ),
         Expanded(
           flex: 2,
-          child: Text(trailingText,
-              textAlign: TextAlign.right, style: trailingTextStyle),
+          child: Text(trailingText, textAlign: TextAlign.right, style: trailingTextStyle),
         ),
         Expanded(
           flex: 1,
-          child:
-              Text(unit, textAlign: TextAlign.right, style: trailingTextStyle),
+          child: Text(unit, textAlign: TextAlign.right, style: trailingTextStyle),
         ),
       ],
     );
@@ -564,8 +509,7 @@ class _PaymentsReceiptState extends State<PaymentsReceipt> {
     );
   }
 
-  Widget RowTextfield(
-      String Name, TextEditingController controller, String hint) {
+  Widget RowTextfield(String Name, TextEditingController controller, String hint) {
     return Row(
       children: [
         Text(

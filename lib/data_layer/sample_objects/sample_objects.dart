@@ -1,12 +1,12 @@
 import 'package:healtether_clinic_app/data_layer/models/allergies/allergies.dart';
 import 'package:healtether_clinic_app/data_layer/models/appointment_models/appointment_model.dart';
 import 'package:healtether_clinic_app/data_layer/models/lab_tests/lab_tests.dart';
-import 'package:healtether_clinic_app/data_layer/models/patient_records_model/appointments_model.dart';
 // import 'package:healtether_clinic_app/data_layer/models/appointmentdata.dart';
 import 'package:healtether_clinic_app/data_layer/models/patient_records_model/patient_model.dart';
 import 'package:healtether_clinic_app/data_layer/models/symptom_model/symptom.dart';
-import 'package:healtether_clinic_app/data_layer/models/drug_model/drug_model.dart';
 import 'package:uuid/uuid.dart';
+
+import '../models/patient_records_model/appointments_model.dart';
 
 class SampleObjects {
   static final List<LabTest> availableTests = [

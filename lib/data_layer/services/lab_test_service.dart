@@ -11,8 +11,6 @@ class LabTestService {
   Future<void> fetchToken() async {
     token = await SharedPrefService.getAccessToken() ?? "";
     clinicId = await SharedPrefService.getClinicId() ?? "";
-    log('TOKEN ' + token);
-    log('CLINIC_ID ' + clinicId);
   }
 
   Future<List<LabTest>> getFrequentlySearchedTests() async {
@@ -31,7 +29,11 @@ class LabTestService {
     }
   }
 
-  Future<String> postLabTest({required String patientId, required String appointmentId, required List labTests}) async {
+  Future<String> postLabTest({
+    required String patientId,
+    required String appointmentId,
+    required List<Map<String, dynamic>> labTests,
+  }) async {
     await fetchToken();
     final response = await HttpService.post(
       ApiEndPoint.postLabtests(patientId: patientId, clientId: clinicId, appointmentId: appointmentId),
@@ -47,7 +49,12 @@ class LabTestService {
 
   Future<List<LabTest>?> getSavedLabTests({required String appointmentId}) async {
     await fetchToken();
-    final response = await HttpService.get(ApiEndPoint.getWholePrescriptionsAndVitals(appointmentId: appointmentId, clientId: clinicId), token);
+    final response = await HttpService.get(
+        ApiEndPoint.getWholePrescriptionsAndVitals(
+          appointmentId: appointmentId,
+          clientId: clinicId,
+        ),
+        token);
     if (response.statusCode == 200) {
       if (response.data['prescriptions'] != null) {
         List<LabTest>? labTests = (response.data['prescriptions']['labTests'] as List?)?.map((e) => LabTest.fromMap(e)).toList();

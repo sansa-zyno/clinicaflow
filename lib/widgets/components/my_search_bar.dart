@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:healtether_clinic_app/Screens/AppointmentScreen/widgets/custom_textfield.dart';
-import 'package:healtether_clinic_app/Screens/DigitalScreensAll/sx&dx_screen.dart';
 
 class MySearchBar extends StatelessWidget {
   const MySearchBar({

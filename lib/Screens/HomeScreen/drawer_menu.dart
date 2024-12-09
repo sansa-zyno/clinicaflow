@@ -1,12 +1,10 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:healtether_clinic_app/business_logic/blocs/login_bloc/login_bloc.dart';
-import 'package:healtether_clinic_app/business_logic/cubits/profile_image_cubit/profile_image_cubit.dart';
+import 'package:healtether_clinic_app/constants/api.dart';
 import 'package:healtether_clinic_app/constants/app_icons.dart';
 import 'package:healtether_clinic_app/data_layer/models/user_model/user_model.dart';
 import 'package:healtether_clinic_app/data_layer/services/shared_preferences_service.dart';
@@ -35,17 +33,13 @@ class _DrawerMenuState extends State<DrawerMenu> {
     userModel = data;
 
     String clinicId = await SharedPrefService.getClinicId() ?? "";
-    selectedClinic = data?.linkedClinics
-            .where((element) => element['clinic']['_id'] == clinicId)
-            .toList()[0]['clinic'] ??
-        '';
+    selectedClinic = data?.linkedClinics.where((element) => element['clinic']['_id'] == clinicId).toList()[0]['clinic'] ?? '';
     setState(() {});
   }
 
   Future _pickImageFromGallery(BuildContext context) async {
-    final returnedImage =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
-    context.read<ProfileImageCubit>().setImage(File(returnedImage!.path));
+    final returnedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
+    //context.read<ProfileImageCubit>().setImage(File(returnedImage!.path));
   }
 
   @override
@@ -81,17 +75,22 @@ class _DrawerMenuState extends State<DrawerMenu> {
                         children: [
                           Stack(
                             children: [
-                              BlocBuilder<ProfileImageCubit, File?>(
-                                  builder: (context, state) {
-                                return CircleAvatar(
-                                  backgroundImage: state == null
-                                      ? const AssetImage(
-                                          'assets/homeimages/Ellipse 760 (2).png',
-                                        )
-                                      : Image.file(state).image,
-                                  radius: 45,
-                                );
-                              }),
+                              CircleAvatar(
+                                radius: 45,
+                                backgroundColor: Colors.white,
+                                child: (userModel?.profilePic ?? '') == ''
+                                    ? Image.asset(
+                                        'assets/homeimages/Ellipse 760 (2).png',
+                                        height: 100,
+                                        width: 100,
+                                        fit: BoxFit.cover,
+                                      )
+                                    : Image.network(
+                                        userModel!.profilePic,
+                                        height: 100,
+                                        width: 100,
+                                      ),
+                              ),
                               Positioned(
                                 bottom: 0,
                                 right: 0,
@@ -102,8 +101,7 @@ class _DrawerMenuState extends State<DrawerMenu> {
                                   child: Container(
                                     width: 30,
                                     height: 30,
-                                    margin: const EdgeInsets.only(
-                                        top: 96, left: 96),
+                                    margin: const EdgeInsets.only(top: 96, left: 96),
                                     decoration: const BoxDecoration(
                                       color: Color(0xFFDBDBDB),
                                       shape: BoxShape.circle,
@@ -124,22 +122,18 @@ class _DrawerMenuState extends State<DrawerMenu> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              GestureDetector(
-                                onTap: () {},
-                                child: Container(
-                                  height: 35,
-                                  width: 70,
-                                  decoration: BoxDecoration(
-                                    color: Colors.black,
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: const Center(
-                                    child: Text(
-                                      'Admin',
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 16),
-                                      textAlign: TextAlign.center,
-                                    ),
+                              Container(
+                                height: 35,
+                                width: 70,
+                                decoration: BoxDecoration(
+                                  color: Colors.black,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    (userModel?.isSuperAdmin ?? false) || (userModel?.isDoctor ?? false) ? 'Admin' : 'Staff',
+                                    style: const TextStyle(color: Colors.white, fontSize: 16),
+                                    textAlign: TextAlign.center,
                                   ),
                                 ),
                               ),
@@ -157,17 +151,21 @@ class _DrawerMenuState extends State<DrawerMenu> {
                               const SizedBox(
                                 height: 8,
                               ),
-                              Text(
-                                'ENT Spealist',
-                                style: GoogleFonts.montserrat(
-                                  color: Colors.black,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 12,
-                              ),
+                              userModel?.specialization != null
+                                  ? Text(
+                                      userModel!.specialization!,
+                                      style: GoogleFonts.montserrat(
+                                        color: Colors.black,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    )
+                                  : Container(),
+                              userModel?.specialization != null
+                                  ? const SizedBox(
+                                      height: 12,
+                                    )
+                                  : Container(),
                               selectedClinic != null
                                   ? Row(
                                       children: [
@@ -175,12 +173,22 @@ class _DrawerMenuState extends State<DrawerMenu> {
                                           fit: BoxFit.scaleDown,
                                           child: Row(
                                             children: [
-                                              const CircleAvatar(
+                                              CircleAvatar(
                                                 backgroundColor: Colors.white,
                                                 radius: 20,
-                                                backgroundImage: AssetImage(
-                                                  'assets/homeimages/Group 36536.png',
-                                                ),
+                                                child: (selectedClinic!['logo'] ?? '') == ''
+                                                    ? Image.asset(
+                                                        'assets/homeimages/Group 36536.png',
+                                                        height: 100,
+                                                        width: 100,
+                                                        fit: BoxFit.cover,
+                                                      )
+                                                    : Image.network(
+                                                        "${ApiEndPoint.logoBaseUrl}${selectedClinic!['logo']}",
+                                                        height: 100,
+                                                        width: 100,
+                                                      ),
+                                                //backgroundImage: AssetImage('assets/homeimages/Group 36536.png'),
                                               ),
                                               const SizedBox(
                                                 width: 5,
@@ -237,8 +245,7 @@ class _DrawerMenuState extends State<DrawerMenu> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
                       child: Column(
                         children: [
                           InkWell(
@@ -326,8 +333,7 @@ class _DrawerMenuState extends State<DrawerMenu> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 10.0, vertical: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 16),
                   child: Column(
                     children: [
                       InkWell(
@@ -588,8 +594,7 @@ class _DrawerMenuState extends State<DrawerMenu> {
                 Navigator.of(context).pop();
               },
               style: ButtonStyle(
-                backgroundColor:
-                    MaterialStateProperty.all<Color>(const Color(0xff32856E)),
+                backgroundColor: MaterialStateProperty.all<Color>(const Color(0xff32856E)),
                 shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(4.0),
@@ -645,8 +650,7 @@ class IconContainer extends StatelessWidget {
       width: 35,
       height: 35,
       padding: const EdgeInsets.all(6),
-      decoration:
-          const BoxDecoration(color: Color(0xFF32856E), shape: BoxShape.circle),
+      decoration: const BoxDecoration(color: Color(0xFF32856E), shape: BoxShape.circle),
       child: icon,
     );
   }

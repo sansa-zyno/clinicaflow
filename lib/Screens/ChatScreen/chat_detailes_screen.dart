@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:healtether_clinic_app/Screens/ChatScreen/draft_templates_screen.dart';
 import 'package:healtether_clinic_app/constants/constants.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -43,8 +42,7 @@ class ChatDetailScreenState extends State<ChatDetailScreen> {
       });
 
       if (messageText.toLowerCase().contains('mag')) {
-        receiveMessage(
-            "You've mentioned 'mag'. Here is the information related to it...");
+        receiveMessage("You've mentioned 'mag'. Here is the information related to it...");
       }
 
       _textEditingController.clear();
@@ -88,21 +86,16 @@ class ChatDetailScreenState extends State<ChatDetailScreen> {
               itemBuilder: (context, index) {
                 final messageIndex = messages.length - index - 1;
                 return Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 5.0, horizontal: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 16),
                   child: Align(
-                    alignment: messages[messageIndex]['isUser']
-                        ? Alignment.topRight
-                        : Alignment.topLeft,
+                    alignment: messages[messageIndex]['isUser'] ? Alignment.topRight : Alignment.topLeft,
                     child: Container(
                       constraints: BoxConstraints(
                         maxWidth: MediaQuery.of(context).size.width * 0.6,
                       ),
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: messages[messageIndex]['isUser']
-                            ? AppColors.greenColor
-                            : AppColors.whiteColor,
+                        color: messages[messageIndex]['isUser'] ? AppColors.greenColor : AppColors.whiteColor,
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Column(
@@ -112,21 +105,16 @@ class ChatDetailScreenState extends State<ChatDetailScreen> {
                             messages[messageIndex]['text'],
                             style: TextStyle(
                               fontSize: 16,
-                              color: messages[messageIndex]['isUser']
-                                  ? Colors.white
-                                  : Colors.black,
+                              color: messages[messageIndex]['isUser'] ? Colors.white : Colors.black,
                             ),
                             textAlign: TextAlign.start,
                           ),
                           const SizedBox(height: 5),
                           Text(
-                            DateFormat('hh:mm a')
-                                .format(messages[messageIndex]['time']),
+                            DateFormat('hh:mm a').format(messages[messageIndex]['time']),
                             style: TextStyle(
                               fontSize: 12,
-                              color: messages[messageIndex]['isUser']
-                                  ? Colors.white70
-                                  : Colors.black54,
+                              color: messages[messageIndex]['isUser'] ? Colors.white70 : Colors.black54,
                             ),
                           ),
                         ],
@@ -140,8 +128,7 @@ class ChatDetailScreenState extends State<ChatDetailScreen> {
           Container(
             color: Colors.white,
             child: Padding(
-              padding: const EdgeInsets.only(
-                  left: 14.0, right: 8, top: 8, bottom: 8),
+              padding: const EdgeInsets.only(left: 14.0, right: 8, top: 8, bottom: 8),
               child: Row(
                 children: [
                   Expanded(
@@ -187,38 +174,26 @@ class ChatDetailScreenState extends State<ChatDetailScreen> {
                                       child: Padding(
                                         padding: const EdgeInsets.all(16.0),
                                         child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 16),
+                                              padding: const EdgeInsets.only(left: 16),
                                               child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 children: [
                                                   Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
                                                     children: [
                                                       const Text(
                                                         'ADD FILES',
-                                                        style: TextStyle(
-                                                            fontSize: 14,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w600),
+                                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
                                                       ),
                                                       Container(
                                                         width: 60,
                                                         height: 2,
-                                                        decoration:
-                                                            BoxDecoration(
+                                                        decoration: BoxDecoration(
                                                           border: Border.all(
-                                                            color: const Color(
-                                                                0xFF52CFAC),
+                                                            color: const Color(0xFF52CFAC),
                                                             width: 2,
                                                           ),
                                                         ),
@@ -229,17 +204,12 @@ class ChatDetailScreenState extends State<ChatDetailScreen> {
                                                     height: 30,
                                                     width: 30,
                                                     decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                          color: AppColors
-                                                              .blackColor),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              6),
+                                                      border: Border.all(color: AppColors.blackColor),
+                                                      borderRadius: BorderRadius.circular(6),
                                                     ),
                                                     child: InkWell(
                                                       onTap: () {
-                                                        Navigator.of(context)
-                                                            .pop();
+                                                        Navigator.of(context).pop();
                                                       },
                                                       child: const Icon(
                                                         Icons.close_rounded,
@@ -256,48 +226,31 @@ class ChatDetailScreenState extends State<ChatDetailScreen> {
                                                 Expanded(
                                                   child: GestureDetector(
                                                     onTap: () {
-                                                      Navigator.push(
+                                                      /*  Navigator.push(
                                                         context,
                                                         MaterialPageRoute(
                                                           builder: (context) =>
                                                               DraftTemplatesScreen(),
                                                         ),
-                                                      );
+                                                      );*/
                                                     },
                                                     child: Container(
                                                       height: 100,
                                                       decoration: BoxDecoration(
-                                                        color: const Color(
-                                                            0xFFF32856E),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(15),
+                                                        color: const Color(0xFFF32856E),
+                                                        borderRadius: BorderRadius.circular(15),
                                                       ),
                                                       child: Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
+                                                        mainAxisAlignment: MainAxisAlignment.center,
                                                         children: [
-                                                          Icon(
-                                                              MdiIcons
-                                                                  .accountMultiplePlus,
-                                                              color:
-                                                                  Colors.white,
-                                                              size: 32),
-                                                          const SizedBox(
-                                                              height: 8),
-                                                          const Text(
-                                                              'Templates',
+                                                          Icon(MdiIcons.accountMultiplePlus, color: Colors.white, size: 32),
+                                                          const SizedBox(height: 8),
+                                                          const Text('Templates',
                                                               style: TextStyle(
-                                                                  fontFamily:
-                                                                      'Poppins',
-                                                                  color: Colors
-                                                                      .white,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w600,
-                                                                  fontSize:
-                                                                      11)),
+                                                                  fontFamily: 'Poppins',
+                                                                  color: Colors.white,
+                                                                  fontWeight: FontWeight.w600,
+                                                                  fontSize: 11)),
                                                         ],
                                                       ),
                                                     ),
@@ -310,55 +263,34 @@ class ChatDetailScreenState extends State<ChatDetailScreen> {
                                                     child: Container(
                                                       height: 100,
                                                       decoration: BoxDecoration(
-                                                        color: const Color(
-                                                            0xFFF32856E),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(15),
+                                                        color: const Color(0xFFF32856E),
+                                                        borderRadius: BorderRadius.circular(15),
                                                       ),
                                                       child: Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
+                                                        mainAxisAlignment: MainAxisAlignment.center,
                                                         children: [
                                                           Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .only(
-                                                                    top: 5),
-                                                            child: SvgPicture
-                                                                .asset(
+                                                            padding: const EdgeInsets.only(top: 5),
+                                                            child: SvgPicture.asset(
                                                               'assets/homeimages/solar_notes-linear.svg',
-                                                              color:
-                                                                  Colors.white,
+                                                              color: Colors.white,
                                                             ),
                                                           ),
                                                           const Text(
                                                             'Send',
                                                             style: TextStyle(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontFamily:
-                                                                    'Poppins',
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w600,
-                                                                fontSize:
-                                                                    11 // Specify font size
+                                                                color: Colors.white,
+                                                                fontFamily: 'Poppins',
+                                                                fontWeight: FontWeight.w600,
+                                                                fontSize: 11 // Specify font size
                                                                 ),
                                                           ),
-                                                          const Text(
-                                                              'Prescription',
+                                                          const Text('Prescription',
                                                               style: TextStyle(
-                                                                  color: Colors
-                                                                      .white,
-                                                                  fontFamily:
-                                                                      'Poppins',
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w600,
-                                                                  fontSize:
-                                                                      11)),
+                                                                  color: Colors.white,
+                                                                  fontFamily: 'Poppins',
+                                                                  fontWeight: FontWeight.w600,
+                                                                  fontSize: 11)),
                                                         ],
                                                       ),
                                                     ),
@@ -372,43 +304,29 @@ class ChatDetailScreenState extends State<ChatDetailScreen> {
                                                       width: 80,
                                                       height: 100,
                                                       decoration: BoxDecoration(
-                                                        color: const Color(
-                                                            0xFF32856E),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(15),
+                                                        color: const Color(0xFF32856E),
+                                                        borderRadius: BorderRadius.circular(15),
                                                       ),
                                                       child: Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
+                                                        mainAxisAlignment: MainAxisAlignment.center,
                                                         children: [
                                                           SvgPicture.asset(
                                                             'assets/homeimages/mingcute_bill-line.svg',
                                                             color: Colors.white,
                                                           ),
-                                                          const SizedBox(
-                                                              height: 8),
+                                                          const SizedBox(height: 8),
                                                           const Text('Send',
                                                               style: TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w600,
+                                                                  fontWeight: FontWeight.w600,
                                                                   fontSize: 11,
-                                                                  fontFamily:
-                                                                      'Poppins',
-                                                                  color: Colors
-                                                                      .white)),
+                                                                  fontFamily: 'Poppins',
+                                                                  color: Colors.white)),
                                                           const Text('files',
                                                               style: TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w600,
-                                                                  fontFamily:
-                                                                      'Poppins',
+                                                                  fontWeight: FontWeight.w600,
+                                                                  fontFamily: 'Poppins',
                                                                   fontSize: 11,
-                                                                  color: Colors
-                                                                      .white)),
+                                                                  color: Colors.white)),
                                                         ],
                                                       ),
                                                     ),

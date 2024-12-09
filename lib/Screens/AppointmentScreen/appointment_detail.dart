@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:healtether_clinic_app/business_logic/cubits/appointment_cubit/appointment_cubit.dart';
 import 'package:healtether_clinic_app/data_layer/models/appointment_models/appointment_model.dart';
 // import 'package:healtether_clinic_app/Screens/AppointmentScreen/widgets/custom_textfield.dart';
 // import 'package:healtether_clinic_app/data_layer/models/appointment_models/appointment_log.dart';
 import 'package:healtether_clinic_app/data_layer/models/helper_models/schedule_helper.dart';
 import 'package:healtether_clinic_app/constants/app_icons.dart';
+import 'package:healtether_clinic_app/utils/enums/bloc_enums.dart';
 import 'package:healtether_clinic_app/utils/extensions.dart/widget_extensions.dart';
 import 'package:healtether_clinic_app/utils/helper_functions/log.dart';
 import 'package:healtether_clinic_app/utils/mixins/app_bar_mixin.dart';
@@ -22,8 +25,8 @@ import 'package:healtether_clinic_app/widgets/section_text.dart';
 // import 'package:intl/intl.dart';
 
 class AppointmentDetail extends StatefulWidget {
-  final Appointment appointment;
-  const AppointmentDetail({required this.appointment, super.key});
+  final String id;
+  const AppointmentDetail({required this.id, super.key});
 
   @override
   State<AppointmentDetail> createState() => _AppointmentDetailState();
@@ -31,7 +34,7 @@ class AppointmentDetail extends StatefulWidget {
 
 class _AppointmentDetailState extends State<AppointmentDetail> with AppBarMixin, UiInfoMixin {
   //Appointment get appointment => SampleObjects.appointmentResponseObject;
-  Appointment get appointment => widget.appointment;
+  //Appointment get appointment => widget.appointment;
 
   // late TextEditingController followUpTimeController;
 
@@ -40,86 +43,106 @@ class _AppointmentDetailState extends State<AppointmentDetail> with AppBarMixin,
   final cancelAppointmentSchedule = ScheduleHelper();
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    context.read<AppointmentCubit>().getAppointmentById(id: widget.id);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: buildAppBar(context, title: 'Appointments', automaticallyImplyLeading: true),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(
-            height: 7,
-          ),
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        appBar: buildAppBar(
+          context,
+          title: 'Appointments',
+        ),
+        body: BlocBuilder<AppointmentCubit, AppointmentState>(builder: (context, state) {
+          if (state.state == AppointmentStates.fetchingAppointmentById) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state.state == AppointmentStates.fetchingAppointmentByIdFailed) {
+            return const Center(child: Text('Error fetching appointment details'));
+          } else {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(
+                  height: 7,
+                ),
 
-          //? APPOINTMENT SUMMARY CARD
-          AppointmentSummaryCard(appointment: appointment).pSymmetric(),
+                //? APPOINTMENT SUMMARY CARD
+                AppointmentSummaryCard(appointment: state.appointmentDetails!).pSymmetric(),
 
-          //? ACTIONS
-          ScrollableRow(children: [
-            const SizedBox(width: 16),
+                //? ACTIONS
+                ScrollableRow(children: [
+                  const SizedBox(width: 16),
 
-            //? FOLLOW UP
-            MyElevatedButton(
-                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                text: "Follow up",
-                textStyle: const TextStyle(color: AppColors.lightGrey2),
-                onPressed: () => followUp(context),
-                backgroundColor: AppColors.whiteSmoke),
+                  //? FOLLOW UP
+                  MyElevatedButton(
+                      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                      text: "Follow up",
+                      textStyle: const TextStyle(color: AppColors.lightGrey2),
+                      onPressed: () => followUp(context, state.appointmentDetails!),
+                      backgroundColor: AppColors.whiteSmoke),
 
-            const SizedBox(width: 8),
-            //? CANCEL APPOINTMENT
-            MyElevatedButton(
-                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                text: "Cancel Appointment",
-                textStyle: const TextStyle(color: AppColors.lightGrey2),
-                onPressed: cancelAppointment,
-                backgroundColor: AppColors.whiteSmoke),
-            const SizedBox(width: 8),
-            //? RESCHEDULE
-            MyElevatedButton(
-                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                text: "Reschedule",
-                textStyle: const TextStyle(color: AppColors.lightGrey2),
-                onPressed: rescheduleAppointment,
-                backgroundColor: AppColors.whiteSmoke),
+                  const SizedBox(width: 8),
+                  //? CANCEL APPOINTMENT
+                  MyElevatedButton(
+                      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                      text: "Cancel Appointment",
+                      textStyle: const TextStyle(color: AppColors.lightGrey2),
+                      onPressed: () => cancelAppointment(state.appointmentDetails!),
+                      backgroundColor: AppColors.whiteSmoke),
+                  const SizedBox(width: 8),
+                  //? RESCHEDULE
+                  MyElevatedButton(
+                      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                      text: "Reschedule",
+                      textStyle: const TextStyle(color: AppColors.lightGrey2),
+                      onPressed: () => rescheduleAppointment(state.appointmentDetails!),
+                      backgroundColor: AppColors.whiteSmoke),
 
-            const SizedBox(width: 16)
-          ]).pOnly(top: 16, bottom: 16),
+                  const SizedBox(width: 16)
+                ]).pOnly(top: 16, bottom: 16),
 
-          //? APPOINTMENT LOGS
-          const SectionText(
-            "APPOINTMENTS LOG",
-          ).pSymmetric(),
+                //? APPOINTMENT LOGS
+                const SectionText(
+                  "APPOINTMENTS LOG",
+                ).pSymmetric(),
 
-          const SizedBox(height: 12),
+                const SizedBox(height: 12),
 
-          //? LISTVIEW OF APPOINTMENTS LOG
-          Expanded(
-            child: ListView.builder(
-              itemCount: appointment.appointmentLogs?.length ?? 0,
-              itemBuilder: (BuildContext context, int index) {
-                final appointmentLog = appointment.appointmentLogs![index];
+                //? LISTVIEW OF APPOINTMENTS LOG
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: state.appointmentDetails!.appointmentLogs?.length ?? 0,
+                    itemBuilder: (BuildContext context, int index) {
+                      final appointmentLog = state.appointmentDetails!.appointmentLogs![index];
+                      return AppointmentLogItem(appointmentLog: appointmentLog).pOnly(left: 16, right: 16, bottom: 16);
+                    },
+                  ),
+                ),
 
-                return AppointmentLogItem(appointmentLog: appointmentLog).pOnly(left: 16, right: 16, bottom: 16);
-              },
-            ),
-          ),
-
-          const SizedBox(
-            height: 24,
-          ),
-        ],
+                const SizedBox(
+                  height: 24,
+                ),
+              ],
+            );
+          }
+        }),
       ),
     );
   }
 
-  void followUp(BuildContext context) {
-    log("Follow up");
+  void followUp(BuildContext context, Appointment appointment) {
     showModalBottomSheet(
         context: context,
         constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height / 1.91),
         //shape: const RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16))),
         builder: (BuildContext context) {
           return MyScheduleDialog(
+            type: 'followup',
             appointment: appointment,
             title: const SectionText("SCHEDULE FOLLOW-UP"),
             dateTitle: "Follow-up date",
@@ -129,31 +152,31 @@ class _AppointmentDetailState extends State<AppointmentDetail> with AppBarMixin,
         });
   }
 
-  void cancelAppointment() {
+  void cancelAppointment(Appointment appointment) {
     log("Cancel appointment");
     showModalBottomSheet(
         context: context,
         constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height / 3),
         builder: (BuildContext context) {
-          return CancelAppointmentDialog(schedule: cancelAppointmentSchedule);
+          return CancelAppointmentDialog(
+            schedule: cancelAppointmentSchedule,
+            appointment: appointment,
+          );
         });
   }
 
-  void rescheduleAppointment() {
+  void rescheduleAppointment(Appointment appointment) {
     log("Reschedule appointment");
     showModalBottomSheet(
         context: context,
         constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height / 1.91),
         builder: (BuildContext context) {
           return MyScheduleDialog(
+            type: 'reschedule',
             appointment: appointment,
             title: const SectionText("RESCHEDULE APPOINTMENT"),
             dateTitle: "Set up a date",
             schedule: rescheduleFollowUpSchedule,
-            // onDone: () {
-            //   log(rescheduleFollowUpSchedule.toMap());
-            //   context.pop();
-            // },
             onExit: context.pop,
           );
         });

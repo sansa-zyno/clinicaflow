@@ -6,6 +6,7 @@ import 'package:healtether_clinic_app/Screens/DigitalScreensAll/symptoms_diagnos
 import 'package:healtether_clinic_app/business_logic/cubits/allergy_cubit/allergy_cubit.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/drug_cubit/drug_prescription_cubit.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/past_medical_history_cubit/past_medical_history_cubit.dart';
+import 'package:healtether_clinic_app/business_logic/cubits/vitals_cubit/vitals_cubit.dart';
 import 'package:healtether_clinic_app/data_layer/models/allergies/allergies.dart';
 import 'package:healtether_clinic_app/data_layer/models/appointment_models/appointment_model.dart';
 import 'package:healtether_clinic_app/data_layer/models/drug_model/drug_model.dart';
@@ -30,11 +31,11 @@ class PastMedicalHistoryScreen extends StatefulWidget {
   final Appointment appointment;
   final List<HistoryItem>? pastHistory;
   final List<HistoryItem>? familyHistory;
-  final List<HistoryItem>? pastProcedures;
+  final List<HistoryItem>? pastProcedureHistory;
   final List<HistoryItem>? allergies;
-  final List<HistoryItem>? medicationHistory;
+  final List<HistoryItem>? medication;
   const PastMedicalHistoryScreen(
-      {Key? key, required this.appointment, this.pastHistory, this.familyHistory, this.pastProcedures, this.allergies, this.medicationHistory})
+      {Key? key, required this.appointment, this.pastHistory, this.familyHistory, this.pastProcedureHistory, this.allergies, this.medication})
       : super(key: key);
 
   @override
@@ -44,32 +45,47 @@ class PastMedicalHistoryScreen extends StatefulWidget {
 class _PastMedicalHistoryScreenState extends State<PastMedicalHistoryScreen> with AppBarMixin, UiInfoMixin {
   late final UserModel? user;
   bool hasNavigated = false;
+  bool addSpace = false;
   late List<HistoryItem> pastHistory;
   late List<HistoryItem> familyHistory;
   late List<HistoryItem> pastProcedures;
   late List<HistoryItem> allergies;
   late List<HistoryItem> medicationHistory;
-
-  bool addSpace = false;
-
   late final TextEditingController searchController;
   late final ScrollController scrollController;
-
   late final FocusNode focusNode;
 
   @override
   void initState() {
     super.initState();
-
-    pastHistory = List.filled(2, HistoryItem.empty(), growable: true); // initial two items according to the figma UI
-    familyHistory = List.filled(2, HistoryItem.empty(), growable: true); // initial two items according to the figma UI
-    pastProcedures = List.filled(2, HistoryItem.empty(), growable: true); // initial two items according to the figma UI
-    allergies = List.filled(2, HistoryItem.empty(), growable: true); // initial two items according to the figma UI
-    medicationHistory = List.filled(2, HistoryItem.empty(), growable: true); // initial two items according to the figma UI
+    if (widget.pastHistory != null && widget.pastHistory!.isNotEmpty) {
+      pastHistory = List.generate(widget.pastHistory!.length, (index) => widget.pastHistory![index]);
+    } else {
+      pastHistory = List.filled(2, HistoryItem.empty(), growable: true); // initial two items according to the figma UI
+    }
+    if (widget.familyHistory != null && widget.familyHistory!.isNotEmpty) {
+      familyHistory = List.generate(widget.familyHistory!.length, (index) => widget.familyHistory![index]);
+    } else {
+      familyHistory = List.filled(2, HistoryItem.empty(), growable: true); // initial two items according to the figma UI
+    }
+    if (widget.pastProcedureHistory != null && widget.pastProcedureHistory!.isNotEmpty) {
+      pastProcedures = List.generate(widget.pastProcedureHistory!.length, (index) => widget.pastProcedureHistory![index]);
+    } else {
+      pastProcedures = List.filled(2, HistoryItem.empty(), growable: true); // initial two items according to the figma UI
+    }
+    if (widget.allergies != null && widget.allergies!.isNotEmpty) {
+      allergies = List.generate(widget.allergies!.length, (index) => widget.allergies![index]);
+    } else {
+      allergies = List.filled(2, HistoryItem.empty(), growable: true); // initial two items according to the figma UI
+    }
+    if (widget.medication != null && widget.medication!.isNotEmpty) {
+      medicationHistory = List.generate(widget.medication!.length, (index) => widget.medication![index]);
+    } else {
+      medicationHistory = List.filled(2, HistoryItem.empty(), growable: true); // initial two items according to the figma UI
+    }
 
     focusNode = FocusNode();
     searchController = TextEditingController();
-
     scrollController = ScrollController();
   }
 
@@ -88,39 +104,63 @@ class _PastMedicalHistoryScreenState extends State<PastMedicalHistoryScreen> wit
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(context, title: "Digital Prescription", automaticallyImplyLeading: true, backgroundColor: AppColors.whitColor),
+      appBar: buildAppBar(context, title: "Digital Prescription", backgroundColor: AppColors.whitColor),
       body: BlocListener<PastMedicalHistoryCubit, PastMedicalHistoryState>(
-        listener: (context, state) {
-          if (state.state == PastMedicalHistoryStates.pastMedicalHistoryPosted && !hasNavigated) {
-            dev.log(state.state.toString());
-            hasNavigated = true;
-            //context.read<LabTestCubit>().getSavedLabTests(appointmentId: widget.appointment.id!);
-            showSnackMessage(context, 'Past Medical History has been saved successfully.');
-            context.pushReplacementNamed(AppRoutes.vitals.name, extra: {
-              'appointment': widget.appointment,
-              'vitals': [],
-            });
-          }
-        },
-        child: CustomScrollView(
-          controller: scrollController,
-          slivers: [
-            //? SECTION TEXT | Medical condition investigation
-            SliverToBoxAdapter(
-              child: const SectionText(
-                "MEDICAL CONDITION INVESTIGATION",
-                textStyle: TextStyle(fontSize: 18, height: 24 / 20),
-                underlineWidth: 358,
-                underlineColor: AppColors.eerieBlack,
-              ).pOnly(left: 16, right: 16, top: 10, bottom: 12),
-            ),
-
-            const SliverToBoxAdapter(child: SizedBox.shrink()),
-
-            SliverToBoxAdapter(child: buildNotTypingView()),
-          ],
-        ),
-      ),
+          listener: (context, state) {
+            if (state.state == PastMedicalHistoryStates.pastMedicalHistoryPosted && !hasNavigated) {
+              dev.log(state.state.toString());
+              hasNavigated = true;
+              //context.read<LabTestCubit>().getSavedLabTests(appointmentId: widget.appointment.id!);
+              showSnackMessage(context, 'Past Medical History saved successfully.');
+              context.pushReplacementNamed(AppRoutes.vitals.name, extra: {
+                'appointment': widget.appointment,
+                'vitals': context.read<VitalsCubit>().state.savedVital,
+              });
+            }
+            /*if (state.state == PastMedicalHistoryStates.pastMedicalHistoryFetched) {
+            if (state.pastHistory != null && state.pastHistory!.isNotEmpty) {
+              pastHistory = List.generate(state.pastHistory!.length, (index) => state.pastHistory![index]);
+            } else {
+              pastHistory = List.filled(2, HistoryItem.empty(), growable: true); // initial two items according to the figma UI
+            }
+            if (state.familyHistory != null && state.familyHistory!.isNotEmpty) {
+              familyHistory = List.generate(state.familyHistory!.length, (index) => state.familyHistory![index]);
+            } else {
+              familyHistory = List.filled(2, HistoryItem.empty(), growable: true); // initial two items according to the figma UI
+            }
+            if (state.pastProcedures != null && state.pastProcedures!.isNotEmpty) {
+              pastProcedures = List.generate(state.pastProcedures!.length, (index) => state.pastProcedures![index]);
+            } else {
+              pastProcedures = List.filled(2, HistoryItem.empty(), growable: true); // initial two items according to the figma UI
+            }
+            if (state.allergies != null && state.allergies!.isNotEmpty) {
+              allergies = List.generate(state.allergies!.length, (index) => state.allergies![index]);
+            } else {
+              allergies = List.filled(2, HistoryItem.empty(), growable: true); // initial two items according to the figma UI
+            }
+            if (state.medicationHistory != null && state.medicationHistory!.isNotEmpty) {
+              medicationHistory = List.generate(state.medicationHistory!.length, (index) => state.medicationHistory![index]);
+            } else {
+              medicationHistory = List.filled(2, HistoryItem.empty(), growable: true); // initial two items according to the figma UI
+            }
+          }*/
+          },
+          child: CustomScrollView(
+            controller: scrollController,
+            slivers: [
+              //? SECTION TEXT | Medical condition investigation
+              SliverToBoxAdapter(
+                child: const SectionText(
+                  "MEDICAL CONDITION INVESTIGATION",
+                  textStyle: TextStyle(fontSize: 18, height: 24 / 20),
+                  underlineWidth: 358,
+                  underlineColor: AppColors.eerieBlack,
+                ).pOnly(left: 16, right: 16, top: 10, bottom: 12),
+              ),
+              const SliverToBoxAdapter(child: SizedBox.shrink()),
+              SliverToBoxAdapter(child: buildNotTypingView()),
+            ],
+          )),
       bottomNavigationBar: BlocBuilder<PastMedicalHistoryCubit, PastMedicalHistoryState>(builder: (context, state) {
         if (state.state == PastMedicalHistoryStates.postingPastMedicalHistory) {
           return const SizedBox(height: 100, child: Center(child: CircularProgressIndicator()));
@@ -133,7 +173,7 @@ class _PastMedicalHistoryScreenState extends State<PastMedicalHistoryScreen> wit
               hasNavigated = false;
               context.read<PastMedicalHistoryCubit>().postPastMedicalHistory(
                   patientId: widget.appointment.patientId!,
-                  medications: medicationHistory.map((e) => e.toMap()).toList(),
+                  medication: medicationHistory.map((e) => e.toMap()).toList(),
                   allergies: allergies.map((e) => e.toMap()).toList(),
                   familyHistory: familyHistory.map((e) => e.toMap()).toList(),
                   pastHistory: pastHistory.map((e) => e.toMap()).toList(),

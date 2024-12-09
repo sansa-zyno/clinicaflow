@@ -1,6 +1,4 @@
-import 'dart:convert';
 import 'dart:developer';
-import 'package:flutter/foundation.dart';
 import 'package:healtether_clinic_app/constants/api.dart';
 import 'package:healtether_clinic_app/data_layer/services/http.service.dart';
 import '../shared_preferences_service.dart';
@@ -12,8 +10,6 @@ class PaymentService {
   Future<void> fetchToken() async {
     token = await SharedPrefService.getAccessToken() ?? "";
     clinicId = await SharedPrefService.getClinicId() ?? "";
-    log('TOKEN ' + token);
-    log('CLINIC_ID ' + clinicId);
   }
 
   Future<List<GetPayment>> fetchPayment() async {

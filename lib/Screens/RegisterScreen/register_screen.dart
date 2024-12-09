@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_stepindicator/flutter_stepindicator.dart';
 import 'package:go_router/go_router.dart';
-import 'package:healtether_clinic_app/Screens/HomeScreen/page_view_screen.dart';
 import 'package:healtether_clinic_app/Screens/RegisterScreen/others.dart';
 import 'package:healtether_clinic_app/Screens/RegisterScreen/personal_details.dart';
 import 'package:healtether_clinic_app/Screens/RegisterScreen/practice_details.dart';
@@ -21,8 +20,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController numberController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPassController = TextEditingController();
-  final TextEditingController specializationController =
-      TextEditingController();
+  final TextEditingController specializationController = TextEditingController();
   final TextEditingController registrationNumber = TextEditingController();
   int _page = 0;
 
@@ -32,8 +30,7 @@ class _RegisterPageState extends State<RegisterPage> {
     print("navigation tapped");
     _page += 1;
     setState(() {});
-    controller.animateToPage(_page,
-        duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+    controller.animateToPage(_page, duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
   }
 
   void onPageChanged(int page) {
@@ -87,7 +84,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               GestureDetector(
                   onTap: () => _page == 2
-                  ? context.goNamed(AppRoutes.homePageView.name)
+                      ? context.goNamed(AppRoutes.homePageView.name)
                       // ? Navigator.push(
                       //     context,
                       //     MaterialPageRoute(

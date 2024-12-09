@@ -1,27 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:healtether_clinic_app/Screens/AppointmentScreen/appointment_detail.dart';
-import 'package:healtether_clinic_app/Screens/AppointmentScreen/widgets/reschedule_appoinment.dart';
-import 'package:healtether_clinic_app/Screens/AppointmentScreen/widgets/schedule_follow_up.dart';
-import 'package:healtether_clinic_app/data_layer/models/helper_models/schedule_helper.dart';
-import 'package:healtether_clinic_app/data_layer/sample_objects/sample_objects.dart';
 import 'package:healtether_clinic_app/constants/app_colors.dart';
-import 'package:healtether_clinic_app/utils/enums/route_enums.dart';
 import 'package:healtether_clinic_app/utils/helper_functions/log.dart';
-import 'package:healtether_clinic_app/widgets/components/cancel_appointment_dialog.dart';
 
 mixin AppBarMixin {
   PreferredSizeWidget buildAppBar(BuildContext context,
       {required String title,
-      bool automaticallyImplyLeading = false,
       void Function()? onLeadingPressed,
       final List<Widget>? actions,
       bool showDefaultActions = false,
       Color? backgroundColor,
       double? leadingWidth,
       Widget? leading}) {
-    final patient = SampleObjects.patient;
     return AppBar(
         leadingWidth: leadingWidth,
         leading: GestureDetector(
@@ -34,17 +25,15 @@ mixin AppBarMixin {
         ),
         surfaceTintColor: AppColors.whiteColor,
         backgroundColor: backgroundColor,
-        automaticallyImplyLeading: automaticallyImplyLeading,
         title: Text(
           title,
-          style:
-              GoogleFonts.urbanist(fontWeight: FontWeight.w500, fontSize: 20),
+          style: GoogleFonts.urbanist(fontWeight: FontWeight.w500, fontSize: 20),
         ),
         actions: showDefaultActions == false
             ? actions
             : [
                 // close icon
-                const MyCloseIconButton(showShadow: false),
+                /*  const MyCloseIconButton(showShadow: false),
 
                 // pop up menu
                 PopupMenuButton<String>(
@@ -161,7 +150,7 @@ mixin AppBarMixin {
                 ),
                 const SizedBox(
                   width: 5,
-                ),
+                ),*/
               ]);
   }
 }

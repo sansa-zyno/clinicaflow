@@ -87,6 +87,7 @@ class _HomePageViewState extends State<HomePageView> {
                   ),
           ],
         ),
+
         // body: PageView(
         //   controller: _pageController,
         //   onPageChanged: context.read<HomePageBottomNavCubit>().onPageChanged,

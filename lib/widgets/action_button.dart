@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:healtether_clinic_app/business_logic/cubits/appointment_data_cubit/appointment_data_cubit.dart';
 
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import 'package:url_launcher/url_launcher.dart';
+
+import '../business_logic/cubits/appointment_cubit/appointment_cubit.dart';
 
 class AppointmentActionButtons extends StatelessWidget {
   const AppointmentActionButtons({super.key});
@@ -18,16 +19,14 @@ class AppointmentActionButtons extends StatelessWidget {
           children: [
             Icon(Icons.call, size: 20),
             SizedBox(width: 5),
-            Text('Call',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+            Text('Call', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
           ],
         ),
         Row(
           children: [
             Icon(MdiIcons.fileDocument, size: 23),
             const SizedBox(width: 5),
-            const Text('View bills',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+            const Text('View bills', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
           ],
         ),
         GestureDetector(
@@ -46,10 +45,7 @@ class AppointmentActionButtons extends StatelessWidget {
                 const SizedBox(width: 5),
                 const Text(
                   'Chat',
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white),
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white),
                 ),
               ],
             ),
@@ -62,14 +58,14 @@ class AppointmentActionButtons extends StatelessWidget {
   void _sendWhatsAppMessage(BuildContext context) async {
     // final appointmentData =
     //     Provider.of<AppointmentData>(context, listen: false);
-    final appointments = context.read<AppointmentDataCubit>().state.appointments ?? [];
+    final appointments = context.read<AppointmentCubit>().state.appointments ?? [];
 
     String message = 'Appointment Details:\n';
     for (final appointment in appointments) {
       message += 'Name: ${appointment.name}\n';
-      message += 'Date: ${appointment.selectedDate}\n';
-      message += 'Doctor: ${appointment.doctor}\n';
-      message += 'Mobile No.: ${appointment.mobileNo}\n';
+      message += 'Date: ${appointment.appointmentDate}\n';
+      message += 'Doctor: ${appointment.doctorName}\n';
+      message += 'Mobile No.: ${appointment.mobile}\n';
       message += '\n';
     }
 

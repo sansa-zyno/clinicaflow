@@ -142,7 +142,9 @@ class _LoginPageState extends State<LoginPage> {
                     height: 16,
                   ),
                   GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        context.goNamed(AppRoutes.forgotPassword.name);
+                      },
                       child: const Text("Forgot Password?",
                           style: TextStyle(
                             fontSize: 14,

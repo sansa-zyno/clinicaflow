@@ -6,16 +6,22 @@ class UserModel {
   final String id;
   final String firstName;
   final String lastName;
+  final String profilePic;
   final String? email;
+  final String? specialization;
   final bool isSuperAdmin;
+  final bool isDoctor;
   final List<dynamic> linkedClinics;
 
   UserModel({
     required this.id,
     required this.firstName,
     required this.lastName,
+    required this.profilePic,
     this.email,
+    this.specialization,
     required this.isSuperAdmin,
+    required this.isDoctor,
     required this.linkedClinics,
   });
 
@@ -48,8 +54,11 @@ class UserModel {
       'id': id,
       'firstName': firstName,
       'lastName': lastName,
+      'profilePic': profilePic,
       'email': email,
+      'specialization': specialization,
       'isSuperAdmin': isSuperAdmin,
+      'isDoctor': isDoctor,
       'linkedClinics': linkedClinics,
     };
   }
@@ -59,10 +68,12 @@ class UserModel {
       id: map['id'] as String,
       firstName: map['firstName'] as String,
       lastName: map['lastName'] as String,
+      profilePic: map['profilePic'] as String,
       email: map['email'] != null ? map['email'] as String : null,
+      specialization: map['specialization'] != null ? map['specialization'] as String : null,
       isSuperAdmin: map['isSuperAdmin'] as bool,
-      linkedClinics:
-          List<dynamic>.from((map['linkedClinics'] as List<dynamic>)),
+      isDoctor: map['isDoctor'] as bool,
+      linkedClinics: List<dynamic>.from((map['linkedClinics'] as List<dynamic>)),
     );
   }
 
@@ -73,6 +84,5 @@ class UserModel {
 
   String toJson() => json.encode(toMap());
 
-  factory UserModel.fromJson(String source) =>
-      UserModel.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory UserModel.fromJson(String source) => UserModel.fromMap(json.decode(source) as Map<String, dynamic>);
 }

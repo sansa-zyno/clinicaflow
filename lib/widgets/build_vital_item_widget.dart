@@ -1,16 +1,25 @@
 import 'dart:math' as Math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:healtether_clinic_app/Screens/AppointmentScreen/widgets/custom_textfield.dart';
 import 'package:healtether_clinic_app/utils/helper_functions/log.dart';
 
 class VitalItem extends StatefulWidget {
-  const VitalItem({super.key, required this.title, required this.unit, required this.hintText, required this.controller});
+  const VitalItem({
+    super.key,
+    required this.title,
+    required this.unit,
+    required this.hintText,
+    required this.controller,
+    required this.onChanged,
+  });
   final String title;
   final String unit;
   final String hintText;
   final TextEditingController controller;
+  final void Function(String x) onChanged;
 
   @override
   State<VitalItem> createState() => _VitalItemState();
@@ -117,6 +126,11 @@ class _VitalItemState extends State<VitalItem> {
                     height: 52,
                     controller: widget.controller,
                     hintText: widget.hintText,
+                    keyBoardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    onChanged: (value) {
+                      widget.onChanged(value);
+                    },
                   )),
               const SizedBox(width: 6),
               Expanded(

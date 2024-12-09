@@ -1,3 +1,6 @@
+import 'package:healtether_clinic_app/data_layer/models/appointment_slot/appointment_slot.dart';
+import 'package:healtether_clinic_app/data_layer/models/staff_model/address_staff_model.dart';
+
 class StaffByIdModel {
   StaffByIdModel({
     required this.the1,
@@ -21,6 +24,7 @@ class StaffByIdModel {
     required this.bankName,
     required this.accountName,
     required this.ifsc,
+    required this.upiId,
     required this.profilePic,
     required this.documents,
     required this.deleted,
@@ -50,12 +54,13 @@ class StaffByIdModel {
   final String bankName;
   final String accountName;
   final String ifsc;
+  final String upiId;
   final String profilePic;
   final List<dynamic> documents;
   final bool deleted;
   final String clinic;
   final String userId;
-  final List<AvailableTimeSlot> availableTimeSlot;
+  final List<AppointmentSlot> availableTimeSlot;
 
   StaffByIdModel copyWith({
     Map<String, int>? the1,
@@ -79,12 +84,13 @@ class StaffByIdModel {
     String? bankName,
     String? accountName,
     String? ifsc,
+    String? upiId,
     String? profilePic,
     List<dynamic>? documents,
     bool? deleted,
     String? clinic,
     String? userId,
-    List<AvailableTimeSlot>? availableTimeSlot,
+    List<AppointmentSlot>? availableTimeSlot,
   }) {
     return StaffByIdModel(
       the1: the1 ?? this.the1,
@@ -108,6 +114,7 @@ class StaffByIdModel {
       bankName: bankName ?? this.bankName,
       accountName: accountName ?? this.accountName,
       ifsc: ifsc ?? this.ifsc,
+      upiId: upiId ?? this.upiId,
       profilePic: profilePic ?? this.profilePic,
       documents: documents ?? this.documents,
       deleted: deleted ?? this.deleted,
@@ -120,12 +127,9 @@ class StaffByIdModel {
   factory StaffByIdModel.fromJson(Map<String, dynamic> json) {
     return StaffByIdModel(
       the1: Map.from(json["1"]).map((k, v) => MapEntry<String, int>(k, v)),
-      address:
-          json["address"] == null ? null : Address.fromJson(json["address"]),
-      created:
-          json["created"] == null ? null : Created.fromJson(json["created"]),
-      modified:
-          json["modified"] == null ? null : Created.fromJson(json["modified"]),
+      address: json["address"] == null ? null : Address.fromJson(json["address"]),
+      created: json["created"] == null ? null : Created.fromJson(json["created"]),
+      modified: json["modified"] == null ? null : Created.fromJson(json["modified"]),
       id: json["_id"] ?? "",
       staffId: json["staffId"] ?? "",
       firstName: json["firstName"] ?? "",
@@ -143,21 +147,18 @@ class StaffByIdModel {
       bankName: json["bankName"] ?? "",
       accountName: json["accountName"] ?? "",
       ifsc: json["ifsc"] ?? "",
+      upiId: json['upiId'] ?? "",
       profilePic: json["profilePic"] ?? "",
-      documents: json["documents"] == null
-          ? []
-          : List<dynamic>.from(json["documents"]!.map((x) => x)),
+      documents: json["documents"] == null ? [] : List<dynamic>.from(json["documents"]!.map((x) => x)),
       deleted: json["deleted"] ?? false,
       clinic: json["clinic"] ?? "",
       userId: json["userId"] ?? "",
-      availableTimeSlot: json["availableTimeSlot"] == null
-          ? []
-          : List<AvailableTimeSlot>.from(json["availableTimeSlot"]!
-              .map((x) => AvailableTimeSlot.fromJson(x))),
+      availableTimeSlot:
+          json["availableTimeSlot"] == null ? [] : List<AppointmentSlot>.from(json["availableTimeSlot"]!.map((x) => AppointmentSlot.fromMap(x))),
     );
   }
 
-  Map<String, dynamic> toJson() => {
+  /*Map<String, dynamic> toJson(BuildContext context) => {
         "1": Map.from(the1).map((k, v) => MapEntry<String, dynamic>(k, v)),
         "address": address?.toJson(),
         "created": created?.toJson(),
@@ -184,8 +185,8 @@ class StaffByIdModel {
         "deleted": deleted,
         "clinic": clinic,
         "userId": userId,
-        "availableTimeSlot": availableTimeSlot.map((x) => x?.toJson()).toList(),
-      };
+        "availableTimeSlot": availableTimeSlot.map((x) => x.toJson(context)).toList(),
+      };*/
 
   @override
   String toString() {
@@ -193,62 +194,7 @@ class StaffByIdModel {
   }
 }
 
-class Address {
-  Address({
-    required this.house,
-    required this.street,
-    required this.landmarks,
-    required this.city,
-    required this.pincode,
-  });
-
-  final String house;
-  final String street;
-  final String landmarks;
-  final String city;
-  final String pincode;
-
-  Address copyWith({
-    String? house,
-    String? street,
-    String? landmarks,
-    String? city,
-    String? pincode,
-  }) {
-    return Address(
-      house: house ?? this.house,
-      street: street ?? this.street,
-      landmarks: landmarks ?? this.landmarks,
-      city: city ?? this.city,
-      pincode: pincode ?? this.pincode,
-    );
-  }
-
-  factory Address.fromJson(Map<String, dynamic> json) {
-    return Address(
-      house: json["house"] ?? "",
-      street: json["street"] ?? "",
-      landmarks: json["landmarks"] ?? "",
-      city: json["city"] ?? "",
-      pincode: json["pincode"] ?? "",
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-        "house": house,
-        "street": street,
-        "landmarks": landmarks,
-        "city": city,
-        "pincode": pincode,
-      };
-
-  @override
-  String toString() {
-    return "$house, $street, $landmarks, $city, $pincode, ";
-  }
-}
-
-class AvailableTimeSlot {
+/*class AvailableTimeSlot {
   AvailableTimeSlot({
     required this.weekDay,
     required this.timeSlot,
@@ -343,7 +289,7 @@ class TimeSlot {
   String toString() {
     return "$start, $end, $id, ";
   }
-}
+}*/
 
 class Created {
   Created({

@@ -1,90 +1,194 @@
 import 'dart:convert';
-import 'package:healtether_clinic_app/utils/helper_functions/log.dart';
 
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+
 class Vital {
-  final Map<String, dynamic>? value;
   final String? id;
-  final String? type;
-  final String? appointmentId;
-  final String? userId;
-  final bool? isDeleted;
-  final String? clinicId;
-  final Map<String, dynamic>? createdBy;
-  final Map<String, dynamic>? updatedBy;
-  final String? createdAt;
-  final String? updatedAt;
+  final int? spo2;
+  final int? temperature;
+  final int? height;
+  final int? weight;
+  final int? pulseRate;
+  final int? rbs;
+  final int? respiratoryRate;
+  final BloodPressure? bloodPressure;
+  final Set<PersonalHistory>? personalHistories;
+
   Vital({
-    this.value,
     this.id,
-    this.type,
-    this.appointmentId,
-    this.userId,
-    this.isDeleted,
-    this.clinicId,
-    this.createdBy,
-    this.updatedBy,
-    this.createdAt,
-    this.updatedAt,
+    this.spo2,
+    this.temperature,
+    this.height,
+    this.weight,
+    this.pulseRate,
+    this.rbs,
+    this.respiratoryRate,
+    this.bloodPressure,
+    this.personalHistories,
   });
 
   @override
   String toString() {
-    return 'Vital(value: $value, id: $id, type: $type, appointmentId: $appointmentId, userId: $userId, isDeleted: $isDeleted, clinicId: $clinicId, createdBy: $createdBy, updatedBy: $updatedBy, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'Vital( id: $id,  spo2: $spo2 temperature: $temperature height: $height weight: $weight pulseRate: $pulseRate rbs: $rbs respiratoryRate: $respiratoryRate,bloodPressure: $bloodPressure,personalHistory: $personalHistories)';
+  }
+
+  Vital copyWith({
+    int? spo2,
+    int? temperature,
+    int? height,
+    int? weight,
+    int? pulseRate,
+    int? rbs,
+    int? respiratoryRate,
+    BloodPressure? bloodPressure,
+    Set<PersonalHistory>? personalHistories,
+  }) {
+    return Vital(
+      spo2: spo2 ?? this.spo2,
+      temperature: temperature ?? this.temperature,
+      height: height ?? this.height,
+      weight: weight ?? this.weight,
+      pulseRate: pulseRate ?? this.pulseRate,
+      rbs: rbs ?? this.rbs,
+      respiratoryRate: respiratoryRate ?? this.respiratoryRate,
+      bloodPressure: bloodPressure ?? this.bloodPressure,
+      personalHistories: personalHistories ?? this.personalHistories,
+    );
+  }
+  /*
+ "vitals": {
+    "bloodPressure": {
+      "systolic": 120,
+      "diastolic": 80
+    },
+    "_id": "6741f68840e7b037fce50d68",
+    "spo2": 98,
+    "temperature": 37,
+    "height": 170,
+    "weight": 65,
+    "pulseRate": 75,
+    "rbs": 90,
+    "respiratoryRate": 18,
+    "appointment": "6741f65e40e7b037fce50d3f"
+  },*/
+
+  factory Vital.fromMap(Map<String, dynamic> map) {
+    final vital = Vital(
+      id: map['_id'] != null ? map['_id'] as String : null,
+      spo2: map['spo2'] != null ? map['spo2'] as int : null,
+      temperature: map['temperature'] != null ? map['temperature'] as int : null,
+      height: map['height'] != null ? map['height'] as int : null,
+      weight: map['weight'] != null ? map['weight'] as int : null,
+      pulseRate: map['pulseRate'] != null ? map['pulseRate'] as int : null,
+      rbs: map['rbs'] != null ? map['rbs'] as int : null,
+      respiratoryRate: map['respiratoryRate'] != null ? map['respiratoryRate'] as int : null,
+      bloodPressure: map['bloodPressure'] != null ? BloodPressure.fromMap(map['bloodPressure'] as Map<String, dynamic>) : null,
+    );
+    return vital;
   }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'value': value,
-      'id': id,
-      'type': type,
-      'appointmentId': appointmentId,
-      'userId': userId,
-      'isDeleted': isDeleted,
-      'clinicId': clinicId,
-      'createdBy': createdBy,
-      'updatedBy': updatedBy,
-      'createdAt': createdAt,
-      'updatedAt': updatedAt,
+      'vitals': {
+        "bloodPressure": bloodPressure != null ? bloodPressure!.toMap() : BloodPressure().toMap(),
+        "spo2": spo2?.toString() ?? "",
+        "temperature": temperature?.toString() ?? "",
+        "height": height?.toString() ?? "",
+        "weight": weight?.toString() ?? "",
+        "pulseRate": pulseRate?.toString() ?? "",
+        "rbs": rbs?.toString() ?? "",
+        "respiratoryRate": respiratoryRate?.toString() ?? "",
+      },
+      'personalHistories': personalHistories != null ? personalHistories!.map((e) => e.toMap()).toList() : [],
     };
   }
 
-  factory Vital.fromMap(Map<String, dynamic> map) {
-    for (var key in map.keys) {
-      log("key, value: $key, ${map[key]}");
-    }
-    final vital = Vital(
-      value: map['value'] != null ? Map<String, dynamic>.from((map['value'] as Map<String, dynamic>)) : null,
-      id: map['_id'] != null ? map['_id'] as String : null,
-      type: map['type'] != null ? map['type'] as String : null,
-      appointmentId: map['appointment_id'] != null ? map['appointment_id'] as String : null,
-      userId: map['user_id'] != null ? map['user_id'] as String : null,
-      isDeleted: map['is_deleted'] != null ? map['is_deleted'] as bool : null,
-      clinicId: map['clinic_id'] != null ? map['clinic_id'] as String : null,
-      createdBy: map['createdBy'] != null ? Map<String, dynamic>.from((map['createdBy'] as Map<String, dynamic>)) : null,
-      updatedBy: map['updatedBy'] != null ? Map<String, dynamic>.from((map['updatedBy'] as Map<String, dynamic>)) : null,
-      createdAt: map['createdAt'] != null ? map['createdAt'] as String : null,
-      updatedAt: map['updatedAt'] != null ? map['updatedAt'] as String : null,
-    );
-
-    log("parsed vital = $vital");
-
-    return vital;
-  }
-
-  String toJson() => json.encode(toMap());
+  // String toJson() => json.encode(toMap());
 
   factory Vital.fromJson(String source) => Vital.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   bool operator ==(covariant Vital other) {
     if (identical(this, other)) return true;
-
     return other.id == id;
   }
 
   @override
   int get hashCode {
     return id.hashCode;
+  }
+}
+
+class BloodPressure {
+  final int? systolic;
+  final int? diastolic;
+
+  BloodPressure({this.systolic, this.diastolic});
+
+  BloodPressure copyWith({
+    int? systolic,
+    int? diastolic,
+  }) {
+    return BloodPressure(
+      systolic: systolic ?? this.systolic,
+      diastolic: diastolic ?? this.diastolic,
+    );
+  }
+
+  factory BloodPressure.fromMap(Map<String, dynamic> map) {
+    return BloodPressure(
+      systolic: map['systolic'] != null ? map['systolic'] as int : null,
+      diastolic: map['diastolic'] != null ? map['diastolic'] as int : null,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      "systolic": systolic?.toString() ?? "",
+      "diastolic": diastolic?.toString() ?? "",
+    };
+  }
+}
+
+class PersonalHistory {
+  final String activity;
+  final String? nature;
+  final String? privateNote;
+
+  PersonalHistory({required this.activity, this.nature, this.privateNote});
+
+  PersonalHistory copyWith({
+    String? activity,
+    String? nature,
+    String? privateNote,
+  }) {
+    return PersonalHistory(
+      activity: activity ?? this.activity,
+      nature: nature ?? this.nature,
+      privateNote: privateNote ?? this.privateNote,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'activity': activity,
+      "nature": nature ?? "",
+      'notes': privateNote ?? "",
+    };
+  }
+
+  PersonalHistory clear() {
+    return PersonalHistory(activity: activity);
+  }
+
+  @override
+  bool operator ==(covariant PersonalHistory other) {
+    if (identical(this, other)) return true;
+    return other.activity == activity;
+  }
+
+  @override
+  int get hashCode {
+    return activity.hashCode;
   }
 }

@@ -20,10 +20,30 @@ enum AppointmentStates {
   creatingAppointments,
   appointmentsCreated,
   creatingAppointmentsFailed,
-  //? FETCHING APPOINTMENT
+  //? FETCHING APPOINTMENTs
   fetchingAppointments,
   appointmentsFetched,
   fetchingAppointmentsFailed,
+  //? RESCHEDULLING APPOINTMENT
+  reschedulingAppointment,
+  appointmentRescheduled,
+  reschedulingAppointmentFailed,
+  //? CANCELLING APPOINTMENT
+  cancellingAppointment,
+  appointmentCancelled,
+  cancellingAppointmentFailed,
+  //? FOLLOWUP APPOINTMENT
+  followingupAppointment,
+  appointmentFollowedup,
+  followingupAppointmentFailed,
+  //? FETCHING APPOINTMENT BY ID
+  fetchingAppointmentById,
+  appointmentByIdFetched,
+  fetchingAppointmentByIdFailed,
+  //? FETCHING APPOINTMENT COUNT
+  fetchingAppointmentCount,
+  appointmentCountFetched,
+  fetchingAppointmentCountFailed,
 }
 
 enum PaymentStates {

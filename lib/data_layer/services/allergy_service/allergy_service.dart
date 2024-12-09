@@ -13,8 +13,6 @@ class AllergyService extends BaseService {
   Future<void> fetchToken() async {
     token = await SharedPrefService.getAccessToken() ?? "";
     clinicId = await SharedPrefService.getClinicId() ?? "";
-    log('TOKEN ' + token);
-    log('CLINIC_ID ' + clinicId);
   }
 
   @override

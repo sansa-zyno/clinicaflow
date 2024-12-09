@@ -46,7 +46,7 @@ class _ClinicDetailsState extends State<ClinicDetails> with AppBarMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(context, title: "Clinic Settings", automaticallyImplyLeading: true, showDefaultActions: false),
+      appBar: buildAppBar(context, title: "Clinic Settings", showDefaultActions: false),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(14.0),

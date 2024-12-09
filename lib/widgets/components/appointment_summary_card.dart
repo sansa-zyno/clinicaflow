@@ -110,13 +110,13 @@ class AppointmentSummaryCard extends StatelessWidget {
       children: [
         //? PATIENT ID
         Text(
-          "PATIENT ID - ${appointment.getPatientId}",
+          "PATIENT ID - ${appointment.clinicPatientId ?? 'N/A'}",
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, height: 16.8 / 14, color: AppColors.deepAqua),
         ),
 
         //? PATIENT NAME
         Text(
-          appointment.name!,
+          appointment.name ?? '',
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20, height: 24 / 20),
         ).pSymmetric(horizontal: 0, vertical: 4),
 

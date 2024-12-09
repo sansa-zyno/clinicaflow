@@ -1,4 +1,4 @@
-import 'package:healtether_clinic_app/data_layer/models/day.dart';
+import 'package:healtether_clinic_app/data_layer/models/appointment_slot/day.dart';
 import 'package:healtether_clinic_app/utils/extensions.dart/string_extensions.dart';
 
 enum PrescriptionTemplates {

@@ -1,14 +1,9 @@
-import 'dart:convert';
 import 'dart:developer';
-
-import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:healtether_clinic_app/data_layer/models/patient/patient_model.dart';
 import 'package:healtether_clinic_app/data_layer/models/patient/patient_model_id.dart';
 import 'package:healtether_clinic_app/data_layer/models/patient_records_model/patient_response_model.dart';
 import 'package:healtether_clinic_app/data_layer/models/patient_records_model/post/patient_create_model.dart';
 import 'package:healtether_clinic_app/data_layer/services/http.service.dart';
-import 'package:http/http.dart' as http;
 import '../../../constants/api.dart';
 import '../shared_preferences_service.dart';
 
@@ -18,8 +13,61 @@ class PatientService {
   Future<void> fetchToken() async {
     token = await SharedPrefService.getAccessToken() ?? "";
     clinicId = await SharedPrefService.getClinicId() ?? "";
-    log('TOKEN ' + token);
-    log('CLINIC_ID ' + clinicId);
+  }
+
+  Future<String> getPatientId() async {
+    await fetchToken();
+    final response = await HttpService.get(
+      ApiEndPoint.getPatientId(clinicId: clinicId),
+      token,
+    );
+    if (response.statusCode == 200) {
+      if (response.data['patientId'] != null) {
+        String prefix = response.data['patientId']['prefix'];
+        String suffix = response.data['patientId']['suffix'];
+        String currentPatientId = (response.data['patientId']['currentPatientId'] as int).toString();
+        return '${prefix}_${currentPatientId}_$suffix';
+      } else {
+        throw Exception('Failed to create patient id: ${response.statusCode}');
+      }
+    } else {
+      throw Exception('Failed to create patient id: ${response.statusCode}');
+    }
+  }
+
+  Future<bool> postPatient(PatientCreate patientCreate) async {
+    await fetchToken();
+    Map<String, dynamic> map = patientCreate.toJson();
+    String patientId = await getPatientId();
+    map['patientId'] = patientId;
+    log('patientId  ${map['patientId']}');
+    final response = await HttpService.post(
+      ApiEndPoint.postPatient,
+      token,
+      {
+        "patientData": map,
+      },
+    );
+    if (response.statusCode == 200) {
+      return response.data['success'];
+    } else {
+      throw Exception('Failed to create patient');
+    }
+  }
+
+  Future<bool> updatePatient(PatientCreate patientCreate, String id) async {
+    log(id);
+    await fetchToken();
+    Map<String, dynamic> map = patientCreate.toJson();
+    map.addAll({'id': id});
+    final response = await HttpService.post(ApiEndPoint.updatePatient, token, {
+      "patientData": map,
+    });
+    if (response.statusCode == 200) {
+      return response.data['success'];
+    } else {
+      throw Exception('Failed to update patient');
+    }
   }
 
   Future<PatientResponse> fetchPatients() async {
@@ -30,78 +78,10 @@ class PatientService {
     );
     if (response.statusCode == 200) {
       final data = response.data;
-      log("Patient data >>>>>>> " + data.toString());
-
+      //log("Patient data >>>>>>> " + data.toString());
       return PatientResponse.fromJson(data);
     } else {
       throw Exception('Failed to load patients: ${response.statusCode}');
-    }
-  }
-
-  Future<PatientCreate> postPatient(PatientCreate patientCreate) async {
-    try {
-      await fetchToken();
-      final body = json.encode(patientCreate.toJson());
-      print(body);
-      final response =
-          await HttpService.post(ApiEndPoint.postPatient, token, body);
-      print("res:::::${response.data}");
-      if (response.statusCode == 200) {
-        return PatientCreate.fromJson(response.data);
-      } else {
-        print(response.data);
-        throw Exception('Failed to create patient');
-      }
-    } catch (e, strack) {
-      print("strack:e:$e");
-      print("strack:$strack");
-      throw Exception('Failed to create patient throw catch');
-    }
-  }
-
-  Future<PatientCreate> editPatient(PatientCreate patientCreate) async {
-    try {
-      await fetchToken();
-      final body = json.encode(patientCreate.toJson());
-      print(body);
-      final response =
-          await HttpService.post(ApiEndPoint.editPatient, token, body);
-      print("res:::::${response.data}");
-      if (response.statusCode == 200) {
-        return PatientCreate.fromJson(response.data);
-      } else {
-        print(response.data);
-        throw Exception('Failed to create patient');
-      }
-    } catch (e, strack) {
-      print("strack:e:$e");
-      print("strack:$strack");
-      throw Exception('Failed to create patient throw catch');
-    }
-  }
-
-  Future<void> deletePatient(String id) async {
-    await fetchToken();
-    try {
-      final response = await HttpService.delete(
-        ApiEndPoint.deletePatientById(id: id),
-        token,
-      );
-      if (response.statusCode == 200) {
-        print(response.data);
-        if (kDebugMode) {
-          print('Delete Patient successful');
-        }
-      } else {
-        if (kDebugMode) {
-          print(
-              'Delete Patient request failed with status: ${response.statusCode}');
-        }
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print('Delete Patient Error: $e');
-      }
     }
   }
 
@@ -111,16 +91,35 @@ class PatientService {
       ApiEndPoint.getPatientById(id: id),
       token,
     );
-    log("patient details >>>>>>>>>> " + response.toString());
     if (response.statusCode == 200) {
       final data = response.data;
+      //log("res:::::${data}");
       return PatientByIdModel.fromJson(data);
     } else {
-      throw Exception('Failed to load patients: ${response.statusCode}');
+      throw Exception('Failed to load patient details: ${response.statusCode}');
     }
   }
 
-  Future<PatientModel?> getFullPatientRecord(String id) async {
+  Future<void> deletePatient(String id) async {
+    await fetchToken();
+    final response = await HttpService.delete(
+      ApiEndPoint.deletePatientById(id: id),
+      token,
+    );
+    if (response.statusCode == 200) {
+      print(response.data);
+      if (kDebugMode) {
+        print('Delete Patient successful');
+      }
+    } else {
+      if (kDebugMode) {
+        print('Delete Patient request failed with status: ${response.statusCode}');
+      }
+    }
+    throw Exception('Failed to delete patient: ${response.statusCode}');
+  }
+
+  /*Future<PatientModel?> getFullPatientRecord(String id) async {
     await fetchToken();
     try {
       final response = await HttpService.get(
@@ -144,5 +143,5 @@ class PatientService {
       }
       return null;
     }
-  }
+  }*/
 }

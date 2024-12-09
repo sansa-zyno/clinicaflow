@@ -58,8 +58,8 @@ class SharedPrefService {
     await prefs!.remove("userName");
   }*/
 
-  static Future<void> setUser(String name) async {
-    await prefs!.setString('user', name);
+  static Future<void> setUser(String userDetails) async {
+    await prefs!.setString('user', userDetails);
   }
 
   static Future<String?> getUser() async {

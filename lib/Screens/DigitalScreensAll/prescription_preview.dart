@@ -1,15 +1,24 @@
-import 'dart:typed_data';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:healtether_clinic_app/constants/api.dart';
 import 'package:healtether_clinic_app/constants/constants.dart';
+import 'package:healtether_clinic_app/data_layer/models/drug_model/drug_model.dart';
+import 'package:healtether_clinic_app/data_layer/models/prescription/prescription_report.dart';
 import 'package:healtether_clinic_app/utils/enums/route_enums.dart';
 import 'package:healtether_clinic_app/utils/extensions.dart/widget_extensions.dart';
 import 'package:healtether_clinic_app/utils/prescription_pdf.dart';
 import 'package:healtether_clinic_app/widgets/buttons/my_elevated_button.dart';
+import 'package:intl/intl.dart';
 
 class PrescriptionPreview extends StatefulWidget {
-  const PrescriptionPreview({super.key});
+  final PrescriptionReport prescriptionReport;
+  const PrescriptionPreview({
+    Key? key,
+    required this.prescriptionReport,
+  }) : super(key: key);
 
   @override
   State<PrescriptionPreview> createState() => _PrescriptionPreviewState();
@@ -17,8 +26,14 @@ class PrescriptionPreview extends StatefulWidget {
 
 class _PrescriptionPreviewState extends State<PrescriptionPreview> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  // to save image bytes of widget
-  Uint8List? bytes;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    log('hi');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,7 +55,7 @@ class _PrescriptionPreviewState extends State<PrescriptionPreview> {
       ),
       body: SingleChildScrollView(
         child: Container(
-          margin: EdgeInsets.all(8),
+          margin: const EdgeInsets.all(8),
           decoration: BoxDecoration(border: Border.all(), color: Colors.white),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -53,64 +68,72 @@ class _PrescriptionPreviewState extends State<PrescriptionPreview> {
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
                   children: [
-                    Image.asset(
-                      'assets/homeimages/Ellipse 250.png',
-                      width: 90,
-                      fit: BoxFit.contain,
+                    CircleAvatar(
+                      backgroundColor: Colors.white,
+                      radius: 40,
+                      child: (widget.prescriptionReport.clinic?.logo ?? '') == ''
+                          ? Image.asset(
+                              'assets/homeimages/Group 36536.png',
+                              height: 60,
+                              width: 60,
+                              fit: BoxFit.cover,
+                            )
+                          : Image.network(
+                              "${ApiEndPoint.logoBaseUrl}${widget.prescriptionReport.clinic!.logo}",
+                              height: 60,
+                              width: 60,
+                            ),
+                      //backgroundImage: AssetImage('assets/homeimages/Group 36536.png'),
                     ),
-                    SizedBox(
-                      width: 10,
-                    ),
+                    const SizedBox(width: 10),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Kim Jones Clinic',
-                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+                            widget.prescriptionReport.clinic?.clinicName ?? '',
+                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 6,
                           ),
                           Text(
-                            'Dr. Ajit Bhaia , Neurologist',
-                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+                            'Dr. ${widget.prescriptionReport.doctorName ?? 'N/A'}',
+                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 6,
                           ),
                           Row(
                             children: [
                               Expanded(
                                 child: Text(
-                                  'MBBS | FCPS (Neurology) | MRCP (Ireland) | MRCP (UK)America Board Of Electro Diagnostic Medicine',
-                                  style: TextStyle(fontSize: 12),
+                                  widget.prescriptionReport.doctorId?.specialization ?? 'N/A',
+                                  style: const TextStyle(fontSize: 12),
                                 ),
                               ),
                             ],
                           ),
-                          SizedBox(
-                            height: 6,
-                          ),
+                          /*  const SizedBox(height: 6),
                           Row(
                             children: [
                               Text(
                                 'Reg. no: ',
-                                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
                               ),
                               Text(
                                 'G1235455',
-                                style: TextStyle(fontSize: 12),
+                                style: const TextStyle(fontSize: 12),
                               )
                             ],
-                          )
+                          )*/
                         ],
                       ),
                     )
                   ],
                 ),
               ),
-              Divider(),
+              const Divider(),
               //
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -122,31 +145,29 @@ class _PrescriptionPreviewState extends State<PrescriptionPreview> {
                         Expanded(
                             flex: 2,
                             child: Text(
-                              'Patient details: Jane Doe, Female, 36 yrs, 9653256421',
-                              style: TextStyle(fontSize: 12),
+                              'Patient details: ${widget.prescriptionReport.patientName}, ${widget.prescriptionReport.patientGender}, ${widget.prescriptionReport.patientAge} yrs, ${widget.prescriptionReport.patientMobile}',
+                              style: const TextStyle(fontSize: 12),
                             )),
-                        SizedBox(
-                          width: 30,
-                        ),
+                        const SizedBox(width: 30),
                         Expanded(
                           flex: 1,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Date: 27 June, 2024, 04:37pm',
-                                style: TextStyle(fontSize: 12),
+                                'Date: ${DateFormat('dd MMM, yyyy, hh:mm a').format(widget.prescriptionReport.appointmentDate!)}',
+                                style: const TextStyle(fontSize: 12),
                               ),
                               Text(
-                                'Patient ID: 100325',
-                                style: TextStyle(fontSize: 12),
+                                'Patient ID: ${widget.prescriptionReport.clinicPatientId}',
+                                style: const TextStyle(fontSize: 12),
                               )
                             ],
                           ),
                         )
                       ],
                     ),
-                    Text(
+                    /* Text(
                       'Patient medical history:',
                       style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
                     ),
@@ -155,101 +176,125 @@ class _PrescriptionPreviewState extends State<PrescriptionPreview> {
                     ),
                     Row(
                       children: [
-                        Text(
+                        const Text(
                           'Family history: ',
                           style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                         ),
                         Row(
-                            children: List.generate(['Asthma, ', 'Hypertension'].length,
-                                (index) => Text(['Asthma, ', 'Hypertension'][index], style: TextStyle(fontSize: 12))))
+                            children: List.generate(widget.medicalHistory?['familyHistory']?.length ?? 0,
+                                (index) => Text(widget.medicalHistory?['familyHistory']![index].name ?? '', style: const TextStyle(fontSize: 12))))
                       ],
                     ),
                     Row(
                       children: [
-                        Text('Medical Procedures: ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                        Row(
-                            children:
-                                List.generate(['Heart Sugery'].length, (index) => Text(['Heart Sugery'][index], style: TextStyle(fontSize: 12))))
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Text('Medication: ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                        Row(
-                            children: List.generate(['Dolo 600mg, ', 'Paracetamol'].length,
-                                (index) => Text(['Dolo 600mg, ', 'Paracetamol'][index], style: TextStyle(fontSize: 12))))
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Text('Allergies: ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                        const Text('Medical Procedures: ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                         Row(
                             children: List.generate(
-                                ['Pollen, ', 'Sunlight'].length, (index) => Text(['Pollen, ', 'Sunlight'][index], style: TextStyle(fontSize: 12))))
+                                widget.medicalHistory?['pastProcedureHistory']?.length ?? 0,
+                                (index) =>
+                                    Text(widget.medicalHistory?['pastProcedureHistory']![index].name ?? '', style: const TextStyle(fontSize: 12))))
                       ],
                     ),
                     Row(
                       children: [
-                        Text('Phobias/Fears: ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                        const Text('Medication: ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                         Row(
-                            children: List.generate(
-                                ['Pollen, ', 'Sunlight'].length, (index) => Text(['Pollen, ', 'Sunlight'][index], style: TextStyle(fontSize: 12))))
+                            children: List.generate(widget.medicalHistory?['medication']?.length ?? 0,
+                                (index) => Text(widget.medicalHistory?['medication']![index].name ?? '', style: const TextStyle(fontSize: 12))))
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        const Text('Allergies: ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                        Row(
+                            children: List.generate(widget.medicalHistory?['allergies']?.length ?? 0,
+                                (index) => Text(widget.medicalHistory?['allergies']![index].name ?? '', style: const TextStyle(fontSize: 12))))
                       ],
                     ),
                     SizedBox(
                       height: 15,
+                    ),*/
+                    const Text(
+                      'Vitals',
+                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
                     ),
-                    Text('Vitals', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
-                    Divider(
-                      height: 0,
-                    ),
+                    const Divider(height: 0),
                     Row(
                       children: [
-                        Text(
-                          'Family history: ',
+                        const Text(
+                          'Blood Pressure: ',
                           style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                         ),
-                        Row(
-                            children: List.generate(['Asthma, ', 'Hypertension'].length,
-                                (index) => Text(['Asthma, ', 'Hypertension'][index], style: TextStyle(fontSize: 12))))
+                        Text(
+                            '${widget.prescriptionReport.vitals?.bloodPressure?.systolic ?? ''}/${widget.prescriptionReport.vitals?.bloodPressure?.diastolic ?? ''} mm Hg',
+                            style: const TextStyle(fontSize: 12))
                       ],
                     ),
                     Row(
                       children: [
-                        Text('Medical Procedures: ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                        Row(
-                            children:
-                                List.generate(['Heart Sugery'].length, (index) => Text(['Heart Sugery'][index], style: TextStyle(fontSize: 12))))
+                        const Text(
+                          'SpO2 levels: ',
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                        ),
+                        Text('${widget.prescriptionReport.vitals?.spo2 ?? ''} %', style: const TextStyle(fontSize: 12))
                       ],
                     ),
                     Row(
                       children: [
-                        Text('Medication: ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                        Row(
-                            children: List.generate(['Dolo 600mg, ', 'Paracetamol'].length,
-                                (index) => Text(['Dolo 600mg, ', 'Paracetamol'][index], style: TextStyle(fontSize: 12))))
+                        const Text(
+                          'Pulse Rate: ',
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                        ),
+                        Text('${widget.prescriptionReport.vitals?.pulseRate ?? ''} beats/min', style: const TextStyle(fontSize: 12))
                       ],
                     ),
                     Row(
                       children: [
-                        Text('Allergies: ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                        Row(
-                            children: List.generate(
-                                ['Pollen, ', 'Sunlight'].length, (index) => Text(['Pollen, ', 'Sunlight'][index], style: TextStyle(fontSize: 12))))
+                        const Text(
+                          'Respiratory Rate: ',
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                        ),
+                        Text('${widget.prescriptionReport.vitals?.respiratoryRate ?? ''} beats/min', style: const TextStyle(fontSize: 12))
                       ],
                     ),
                     Row(
                       children: [
-                        Text('Phobias/Fears: ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                        Row(
-                            children: List.generate(
-                                ['Pollen, ', 'Sunlight'].length, (index) => Text(['Pollen, ', 'Sunlight'][index], style: TextStyle(fontSize: 12))))
+                        const Text(
+                          'Temperature: ',
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                        ),
+                        Text('${widget.prescriptionReport.vitals?.temperature ?? ''} \u2109', style: const TextStyle(fontSize: 12))
                       ],
                     ),
-                    SizedBox(
-                      height: 15,
+                    Row(
+                      children: [
+                        const Text(
+                          'RBS: ',
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                        ),
+                        Text('${widget.prescriptionReport.vitals?.rbs ?? ''} mg/dL', style: const TextStyle(fontSize: 12))
+                      ],
                     ),
                     Row(
+                      children: [
+                        const Text(
+                          'Height: ',
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                        ),
+                        Text('${widget.prescriptionReport.vitals?.height ?? ''} cm', style: const TextStyle(fontSize: 12))
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        const Text(
+                          'Weight: ',
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                        ),
+                        Text('${widget.prescriptionReport.vitals?.weight ?? ''} Kg', style: const TextStyle(fontSize: 12))
+                      ],
+                    ),
+                    const SizedBox(height: 15),
+                    const Row(
                       children: [
                         SizedBox(width: 150, child: Text('Chief Complaints', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700))),
                         SizedBox(
@@ -258,44 +303,43 @@ class _PrescriptionPreviewState extends State<PrescriptionPreview> {
                         Text('Clinical Findings', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700))
                       ],
                     ),
-                    Divider(
-                      height: 0,
-                    ),
-                    Row(
-                      children: [
-                        SizedBox(width: 150, child: Text('Fever', style: TextStyle(fontSize: 12))),
-                        SizedBox(
-                          width: 50,
-                        ),
-                        Text('Notes', style: TextStyle(fontSize: 12))
-                      ],
-                    ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    Row(
-                      children: [
-                        SizedBox(width: 150, child: Text('Fever')),
-                        SizedBox(
-                          width: 50,
-                        ),
-                        Text('Notes')
-                      ],
-                    ),
-                    SizedBox(
-                      height: 15,
-                    ),
+                    const Divider(height: 0),
+                    ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: widget.prescriptionReport.prescriptions?.symptoms?.length ?? 0,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 5.0),
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                    width: 150,
+                                    child:
+                                        Text(widget.prescriptionReport.prescriptions?.symptoms?[index].name ?? '', style: TextStyle(fontSize: 12))),
+                                const SizedBox(width: 50),
+                                Text(widget.prescriptionReport.prescriptions?.symptoms?[index].privateNote ?? '', style: TextStyle(fontSize: 12))
+                              ],
+                            ),
+                          );
+                        }),
+                    const SizedBox(height: 15),
                     Text('Diagnosis', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
-                    Divider(
-                      height: 0,
-                    ),
-                    Text('Pneumonia', style: TextStyle(fontSize: 12)),
-                    SizedBox(
-                      height: 15,
-                    ),
-                    Row(
+                    const Divider(height: 0),
+                    ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: widget.prescriptionReport.prescriptions?.diagnosis?.length ?? 0,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 5.0),
+                            child: Text(widget.prescriptionReport.prescriptions?.diagnosis?[index].name ?? '', style: TextStyle(fontSize: 12)),
+                          );
+                        }),
+                    const SizedBox(height: 15),
+                    const Row(
                       children: [
-                        SizedBox(width: 40, child: Text('Drugs', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700))),
+                        SizedBox(width: 100, child: Text('Drugs', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700))),
                         SizedBox(
                           width: 10,
                         ),
@@ -303,104 +347,73 @@ class _PrescriptionPreviewState extends State<PrescriptionPreview> {
                         SizedBox(
                           width: 8,
                         ),
-                        SizedBox(width: 40, child: Text('Time', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700))),
+                        SizedBox(width: 70, child: Text('Time', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700))),
                         SizedBox(
                           width: 8,
                         ),
                         SizedBox(width: 70, child: Text('Frequency', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700))),
-                        SizedBox(
+                        /* SizedBox(
                           width: 8,
                         ),
                         SizedBox(width: 60, child: Text('Duration', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700))),
                         SizedBox(
                           width: 8,
                         ),
-                        SizedBox(width: 40, child: Text('Notes', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700))),
+                        SizedBox(width: 40, child: Text('Notes', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700))),*/
                       ],
                     ),
-                    Divider(
-                      height: 0,
-                    ),
-                    Row(
-                      children: [
-                        SizedBox(width: 40, child: Text('Tab DOLO 500mg', style: TextStyle(fontSize: 12))),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        SizedBox(width: 50, child: Text('1', style: TextStyle(fontSize: 12))),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        SizedBox(width: 40, child: Text('Before Meal', style: TextStyle(fontSize: 12))),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        SizedBox(width: 70, child: Text('1-0-1', style: TextStyle(fontSize: 12))),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        SizedBox(width: 60, child: Text('5 days', style: TextStyle(fontSize: 12))),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        SizedBox(width: 40, child: Text('Notes', style: TextStyle(fontSize: 12))),
-                      ],
-                    ),
-                    Divider(),
-                    Row(
-                      children: [
-                        SizedBox(width: 40, child: Text('Syp Ambrodel', style: TextStyle(fontSize: 12))),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        SizedBox(width: 50, child: Text('10ml', style: TextStyle(fontSize: 12))),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        SizedBox(width: 40, child: Text('After Meal', style: TextStyle(fontSize: 12))),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        SizedBox(width: 70, child: Text('1-0-1', style: TextStyle(fontSize: 12))),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        SizedBox(width: 60, child: Text('5 days', style: TextStyle(fontSize: 12))),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        SizedBox(width: 40, child: Text('Notes', style: TextStyle(fontSize: 12))),
-                      ],
-                    ),
-                    Divider(),
-                    SizedBox(
+                    const Divider(height: 0),
+                    ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: widget.prescriptionReport.prescriptions?.drugPrescriptions?.length ?? 0,
+                        itemBuilder: (context, index) {
+                          Drug? drug = widget.prescriptionReport.prescriptions?.drugPrescriptions?[index];
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 5.0),
+                            child: Row(
+                              children: [
+                                SizedBox(width: 100, child: Text(drug?.name ?? '', style: TextStyle(fontSize: 12))),
+                                const SizedBox(width: 10),
+                                SizedBox(width: 50, child: Text(drug?.quantity ?? '', style: TextStyle(fontSize: 12))),
+                                const SizedBox(width: 8),
+                                SizedBox(width: 70, child: Text(drug?.dosageTime ?? '', style: TextStyle(fontSize: 12))),
+                                const SizedBox(width: 8),
+                                SizedBox(width: 70, child: Text(drug?.dosageFrequency ?? '', style: TextStyle(fontSize: 12))),
+                                /* SizedBox(
+                                  width: 8,
+                                ),
+                                SizedBox(
+                                    width: 60,
+                                    child: Text('${drug.duration?['value'] ?? ''} ${drug.duration?['unit'] ?? ''}', style: TextStyle(fontSize: 12))),
+                                SizedBox(
+                                  width: 8,
+                                ),
+                                const SizedBox(width: 40, child: Text('Notes', style: TextStyle(fontSize: 12))),*/
+                              ],
+                            ),
+                          );
+                        },
+                        separatorBuilder: (context, index) => Divider()),
+                    const SizedBox(
                       height: 15,
                     ),
-                    Text('Advice/Instructions', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
-                    Divider(
-                      height: 0,
-                    ),
-                    Text('Eat a balanced diet with lots of fibre. Drink lots of water. Drink Electrolyte Solutions to stay hydrated',
-                        style: TextStyle(fontSize: 12)),
-                    SizedBox(
-                      height: 15,
-                    ),
+                    const Text('Advice/Instructions', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
+                    const Divider(height: 0),
+                    Text(widget.prescriptionReport.prescriptions?.patientAdvice ?? '', style: TextStyle(fontSize: 12)),
+                    const SizedBox(height: 15),
                     Row(
                       children: [
                         Text('Follow up', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        Text('None', style: TextStyle(fontSize: 12))
+                        const SizedBox(width: 8),
+                        Text(widget.prescriptionReport.prescriptions?.followUpDate ?? '', style: TextStyle(fontSize: 12))
                       ],
                     ),
                   ],
                 ),
               ),
 
-              SizedBox(
-                height: 15,
-              ),
+              const SizedBox(height: 15),
               Divider(),
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -411,19 +424,21 @@ class _PrescriptionPreviewState extends State<PrescriptionPreview> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
-                          children: [Text('Ph: ', style: TextStyle(fontSize: 12)), Text('9659355321', style: TextStyle(fontSize: 12))],
+                          children: [
+                            Text('Ph: ', style: TextStyle(fontSize: 12)),
+                            Text(widget.prescriptionReport.clinic?.adminUserId?.mobile ?? '', style: TextStyle(fontSize: 12))
+                          ],
                         ),
-                        SizedBox(
-                          height: 8,
-                        ),
+                        const SizedBox(height: 8),
                         Row(
-                          children: [Text('email: ', style: TextStyle(fontSize: 12)), Text('Bhaila@gmail.com', style: TextStyle(fontSize: 12))],
+                          children: [
+                            Text('email: ', style: TextStyle(fontSize: 12)),
+                            Text(widget.prescriptionReport.clinic?.adminUserId?.email ?? '', style: TextStyle(fontSize: 12))
+                          ],
                         )
                       ],
                     ),
-                    SizedBox(
-                      width: 15,
-                    ),
+                    const SizedBox(width: 15),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -432,11 +447,10 @@ class _PrescriptionPreviewState extends State<PrescriptionPreview> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text('Add: ', style: TextStyle(fontSize: 12)),
-                              Expanded(
-                                  child: Text('123 Street near HN Market, 2nd floor, Hydrabad, Telangana, 669682', style: TextStyle(fontSize: 12)))
+                              Expanded(child: Text(widget.prescriptionReport.clinic?.address ?? '', style: TextStyle(fontSize: 12)))
                             ],
                           ),
-                          SizedBox(
+                          /* SizedBox(
                             height: 8,
                           ),
                           Row(
@@ -445,7 +459,7 @@ class _PrescriptionPreviewState extends State<PrescriptionPreview> {
                               Text('Timings: ', style: TextStyle(fontSize: 12)),
                               Expanded(child: Text('8:30 am - 10:50 pm Mon-Fri', style: TextStyle(fontSize: 12)))
                             ],
-                          )
+                          )*/
                         ],
                       ),
                     )
@@ -481,7 +495,7 @@ class _PrescriptionPreviewState extends State<PrescriptionPreview> {
                   } catch (e) {
                     log(e.toString());
                   }*/
-                  PrescriptionPdf().generate(context);
+                  PrescriptionPdf().generate(context, prescriptionReport: widget.prescriptionReport);
                 })),
 
         const SizedBox(width: 20),

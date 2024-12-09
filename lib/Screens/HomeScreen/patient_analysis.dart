@@ -364,8 +364,9 @@ class _PatientAnalysisState extends State<PatientAnalysis> {
                   height: 9,
                 ),
                 TextListTile(
+                    height: 58,
                     text: 'Patients Analysis',
-                    padding: const EdgeInsets.only(top: 18.0, left: 16),
+                    padding: const EdgeInsets.only(left: 16),
                     onTap: () {
                       setState(() {
                         selectedAnalysis = 'Patients Analysis';
@@ -373,8 +374,9 @@ class _PatientAnalysisState extends State<PatientAnalysis> {
                       });
                     }).pOnly(bottom: 10),
                 TextListTile(
+                    height: 58,
                     text: 'Appointments Analysis',
-                    padding: const EdgeInsets.only(top: 18.0, left: 16),
+                    padding: const EdgeInsets.only(left: 16),
                     onTap: () {
                       setState(() {
                         selectedAnalysis = 'Appointments Analysis';

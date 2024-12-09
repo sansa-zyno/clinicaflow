@@ -11,8 +11,6 @@ class AnalyticsService {
   Future<void> fetchToken() async {
     token = await SharedPrefService.getAccessToken() ?? "";
     clinicId = await SharedPrefService.getClinicId() ?? "";
-    log('TOKEN ' + token);
-    log('CLINIC_ID ' + clinicId);
   }
 
 //patient analysis
@@ -62,8 +60,7 @@ class AnalyticsService {
   //appointment analysis
   Future<Map<String, dynamic>> fetchData() async {
     try {
-      final response = await http.get(Uri.parse(
-          'https://9316dbec-7490-466d-bc74-5e4bb14eefc2.mock.pstmn.io/'));
+      final response = await http.get(Uri.parse('https://9316dbec-7490-466d-bc74-5e4bb14eefc2.mock.pstmn.io/'));
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {

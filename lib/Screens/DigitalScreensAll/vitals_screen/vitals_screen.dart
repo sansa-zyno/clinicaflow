@@ -1,5 +1,6 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'dart:developer' as dev;
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -8,16 +9,16 @@ import 'package:healtether_clinic_app/data_layer/models/appointment_models/appoi
 import 'package:healtether_clinic_app/data_layer/models/vitals_model.dart/vital.dart';
 import 'package:healtether_clinic_app/utils/enums/bloc_enums.dart';
 import 'package:healtether_clinic_app/utils/extensions.dart/widget_extensions.dart';
+import 'package:healtether_clinic_app/utils/snackbar.dart';
 import 'package:healtether_clinic_app/widgets/build_vital_item_widget.dart';
 import 'package:healtether_clinic_app/Screens/AppointmentScreen/widgets/custom_textfield.dart';
 import 'package:healtether_clinic_app/constants/app_colors.dart';
 import 'package:healtether_clinic_app/widgets/buttons/my_elevated_button.dart';
-// import 'package:healtether_clinic_app/widgets/green_line_widget.dart';
-// import 'other_vitals_screen.dart';
+import 'privacy_notes_sheet.dart';
 
 class VitalsScreen extends StatefulWidget {
   final Appointment appointment;
-  final List<Vital>? vitals;
+  final Vital? vitals;
   const VitalsScreen({Key? key, required this.appointment, this.vitals}) : super(key: key);
 
   @override
@@ -25,7 +26,6 @@ class VitalsScreen extends StatefulWidget {
 }
 
 class VitalsScreenState extends State<VitalsScreen> {
-  // List<String> selectedOptions = [];
   bool hasNavigated = false;
   final TextEditingController _bp1 = TextEditingController();
   final TextEditingController _bp2 = TextEditingController();
@@ -37,79 +37,82 @@ class VitalsScreenState extends State<VitalsScreen> {
   final TextEditingController _height = TextEditingController();
   final TextEditingController _weight = TextEditingController();
 
-  // List<Widget> newVitals = [];
-  // List<Vital> selectedVitals = [];
-  // Map<String, TextEditingController> vitalControllers = {};
-  // List<Vital>? vitals;
   List<TextEditingController> personalHistoryControllers = [
     TextEditingController(),
     TextEditingController(),
   ];
   List<LayerLink> personalHistoryLayerLinks = [LayerLink(), LayerLink()];
 
-  @override
-  void dispose() {
-    /* final keys = vitalControllers.keys;
-
-    for (var key in keys) {
-      vitalControllers[key]?.dispose();
-    }*/
-    super.dispose();
-  }
-
-  /* void addSelectedVitals() {
-    final newVitals = vitals ?? [];
-
-    log("VITAL: $vitals");
-    log("New VITAL: $newVitals");
-    log(" SELECTED VITAL: $selectedVitals");
-
-    for (var vital in selectedVitals) {
-      log("TARGET VITAL: ${vital.id}");
-      log("NEW VITAL CONTAINS VITAL: ${newVitals.contains(vital)}");
-      if (newVitals.contains(vital) == false) {
-        final index = selectedVitals.indexOf(vital);
-
-        log("REMOVING: $vital");
-
-        selectedVitals.removeAt(index);
-        vitalControllers.remove(vitalControllers.keys.elementAt(index));
-      }
-    }
-
-    String? text;
-
-    for (var vital in newVitals) {
-      log("VITAL TYPE: ${vital.type}");
-      if (vital.type != 'blood_pressure') {
-        text = vital.value!['real'].toString();
-      } else {
-        text = "${vital.value!['real']}/${vital.value!['fraction']}";
-      }
-      if (selectedVitals.contains(vital) == false) {
-        selectedVitals.add(vital);
-        vitalControllers.addAll({vital.id!: TextEditingController(text: text)});
-      }
-    }
-  }*/
-
-  /*Vital getVital(String id) {
-    final vital = selectedVitals.where((e) => e.id == id);
-
-    return vital.first;
-  }*/
+  late Vital vital;
+  late Set<PersonalHistory> personalHistories;
 
   @override
   void initState() {
     super.initState();
     // context.read<HomePageBottomNavCubit>().onPageChanged(0);
+    if (widget.vitals != null && widget.vitals!.id != null) {
+      vital = widget.vitals!;
+      if (vital.personalHistories == null) {
+        personalHistories = {PersonalHistory(activity: 'x'), PersonalHistory(activity: 'y')};
+        vital = vital.copyWith(personalHistories: personalHistories);
+        log(vital.personalHistories!.map((e) => e.toMap()).toString());
+      } else {
+        personalHistories = widget.vitals!.personalHistories!;
+        log(vital.personalHistories!.map((e) => e.toMap()).toString());
+      }
+      _bp1.text = widget.vitals!.bloodPressure?.systolic?.toString() ?? '0';
+      _bp2.text = widget.vitals!.bloodPressure?.diastolic?.toString() ?? '0';
+      _spo2.text = widget.vitals!.spo2?.toString() ?? "0";
+      _pulseRate.text = widget.vitals!.pulseRate?.toString() ?? '0';
+      _respRate.text = widget.vitals!.respiratoryRate?.toString() ?? '0';
+      _temp.text = widget.vitals!.temperature?.toString() ?? '0';
+      _rbs.text = widget.vitals!.rbs?.toString() ?? '0';
+      _height.text = widget.vitals!.height?.toString() ?? '0';
+      _weight.text = widget.vitals!.weight?.toString() ?? '0';
+    } else {
+      personalHistories = {PersonalHistory(activity: 'x'), PersonalHistory(activity: 'y')};
+      vital = Vital(
+        bloodPressure: BloodPressure(),
+        personalHistories: personalHistories,
+      );
+      log(vital.personalHistories!.map((e) => e.toMap()).toString());
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  Future<dynamic> _showBottomSheet(PersonalHistory history) async {
+    return await showModalBottomSheet(
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      context: context,
+      builder: (context) => PrivacyNotesSheet(
+        history: history,
+        onSave: saveHistory,
+      ),
+    );
+  }
+
+  void saveHistory(PersonalHistory newHistory) {
+    setState(() {
+      if (vital.personalHistories!.contains(newHistory)) {
+        log("UPDATE HYSTORY");
+        personalHistories = vital.personalHistories!.map((history) => history.activity == newHistory.activity ? newHistory : history).toSet();
+      } else {
+        log("ADD NEW HISTORY");
+        personalHistories.add(newHistory);
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: true,
         leadingWidth: 30,
         title: Text(
           'Digital Prescription',
@@ -122,20 +125,15 @@ class VitalsScreenState extends State<VitalsScreen> {
             ),
           ),
         ),
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(Icons.arrow_back),
-        ),
         backgroundColor: const Color(0xFFE1F9F2),
       ),
       body: BlocListener<VitalsCubit, VitalsState>(
         listener: (context, state) {
           if (state.state == VitalsStates.vitalsPosted && !hasNavigated) {
-            dev.log(state.state.toString());
+            log(state.state.toString());
             hasNavigated = true;
-            //context.read<VitalsCubit>().getSavedSymptomsAndDiagnosis(appointmentId: widget.appointment.id!);
+            showSnackbar("Vitals saved successfully", context);
+            context.read<VitalsCubit>().getSavedVitals(appointmentId: widget.appointment.id!);
             context.pop();
           }
         },
@@ -175,39 +173,6 @@ class VitalsScreenState extends State<VitalsScreen> {
                         ),
                       ),
                     ),
-                    /*Column(
-                      children: [
-                        GestureDetector(
-                          onTap: () async {
-                            log("GOING TO OTHER VITALS");
-                            vitals = await context.pushNamed(AppRoutes.otherVitals.name,
-                                pathParameters: {"appointmentId": widget.appointmentId}, extra: vitals);
-                            log("VITALS: $vitals");
-                            setState(() {
-                              addSelectedVitals();
-                            });
-                          },
-                          child: Text(
-                            'Add',
-                            style: GoogleFonts.urbanist(
-                              textStyle: const TextStyle(
-                                fontSize: 17,
-                                // fontFamily: "Montserrat",
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF32856E),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Container(
-                          height: 2,
-                          width: 32,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFF32856E),
-                          ),
-                        ),
-                      ],
-                    ),*/
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -229,7 +194,14 @@ class VitalsScreenState extends State<VitalsScreen> {
                         height: 52,
                         hintText: "120",
                         controller: _bp1,
+                        keyBoardType: TextInputType.number,
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                         //fillColor: AppColors.fillColor2,
+                        onChanged: (value) {
+                          BloodPressure bp = vital.bloodPressure!;
+                          bp = bp.copyWith(systolic: int.parse(value));
+                          vital = vital.copyWith(bloodPressure: bp);
+                        },
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -245,7 +217,14 @@ class VitalsScreenState extends State<VitalsScreen> {
                         height: 52,
                         hintText: "80",
                         controller: _bp2,
+                        keyBoardType: TextInputType.number,
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                         //fillColor: AppColors.fillColor2,
+                        onChanged: (value) {
+                          BloodPressure bp = vital.bloodPressure!;
+                          bp = bp.copyWith(diastolic: int.parse(value));
+                          vital = vital.copyWith(bloodPressure: bp);
+                        },
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -258,19 +237,69 @@ class VitalsScreenState extends State<VitalsScreen> {
                   ],
                 ),
                 const SizedBox(height: 12),
-                VitalItem(title: 'SpO2 levels', unit: '%', hintText: "95", controller: _spo2),
+                VitalItem(
+                  title: 'SpO2 levels',
+                  unit: '%',
+                  hintText: "95",
+                  controller: _spo2,
+                  onChanged: (value) {
+                    vital = vital.copyWith(spo2: int.parse(value));
+                  },
+                ),
                 const SizedBox(height: 16),
-                VitalItem(title: 'Pulse Rate', unit: 'beats/min', hintText: '60', controller: _pulseRate),
+                VitalItem(
+                    title: 'Pulse Rate',
+                    unit: 'beats/min',
+                    hintText: '60',
+                    controller: _pulseRate,
+                    onChanged: (value) {
+                      vital = vital.copyWith(pulseRate: int.parse(value));
+                    }),
                 const SizedBox(height: 16),
-                VitalItem(title: 'Respiratory Rate', unit: 'beats/min', hintText: '80', controller: _respRate),
+                VitalItem(
+                    title: 'Respiratory Rate',
+                    unit: 'beats/min',
+                    hintText: '80',
+                    controller: _respRate,
+                    onChanged: (value) {
+                      vital = vital.copyWith(respiratoryRate: int.parse(value));
+                    }),
                 const SizedBox(height: 16),
-                VitalItem(title: 'Temperature', unit: '\u2109', hintText: '98', controller: _temp),
+                VitalItem(
+                    title: 'Temperature',
+                    unit: '\u2109',
+                    hintText: '98',
+                    controller: _temp,
+                    onChanged: (value) {
+                      vital = vital.copyWith(temperature: int.parse(value));
+                    }),
                 const SizedBox(height: 16),
-                VitalItem(title: 'RBS', unit: 'mg/dL', hintText: '60', controller: _rbs),
+                VitalItem(
+                    title: 'RBS',
+                    unit: 'mg/dL',
+                    hintText: '60',
+                    controller: _rbs,
+                    onChanged: (value) {
+                      vital = vital.copyWith(rbs: int.parse(value));
+                    }),
                 const SizedBox(height: 16),
-                VitalItem(title: 'Height', unit: 'cm', hintText: '160', controller: _height),
+                VitalItem(
+                    title: 'Height',
+                    unit: 'cm',
+                    hintText: '160',
+                    controller: _height,
+                    onChanged: (value) {
+                      vital = vital.copyWith(height: int.parse(value));
+                    }),
                 const SizedBox(height: 16),
-                VitalItem(title: 'Weight', unit: 'Kg', hintText: '60', controller: _weight),
+                VitalItem(
+                    title: 'Weight',
+                    unit: 'Kg',
+                    hintText: '60',
+                    controller: _weight,
+                    onChanged: (value) {
+                      vital = vital.copyWith(weight: int.parse(value));
+                    }),
                 const SizedBox(height: 16),
                 RichText(
                     text: TextSpan(
@@ -318,9 +347,14 @@ class VitalsScreenState extends State<VitalsScreen> {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            // context.pushNamed(AppRoutes.personalHistory.name);
-                            personalHistoryControllers.add(TextEditingController());
-                            personalHistoryLayerLinks.add(LayerLink());
+                            //to prevent out of range set error
+                            if (personalHistories.elementAt(personalHistories.length - 1).activity != '') {
+                              // context.pushNamed(AppRoutes.personalHistory.name);
+                              personalHistoryControllers.add(TextEditingController());
+                              personalHistoryLayerLinks.add(LayerLink());
+                              personalHistories.add(PersonalHistory(activity: ''));
+                              vital = vital.copyWith(personalHistories: personalHistories);
+                            } else {}
                             setState(() {});
                           },
                           child: Text(
@@ -349,65 +383,73 @@ class VitalsScreenState extends State<VitalsScreen> {
                 ),
                 const SizedBox(height: 8),
                 Column(
-                  children: List<Widget>.generate(
-                      personalHistoryControllers.length,
-                      (index) => Padding(
-                            padding: const EdgeInsets.only(bottom: 8),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: CompositedTransformTarget(
-                                    link: personalHistoryLayerLinks[index],
-                                    child: CustomTextField(
-                                      height: 52,
-                                      borderRadius: 0,
-                                      onTap: () {},
-                                      controller: personalHistoryControllers[index],
-                                      hintText: 'Lifestyle choices',
-                                      onChanged: (String query) {},
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 8,
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    if (personalHistoryControllers.length > 2) {
-                                      //selectedDiagnosis.removeWhere((element) => element.name == diagnosisControllers[index].text);
-                                      personalHistoryControllers.removeAt(index);
-                                      personalHistoryLayerLinks.removeAt(index);
-                                      // onDeletePressedDx = false;
-                                      setState(() {});
-                                    }
-                                  },
-                                  child: CircleAvatar(
-                                      radius: 12,
-                                      backgroundColor: AppColors.accentColor2,
-                                      child: Icon(
-                                        Icons.close,
-                                        color: AppColors.darkBlueViolet,
-                                        size: 20,
-                                      )),
-                                )
-                              ],
+                  children: List<Widget>.generate(personalHistoryControllers.length, (index) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: CompositedTransformTarget(
+                              link: personalHistoryLayerLinks[index],
+                              child: CustomTextField(
+                                height: 52,
+                                borderRadius: 0,
+                                controller: personalHistoryControllers[index],
+                                hintText: 'Lifestyle choices',
+                                onChanged: (value) {
+                                  PersonalHistory history = personalHistories.elementAt(index).copyWith(activity: value);
+                                  List<PersonalHistory> newList = personalHistories.toList();
+                                  newList[index] = history;
+                                  personalHistories = newList.toSet();
+                                  vital = vital.copyWith(personalHistories: personalHistories);
+                                },
+                              ),
                             ),
-                          )),
+                          ),
+                          SizedBox(width: 8),
+                          InkWell(
+                            onTap: () {
+                              final List<PersonalHistory> match =
+                                  personalHistories.where((element) => element.activity == personalHistoryControllers[index].text).toList();
+                              if (match.isNotEmpty) {
+                                _showBottomSheet(match[0]);
+                              }
+                            },
+                            child: CircleAvatar(
+                                radius: 12,
+                                backgroundColor: personalHistories.isNotEmpty && (personalHistories.elementAtOrNull(index)?.privateNote != null)
+                                    ? AppColors.greenCyan
+                                    : AppColors.darkBlueViolet,
+                                child: const Icon(
+                                  Icons.edit,
+                                  color: Colors.white,
+                                  size: 20,
+                                )),
+                          ),
+                          SizedBox(width: 8),
+                          InkWell(
+                            onTap: () {
+                              if (personalHistoryControllers.length > 2) {
+                                personalHistories.removeWhere((element) => element.activity == personalHistoryControllers[index].text);
+                                personalHistoryControllers.removeAt(index);
+                                personalHistoryLayerLinks.removeAt(index);
+                                setState(() {});
+                              }
+                            },
+                            child: const CircleAvatar(
+                                radius: 12,
+                                backgroundColor: AppColors.accentColor2,
+                                child: Icon(
+                                  Icons.close,
+                                  color: AppColors.darkBlueViolet,
+                                  size: 20,
+                                )),
+                          )
+                        ],
+                      ),
+                    );
+                  }),
                 )
-                /* buildPersonalHistorySection(
-                  context,
-                  [
-                    'None',
-                    'Aerobics',
-                    'Yoga',
-                    'Smoking',
-                    'Tobacco',
-                    'Gym',
-                    'Alcohol Consumption',
-                    'Sedentary job',
-                    'Other',
-                  ],
-                ),*/
               ],
             ),
           ),
@@ -425,10 +467,23 @@ class VitalsScreenState extends State<VitalsScreen> {
                     height: 58,
                     textStyle: const TextStyle(color: AppColors.eerieBlack, fontSize: 15),
                     backgroundColor: AppColors.whiteSmoke,
-                    onPressed: () => setState(() {}))),
-
+                    onPressed: () => setState(() {
+                          _bp1.text = "";
+                          _bp2.text = "";
+                          _spo2.text = "";
+                          _pulseRate.text = "";
+                          _respRate.text = "";
+                          _temp.text = "";
+                          _rbs.text = "";
+                          _height.text = "";
+                          _weight.text = "";
+                          personalHistoryControllers = [
+                            TextEditingController(),
+                            TextEditingController(),
+                          ];
+                          personalHistoryLayerLinks = [LayerLink(), LayerLink()];
+                        }))),
             const SizedBox(width: 20),
-
             //? CLEAR
             Expanded(
                 child: MyElevatedButton(
@@ -436,21 +491,11 @@ class VitalsScreenState extends State<VitalsScreen> {
               height: 58,
               textStyle: const TextStyle(fontSize: 15),
               onPressed: () {
-                // dev.log(selectedTests.map((e) => e.toMap()).toList().toString());
+                log(vital.toMap().toString());
                 hasNavigated = false;
-                context.read<VitalsCubit>().postVitals(patientId: widget.appointment.patientId!, appointmentId: widget.appointment.id!, vitals: {
-                  "bloodPressure": {
-                    "systolic": _bp1.text,
-                    "diastolic": _bp2.text,
-                  },
-                  "spo2": _spo2.text,
-                  "temperature": _temp.text,
-                  "height": _height.text,
-                  "weight": _weight.text,
-                  "pulseRate": _pulseRate.text,
-                  "rbs": _rbs.text,
-                  "respiratoryRate": _respRate.text,
-                });
+                context
+                    .read<VitalsCubit>()
+                    .postVitals(patientId: widget.appointment.patientId!, appointmentId: widget.appointment.id!, map: vital.toMap());
               },
             )),
           ]).pSymmetric(vertical: 8);

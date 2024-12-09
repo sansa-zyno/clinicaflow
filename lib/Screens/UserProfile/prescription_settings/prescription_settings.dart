@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/settings_cubit/settings_cubit.dart';
 import 'package:healtether_clinic_app/constants/constants.dart';
-import 'package:healtether_clinic_app/constants/app_images.dart';
 import 'package:healtether_clinic_app/utils/enums/enums.dart';
 import 'package:healtether_clinic_app/utils/enums/route_enums.dart';
 import 'package:healtether_clinic_app/utils/extensions.dart/widget_extensions.dart';
@@ -27,7 +26,7 @@ class _PrescriptionSettingsState extends State<PrescriptionSettings> with AppBar
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(context, title: "Clinic Settings", automaticallyImplyLeading: true, showDefaultActions: false),
+      appBar: buildAppBar(context, title: "Clinic Settings", showDefaultActions: false),
       body: SingleChildScrollView(
         child: BlocBuilder<SettingsCubit, SettingsState>(builder: (context, state) {
           return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

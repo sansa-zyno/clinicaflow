@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:healtether_clinic_app/constants/app_colors.dart';
+import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:shimmer/shimmer.dart';
+import '../Screens/HomeScreen/homescreen.dart';
 
 class AppConstants {
   static Map<String, DateTime?> followUpDate = {
@@ -48,6 +51,64 @@ class AppConstants {
           }),
         ),
       ]),
+    );
+  }
+
+  static Widget patientsHelpedPlaceHolder() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey.shade500,
+      highlightColor: Colors.grey.shade100,
+      enabled: true,
+      child: Row(
+        children: [
+          Expanded(
+            child: CircularPercentIndicator(
+              radius: 50.0,
+              animation: true,
+              animationDuration: 1200,
+              lineWidth: 10.0,
+              percent: 0.6,
+              center: const Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "x%",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.0),
+                  ),
+                  Text(
+                    'done',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.0),
+                  )
+                ],
+              ),
+              circularStrokeCap: CircularStrokeCap.butt,
+              progressColor: Colors.grey,
+              backgroundColor: Colors.grey,
+            ),
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  ' x patients helped',
+                  style: GoogleFonts.urbanist(
+                    fontSize: 17,
+                    color: const Color(0xff0C091F),
+                  ),
+                ),
+                const SizedBox(height: 9),
+                const SmallContainer(
+                  color: Color(0xff03BF9C),
+                  text: 'Completed',
+                ),
+                const SizedBox(height: 9),
+                const SmallContainer(color: Color(0xffE4E0F3), text: 'Remaining'),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

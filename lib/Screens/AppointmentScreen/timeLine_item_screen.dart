@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import 'package:healtether_clinic_app/constants/constants.dart';
 
 class TimelineItem extends StatelessWidget {
@@ -64,4 +64,4 @@ class TimelineItem extends StatelessWidget {
       ),
     );
   }
-}
+}*/

@@ -4,35 +4,32 @@ part of 'vitals_cubit.dart';
 class VitalsState {
   final VitalsStates state;
   final String? message;
-  final Vital? vital;
-  final List<Vital>? vitals;
   final AppError? error;
+  final Vital? savedVital;
+
   VitalsState({
     required this.state,
     this.message,
-    this.vital,
-    this.vitals,
     this.error,
+    this.savedVital,
   });
 
   VitalsState copyWith({
     VitalsStates? state,
     String? message,
-    Vital? vital,
-    List<Vital>? vitals,
     AppError? error,
+    Vital? savedVital,
   }) {
     return VitalsState(
       state: state ?? this.state,
       message: message ?? this.message,
-      vital: vital ?? this.vital,
-      vitals: vitals ?? this.vitals,
       error: error ?? this.error,
+      savedVital: savedVital,
     );
   }
 
   @override
   String toString() {
-    return 'VitalsState(state: $state, message: $message, vital: $vital, vitals: $vitals, error: $error)';
+    return 'VitalsState(state: $state, message: $message, vital: $savedVital, error: $error)';
   }
 }

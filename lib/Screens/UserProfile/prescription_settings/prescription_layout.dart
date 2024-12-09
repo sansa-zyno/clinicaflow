@@ -120,7 +120,7 @@ class _PrescriptionLayoutState extends State<PrescriptionLayout> with AppBarMixi
         }
       },
       child: Scaffold(
-        appBar: buildAppBar(context, title: "Clinic Settings", automaticallyImplyLeading: true, showDefaultActions: false),
+        appBar: buildAppBar(context, title: "Clinic Settings", showDefaultActions: false),
         bottomNavigationBar: BlocBuilder<SettingsCubit, SettingsState>(builder: (context, state) {
           // final bool isValid = validateForm();
           // log("BUILDING SAVE: ${form.isValid}");

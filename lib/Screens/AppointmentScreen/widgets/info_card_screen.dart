@@ -1,13 +1,14 @@
 // ignore_for_file: deprecated_member_use
-
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:healtether_clinic_app/data_layer/models/appointment_models/appointment_model.dart';
+import 'package:healtether_clinic_app/data_layer/services/vitals_service/vitals_service.dart';
 import 'package:healtether_clinic_app/utils/enums/route_enums.dart';
 import 'package:intl/intl.dart';
+import '../../../data_layer/services/past medical history/past_medical_history_service.dart';
 // import 'package:provider/provider.dart';
 
 class InfoCard extends StatefulWidget {
@@ -39,9 +40,9 @@ class InfoCardState extends State<InfoCard> {
     var height = MediaQuery.of(context).size.height;
     return ListView.builder(
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.all(8.0),
-      itemCount: widget.appointments?.length ?? 0,
+      itemCount: widget.appointments.length,
       itemBuilder: (BuildContext context, int index) {
         Appointment appointment = widget.appointments[index];
         return Slidable(
@@ -88,90 +89,107 @@ class InfoCardState extends State<InfoCard> {
                     ),
                   ),
                   const SizedBox(width: 6),
-                  InkWell(
-                    onTap: () {
-                      context.pushNamed(AppRoutes.pastMedicalHistory.name, extra: {
-                        'appointment': appointment,
-                        'pastHistory': [],
-                        'familyHistory': [],
-                        'pastProcedures': [],
-                        'allergies': [],
-                        'medicalHistory': [],
-                      });
-                    },
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: const Color(0xffF5F5F5),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: SvgPicture.asset(
-                              'assets/homeimages/Component 15.svg',
-                              height: 22,
-                              width: 22,
-                              color: const Color(0xff413D56),
+                  FutureBuilder(
+                      future: PastMedicalHistoryService().getPastMedicalHistory(patientId: appointment.patientId!),
+                      builder: (context, snapshot) {
+                        return InkWell(
+                          onTap: () {
+                            if (snapshot.data != null) {
+                              context.pushNamed(AppRoutes.pastMedicalHistory.name, extra: {
+                                'appointment': appointment,
+                                'pastHistory': snapshot.data!['pastHistory'],
+                                'familyHistory': snapshot.data!['familyHistory'],
+                                'pastProcedureHistory': snapshot.data!['pastProcedureHistory'],
+                                'allergies': snapshot.data!['allergies'],
+                                'medication': snapshot.data!['medication'],
+                              });
+                            }
+                          },
+                          child: Opacity(
+                            opacity: snapshot.data == null ? 0.5 : 1,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: const Color(0xffF5F5F5),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: SvgPicture.asset(
+                                      'assets/homeimages/Component 15.svg',
+                                      height: 22,
+                                      width: 22,
+                                      color: const Color(0xff413D56),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                const Text(
+                                  'Past Medical',
+                                  style: TextStyle(fontSize: 11),
+                                ),
+                                const Text(
+                                  'History',
+                                  style: TextStyle(fontSize: 11),
+                                ),
+                              ],
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        const Text(
-                          'Past Medical',
-                          style: TextStyle(fontSize: 11),
-                        ),
-                        const Text(
-                          'History',
-                          style: TextStyle(fontSize: 11),
-                        ),
-                      ],
-                    ),
-                  ),
+                        );
+                      }),
+                  const SizedBox(width: 6),
+                  FutureBuilder(
+                      future: VitalsService().getVitals(appointmentId: appointment.id!),
+                      builder: (context, snapshot) {
+                        return InkWell(
+                          onTap: () {
+                            if (snapshot.data != null) {
+                              context.pushNamed(AppRoutes.vitals.name, extra: {
+                                'appointment': appointment,
+                                'vitals': snapshot.data,
+                              });
+                            }
+                          },
+                          child: Opacity(
+                            opacity: snapshot.data == null ? 0.5 : 1,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: const Color(0xffF5F5F5),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: SvgPicture.asset(
+                                      'assets/homeimages/Vector (15).svg',
+                                      height: 20,
+                                      width: 20,
+                                      color: const Color(0xff413D56),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                const Text(
+                                  'Vitals &',
+                                  style: TextStyle(fontSize: 11),
+                                ),
+                                const Text(
+                                  'Examination',
+                                  style: TextStyle(fontSize: 11),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }),
                   const SizedBox(width: 6),
                   InkWell(
                     onTap: () {
-                      print("Going to vitals screen");
-                      context.pushNamed(AppRoutes.vitals.name, extra: {
-                        'appointment': appointment,
-                        'vitals': [],
-                      });
-                    },
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: const Color(0xffF5F5F5),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: SvgPicture.asset(
-                              'assets/homeimages/Vector (15).svg',
-                              height: 20,
-                              width: 20,
-                              color: const Color(0xff413D56),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        const Text(
-                          'Vitals &',
-                          style: TextStyle(fontSize: 11),
-                        ),
-                        const Text(
-                          'Examination',
-                          style: TextStyle(fontSize: 11),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                  InkWell(
-                    onTap: () {
-                      context.pushNamed(AppRoutes.appointmentDetail.name, extra: appointment);
+                      context.pushNamed(AppRoutes.appointmentDetail.name, extra: appointment.id);
                     },
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -206,7 +224,7 @@ class InfoCardState extends State<InfoCard> {
           ),
           child: GestureDetector(
             onTap: () {
-              context.goNamed(AppRoutes.appointmentDetail.name, extra: appointment);
+              context.goNamed(AppRoutes.appointmentDetail.name, extra: appointment.id);
             },
             child: Container(
               margin: const EdgeInsets.symmetric(
@@ -230,7 +248,7 @@ class InfoCardState extends State<InfoCard> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                '103568',
+                                appointment.clinicPatientId ?? "N/A",
                                 // appointment.sId!,
                                 style: GoogleFonts.urbanist(
                                   textStyle: const TextStyle(
@@ -254,7 +272,7 @@ class InfoCardState extends State<InfoCard> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                '35 years, Female',
+                                '${appointment.age ?? "N/A"} years, ${appointment.gender ?? "N/A"}',
                                 style: GoogleFonts.urbanist(
                                   textStyle: const TextStyle(
                                     color: Color(0xff0C091F),

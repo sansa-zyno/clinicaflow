@@ -4,7 +4,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:healtether_clinic_app/data_layer/models/appointment_slot/time_slot.dart';
-import 'package:healtether_clinic_app/data_layer/models/day.dart';
+import 'package:healtether_clinic_app/data_layer/models/appointment_slot/day.dart';
 import 'package:healtether_clinic_app/utils/helper_functions/log.dart';
 import 'package:uuid/uuid.dart';
 
@@ -14,11 +14,7 @@ class AppointmentSlot {
   String duration;
   List<Day> days;
 
-  AppointmentSlot(
-      {required this.id,
-      required this.timeSlots,
-      required this.duration,
-      required this.days});
+  AppointmentSlot({required this.id, required this.timeSlots, required this.duration, required this.days});
 
   AppointmentSlot copyWith({
     String? id,
@@ -56,46 +52,42 @@ class AppointmentSlot {
   }
 
   @override
-  String toString() =>
-      'AppointmentSlot(id: $id, timeSlots: $timeSlots, duration: $duration, days: $days)';
+  String toString() => 'AppointmentSlot(id: $id, timeSlots: $timeSlots, duration: $duration, days: $days)';
 
   Map<String, dynamic> toMap(BuildContext context) {
     return <String, dynamic>{
       'key': id,
       'timeSlot': timeSlots.map((x) => x.toMap(context)).toList(),
       'slotDuration': duration,
-      'weekDay': days
-          .map((x) => x.day)
-          .toList(), //x.day is a getter that does the conversion from int day to string day
+      'weekDay': days.map((x) => x.day).toList(), //x.day is a getter that does the conversion from int day to string day
     };
   }
 
   factory AppointmentSlot.fromMap(Map<String, dynamic> map) {
     return AppointmentSlot(
       id: map['_id'],
-      timeSlots: List<TimeSlot>.from(
-        (map['timeSlot'] as List<dynamic>).map<TimeSlot>(
-          (x) => TimeSlot.fromMap(x as Map<String, dynamic>),
-        ),
-      ),
-      duration: map['slotDuration'],
-      days: List<Day>.from(
-        (map['weekDay'] as List<dynamic>).map<Day>(
-          (x) => Day.fromString(x as String),
-        ),
-      ),
+      timeSlots: map["timeSlot"] == null
+          ? []
+          : List<TimeSlot>.from(
+              (map['timeSlot'] as List<dynamic>).map<TimeSlot>(
+                (x) => TimeSlot.fromMap(x as Map<String, dynamic>),
+              ),
+            ),
+      duration: map['slotDuration'].toString(),
+      days: map['weekDay'] == null
+          ? []
+          : List<Day>.from(
+              (map['weekDay'] as List<dynamic>).map<Day>(
+                (x) => Day.fromString(x as String),
+              ),
+            ),
     );
   }
 
   factory AppointmentSlot.empty() {
-    return AppointmentSlot(
-        id: const Uuid().v4(),
-        timeSlots: [TimeSlot(const Uuid().v4())],
-        duration: '',
-        days: []);
+    return AppointmentSlot(id: const Uuid().v4(), timeSlots: [TimeSlot(const Uuid().v4())], duration: '', days: []);
   }
 
   String toJson(BuildContext context) => json.encode(toMap(context));
-  factory AppointmentSlot.fromJson(String source) =>
-      AppointmentSlot.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory AppointmentSlot.fromJson(String source) => AppointmentSlot.fromMap(json.decode(source) as Map<String, dynamic>);
 }

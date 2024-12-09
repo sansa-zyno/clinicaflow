@@ -13,8 +13,6 @@ import 'package:healtether_clinic_app/Screens/DigitalScreensAll/vitals_screen/vi
 import 'package:healtether_clinic_app/Screens/DigitalScreensAll/digital_screen.dart';
 import 'package:healtether_clinic_app/Screens/DigitalScreensAll/family_history_screen.dart';
 import 'package:healtether_clinic_app/Screens/DigitalScreensAll/medication_history_screen.dart';
-import 'package:healtether_clinic_app/Screens/DigitalScreensAll/past_history_screen.dart';
-import 'package:healtether_clinic_app/Screens/DigitalScreensAll/past_medical_procedures.dart';
 import 'package:healtether_clinic_app/Screens/DigitalScreensAll/patient_%20suffering_from_%20allergies_screen.dart';
 import 'package:healtether_clinic_app/Screens/DigitalScreensAll/symptoms_diagnosis/create_digital_prescription_screens.dart';
 import 'package:healtether_clinic_app/Screens/DigitalScreensAll/past_medical_history/past_medical_history_screen.dart';
@@ -23,8 +21,7 @@ import 'package:healtether_clinic_app/Screens/HomeScreen/feedback_page.dart';
 import 'package:healtether_clinic_app/Screens/HomeScreen/homescreen.dart';
 import 'package:healtether_clinic_app/Screens/HomeScreen/page_view_screen.dart';
 import 'package:healtether_clinic_app/Screens/HomeScreen/patient_analysis.dart';
-import 'package:healtether_clinic_app/Screens/ManageStaff/add_member_screen.dart';
-import 'package:healtether_clinic_app/Screens/ManageStaff/manage_staff_screen.dart';
+import 'package:healtether_clinic_app/Screens/Members/ManageStaff/manage_staff_screen.dart';
 import 'package:healtether_clinic_app/Screens/Notification/screen/notifications_screen.dart';
 import 'package:healtether_clinic_app/Screens/Onboarding/splash_screen.dart';
 import 'package:healtether_clinic_app/Screens/Onboarding/onboarding_screen.dart';
@@ -36,11 +33,11 @@ import 'package:healtether_clinic_app/Screens/UserProfile/payment_settings.dart'
 import 'package:healtether_clinic_app/Screens/UserProfile/prescription_settings/prescription_layout.dart';
 import 'package:healtether_clinic_app/Screens/UserProfile/prescription_settings/prescription_settings.dart';
 import 'package:healtether_clinic_app/Screens/UserProfile/clinic_settings_page.dart';
-import 'package:healtether_clinic_app/Screens/edit_profile/edit_profile.dart';
+import 'package:healtether_clinic_app/Screens/loginpage/forgot_password.dart';
 import 'package:healtether_clinic_app/Screens/loginpage/login_page.dart';
 import 'package:healtether_clinic_app/Screens/loginpage/welcome.dart';
-import 'package:healtether_clinic_app/Screens/patients_records/patient_record_screen.dart';
-import 'package:healtether_clinic_app/Screens/patients_records/patients_records.dart';
+import 'package:healtether_clinic_app/Screens/Members/patients_records/patient_record_screen.dart';
+import 'package:healtether_clinic_app/Screens/Members/patients_records/patients_records.dart';
 import 'package:healtether_clinic_app/Screens/payment_records/payment_records.dart';
 import 'package:healtether_clinic_app/Screens/payment_records/payments_receipt_screen.dart';
 import 'package:healtether_clinic_app/Screens/payments/payment_receipt/payments_receipt_screen.dart';
@@ -48,8 +45,10 @@ import 'package:healtether_clinic_app/data_layer/models/appointment_models/appoi
 import 'package:healtether_clinic_app/data_layer/models/drug_model/drug_model.dart';
 import 'package:healtether_clinic_app/data_layer/models/history_item/history_item.dart';
 import 'package:healtether_clinic_app/data_layer/models/lab_tests/lab_tests.dart';
+import 'package:healtether_clinic_app/data_layer/models/patient/patient_model_id.dart';
 // import 'package:healtether_clinic_app/data_layer/models/patient/patient_model.dart';
 import 'package:healtether_clinic_app/data_layer/models/patient_records_model/patient_model.dart';
+import 'package:healtether_clinic_app/data_layer/models/prescription/prescription_report.dart';
 import 'package:healtether_clinic_app/data_layer/models/symptom_model/symptom.dart';
 import 'package:healtether_clinic_app/data_layer/models/user_model/user_model.dart';
 // import 'package:healtether_clinic_app/data_layer/models/user_model/user_model.dart';
@@ -60,7 +59,6 @@ import 'package:healtether_clinic_app/utils/helper_functions/log.dart';
 import 'package:healtether_clinic_app/Screens/ChatScreen/chat_detailes_screen.dart';
 import 'package:healtether_clinic_app/data_layer/services/shared_preferences_service.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:healtether_clinic_app/Screens/edit_profile/add_members_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 final routerConfig = AppRouterConfig();
@@ -110,6 +108,14 @@ class AppRouterConfig {
               return const LoginPage();
             }),
 
+        //? FORGOT PASSWORD
+        GoRoute(
+            name: AppRoutes.forgotPassword.name,
+            path: "/forgot-password",
+            builder: (context, state) {
+              return const ForgotPassword();
+            }),
+
         //? WELCOME
         GoRoute(
             name: AppRoutes.welcome.name,
@@ -133,7 +139,6 @@ class AppRouterConfig {
                 },
                 routes: [
                   // sub-routes for home
-
                   //? SCHEDULE APPOINTMENT
                   GoRoute(
                       name: AppRoutes.scheduleAppointment.name,
@@ -149,8 +154,8 @@ class AppRouterConfig {
                       path: "appointment-success",
                       parentNavigatorKey: _rootNavigatorKey,
                       builder: (context, state) {
-                        final params = state.extra as Map;
-                        return ScheduleSuccessfullyScreen(appointmentDetails: params);
+                        final appointment = state.extra as Appointment;
+                        return ScheduleSuccessfullyScreen(appointment: appointment);
                       }),
 
                   //? PAST MEDICAL HISTORY
@@ -162,11 +167,11 @@ class AppRouterConfig {
                         final Map data = state.extra as Map;
                         return PastMedicalHistoryScreen(
                           appointment: data['appointment'] as Appointment,
-                          pastHistory: List<HistoryItem>.from(data['pastHistory']),
-                          familyHistory: List<HistoryItem>.from(data['familyHistory']),
-                          pastProcedures: List<HistoryItem>.from(data['pastProcedures']),
-                          allergies: List<HistoryItem>.from(data['allergies']),
-                          medicationHistory: List<HistoryItem>.from(data['medicalHistory']),
+                          pastHistory: data['pastHistory'] != null ? List<HistoryItem>.from(data['pastHistory']) : null,
+                          familyHistory: data['familyHistory'] != null ? List<HistoryItem>.from(data['familyHistory']) : null,
+                          pastProcedureHistory: data['pastProcedureHistory'] != null ? List<HistoryItem>.from(data['pastProcedureHistory']) : null,
+                          allergies: data['allergies'] != null ? List<HistoryItem>.from(data['allergies']) : null,
+                          medication: data['medication'] != null ? List<HistoryItem>.from(data['medication']) : null,
                         );
                       }),
 
@@ -281,7 +286,8 @@ class AppRouterConfig {
                         final Map data = state.extra as Map;
                         return DigitalPrecriptionScreen(
                           appointment: data['appointment'] as Appointment,
-                          selectedDrugs: data['drugs'] != null ? List<Drug>.from(data['drugs']) : null,
+                          savedDrugPrescription:
+                              data['savedDrugPrescription'] != null ? Map<String, dynamic>.from(data['savedDrugPrescription']) : null,
                         );
                       }),
 
@@ -303,7 +309,7 @@ class AppRouterConfig {
                         final Map data = state.extra as Map;
                         return VitalsScreen(
                           appointment: data['appointment'] as Appointment,
-                          vitals: List<Vital>.from(data['vitals']),
+                          vitals: data['vitals'] as Vital?,
                         );
                       },
                       routes: [
@@ -317,7 +323,7 @@ class AppRouterConfig {
                       ]),
 
                   //? OTHER VITALS
-                  GoRoute(
+                  /* GoRoute(
                       name: AppRoutes.otherVitals.name,
                       path: "other-vitals/:appointmentId",
                       parentNavigatorKey: _rootNavigatorKey,
@@ -327,7 +333,7 @@ class AppRouterConfig {
                           vitals: vitals,
                           appointmentId: state.pathParameters['appointmentId']!,
                         );
-                      }),
+                      }),*/
 
                   //? LAB TESTS
                   GoRoute(
@@ -397,7 +403,10 @@ class AppRouterConfig {
                       path: "prescription-preview",
                       parentNavigatorKey: _rootNavigatorKey,
                       builder: (context, state) {
-                        return const PrescriptionPreview();
+                        final Map data = state.extra as Map;
+                        return PrescriptionPreview(
+                          prescriptionReport: data['prescriptionReport'] as PrescriptionReport,
+                        );
                       }),
 
                   //? DRAWER
@@ -426,24 +435,27 @@ class AppRouterConfig {
                       },
                       routes: [
                         // sub-routes for manage staff
-                        GoRoute(
+                        /*  GoRoute(
                           name: AppRoutes.addMemberScreen.name,
                           path: "add-member",
                           builder: (context, state) {
-                            final bool isAdmin = state.extra as bool;
-                            return AddMemberScreen(isAdmin: isAdmin);
+                            final Map map = state.extra as Map;
+                            return AddMemberScreen(
+                              isAdmin: map['isAdmin'] as bool,
+                              forStaff: map['forStaff'] as bool,
+                            );
                           },
-                        )
+                        ),*/
                       ]),
 
                   //? EDIT PROFILE
-                  GoRoute(
+                  /* GoRoute(
                       name: AppRoutes.editProfile.name,
                       path: "edit-profile",
                       parentNavigatorKey: _rootNavigatorKey,
                       builder: (context, state) {
                         return const EditProfiles();
-                      }),
+                      }),*/
 
                   //? PATIENT RECORDS
                   GoRoute(
@@ -455,13 +467,13 @@ class AppRouterConfig {
                       },
                       routes: [
                         //? ADD MEMBERS
-                        GoRoute(
+                        /* GoRoute(
                             name: AppRoutes.addMembersScreen.name,
                             path: "add-members-screen",
                             parentNavigatorKey: _rootNavigatorKey,
                             builder: (context, state) {
                               return const AddMembersScreen();
-                            }),
+                            }),*/
 
                         GoRoute(
                             name: AppRoutes.patientRecordsScreen.name,
@@ -618,9 +630,9 @@ class AppRouterConfig {
                       path: "appointment-detail",
                       parentNavigatorKey: _rootNavigatorKey,
                       builder: (context, state) {
-                        final Appointment appointment = state.extra as Appointment;
+                        final String id = state.extra as String;
                         return AppointmentDetail(
-                          appointment: appointment,
+                          id: id,
                         );
                       })
                 ]),

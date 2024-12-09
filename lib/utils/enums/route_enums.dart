@@ -1,6 +1,7 @@
 enum AppRoutes {
   onboarding,
   login,
+  forgotPassword,
   welcome,
   homePageView,
   splash,

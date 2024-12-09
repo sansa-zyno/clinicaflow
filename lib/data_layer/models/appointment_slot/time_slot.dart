@@ -17,26 +17,17 @@ class TimeSlot {
     this.finishStr,
   });
 
-  TimeSlot copyWith(
-      {TimeOfDay? start,
-      TimeOfDay? finish,
-      String? startStr,
-      String? finishStr}) {
+  TimeSlot copyWith({TimeOfDay? start, TimeOfDay? finish, String? startStr, String? finishStr}) {
     return TimeSlot(id,
-        start: start ?? this.start,
-        finish: finish ?? this.finish,
-        startStr: startStr ?? this.startStr,
-        finishStr: finishStr ?? this.finishStr);
+        start: start ?? this.start, finish: finish ?? this.finish, startStr: startStr ?? this.startStr, finishStr: finishStr ?? this.finishStr);
   }
 
   int? duration() {
     print("Calculating duration...");
     if (start == null || finish == null) return null;
     final now = DateTime.now();
-    final dateTime1 =
-        DateTime(now.year, now.month, now.day, start!.hour, start!.minute);
-    final dateTime2 =
-        DateTime(now.year, now.month, now.day, finish!.hour, finish!.minute);
+    final dateTime1 = DateTime(now.year, now.month, now.day, start!.hour, start!.minute);
+    final dateTime2 = DateTime(now.year, now.month, now.day, finish!.hour, finish!.minute);
     final difference = dateTime2.difference(dateTime1).inMinutes;
     print("Difference in time: $difference");
     return difference;
@@ -75,12 +66,28 @@ class TimeSlot {
   factory TimeSlot.fromMap(Map<String, dynamic> map) {
     return TimeSlot(
       map['_id'] as String,
-      start: map['start'] != null
-          ? TimeOfDay.fromDateTime(DateFormat("h:mm a").parse(map['start']))
-          : null,
-      finish: map['end'] != null
-          ? TimeOfDay.fromDateTime(DateFormat("h:mm a").parse(map['end']))
-          : null,
+      start: () {
+        try {
+          if (map['start'] != null) {
+            return TimeOfDay.fromDateTime(DateFormat("h:mm a").parse(map['start'].toString()));
+          } else {
+            return null;
+          }
+        } catch (e) {
+          return null;
+        }
+      }(),
+      finish: () {
+        try {
+          if (map['end'] != null) {
+            return TimeOfDay.fromDateTime(DateFormat("h:mm a").parse(map['end'].toString()));
+          } else {
+            return null;
+          }
+        } catch (e) {
+          return null;
+        }
+      }(),
       startStr: map['startStr'] != null ? map['startStr'] as String : null,
       finishStr: map['finishStr'] != null ? map['finishStr'] as String : null,
     );
@@ -88,6 +95,5 @@ class TimeSlot {
 
   String toJson(BuildContext context) => json.encode(toMap(context));
 
-  factory TimeSlot.fromJson(String source) =>
-      TimeSlot.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory TimeSlot.fromJson(String source) => TimeSlot.fromMap(json.decode(source) as Map<String, dynamic>);
 }

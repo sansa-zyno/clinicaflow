@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -9,8 +9,7 @@ import 'package:healtether_clinic_app/utils/mixins/ui_info_mixin.dart';
 import 'package:healtether_clinic_app/widgets/components/my_circular_progress_indicator.dart';
 
 class OtherVitalsScreen extends StatefulWidget {
-  const OtherVitalsScreen({Key? key, required this.appointmentId, this.vitals})
-      : super(key: key);
+  const OtherVitalsScreen({Key? key, required this.appointmentId, this.vitals}) : super(key: key);
   final List<Vital>? vitals;
   final String appointmentId;
 
@@ -18,15 +17,14 @@ class OtherVitalsScreen extends StatefulWidget {
   State<OtherVitalsScreen> createState() => _OtherVitalsScreenState();
 }
 
-class _OtherVitalsScreenState extends State<OtherVitalsScreen>
-    with UiInfoMixin {
+class _OtherVitalsScreenState extends State<OtherVitalsScreen> with UiInfoMixin {
   late final List<Vital> _selectedDiseases;
 
   @override
   void initState() {
     super.initState();
     _selectedDiseases = widget.vitals ?? [];
-    context.read<VitalsCubit>().fetchVitals();
+    context.read<VitalsCubit>().getSavedVitals(appointmentId: widget.appointmentId);
   }
 
   @override
@@ -47,8 +45,7 @@ class _OtherVitalsScreenState extends State<OtherVitalsScreen>
                 child: Text(
                   ' Vitals',
                   style: GoogleFonts.urbanist(
-                    textStyle: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.w600),
+                    textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
@@ -70,11 +67,7 @@ class _OtherVitalsScreenState extends State<OtherVitalsScreen>
                     child: const Center(
                       child: Text(
                         'Save',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            fontFamily: "Poppins"),
+                        style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500, fontFamily: "Poppins"),
                       ),
                     ),
                   ),
@@ -145,9 +138,7 @@ class _OtherVitalsScreenState extends State<OtherVitalsScreen>
                         itemCount: state.vitals?.length ?? 0,
                         itemBuilder: (BuildContext context, int index) {
                           final vital = state.vitals!.elementAt(index);
-                          return Padding(
-                              padding: const EdgeInsets.only(bottom: 10),
-                              child: buildOption(vital));
+                          return Padding(padding: const EdgeInsets.only(bottom: 10), child: buildOption(vital));
                         },
                       ),
               );
@@ -189,8 +180,7 @@ class _OtherVitalsScreenState extends State<OtherVitalsScreen>
                   border: Border.all(
                     color: const Color(0xFFA1A1A1),
                   ),
-                  color:
-                      isSelected ? const Color(0xFFFEFEFE) : Colors.transparent,
+                  color: isSelected ? const Color(0xFFFEFEFE) : Colors.transparent,
                 ),
                 child: isSelected
                     ? const Icon(
@@ -221,4 +211,4 @@ class _OtherVitalsScreenState extends State<OtherVitalsScreen>
       ),
     );
   }
-}
+}*/
