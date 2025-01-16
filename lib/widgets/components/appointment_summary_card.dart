@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:healtether_clinic_app/business_logic/cubits/appointment_cubit/appointment_cubit.dart';
 import 'package:healtether_clinic_app/constants/app_colors.dart';
 import 'package:healtether_clinic_app/constants/app_icons.dart';
 import 'package:healtether_clinic_app/data_layer/models/appointment_models/appointment_model.dart';
+import 'package:healtether_clinic_app/utils/enums/bloc_enums.dart';
 import 'package:healtether_clinic_app/utils/enums/route_enums.dart';
 import 'package:healtether_clinic_app/utils/extensions.dart/string_extensions.dart';
 import 'package:healtether_clinic_app/utils/extensions.dart/widget_extensions.dart';
 import 'package:healtether_clinic_app/utils/helper_functions/log.dart';
+import 'package:healtether_clinic_app/utils/snackbar.dart';
 import 'package:healtether_clinic_app/widgets/buttons/my_elevated_button.dart';
 import 'package:healtether_clinic_app/widgets/buttons/my_elevated_icon_button.dart';
 import 'package:healtether_clinic_app/widgets/components/scrollable_row.dart';
@@ -55,7 +60,7 @@ class AppointmentSummaryCard extends StatelessWidget {
 
               const SizedBox(width: 8),
 
-              //? CHAT
+              //? CALL
               MyElevatedIconButton(
                 padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
                 text: "Call",
@@ -64,22 +69,33 @@ class AppointmentSummaryCard extends StatelessWidget {
                 backgroundColor: Colors.white,
                 onPressed: () {
                   log("call patient");
-
                   launchUrl(Uri.parse('tel:+91${appointment.mobile}'));
                 },
               ),
 
               const SizedBox(width: 8),
 
-              //? CHAT
-              MyElevatedButton(
-                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
-                text: "Mark as No Show",
-                textStyle: const TextStyle(color: AppColors.eerieBlack),
-                backgroundColor: Colors.white,
-                onPressed: () {
-                  //log("navigate to view bills page");
-                },
+              //? No Show
+              Opacity(
+                opacity: context.read<AppointmentCubit>().state.state == AppointmentStates.endingConsultation ? 0.5 : 1.0,
+                child: MyElevatedButton(
+                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
+                  text: "Mark as No Show",
+                  textStyle: const TextStyle(color: AppColors.eerieBlack),
+                  backgroundColor: Colors.white,
+                  onPressed: () {
+                    //log("navigate to view bills page");
+                    context.read<AppointmentCubit>().endConsultation(appointmentId: appointment.id!).then((value) {
+                      if (context.read<AppointmentCubit>().state.state == AppointmentStates.consultationEnded) {
+                        showSnackbar("Consultation ended successfully", context);
+                        context.read<AppointmentCubit>().fetchAppointments(status: 'Upcoming');
+                        context.pop();
+                      } else {
+                        showSnackbar("An error occurred", context);
+                      }
+                    });
+                  },
+                ),
               )
             ],
           )

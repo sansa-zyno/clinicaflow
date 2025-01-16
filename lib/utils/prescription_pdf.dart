@@ -1,7 +1,9 @@
 import 'dart:developer';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:healtether_clinic_app/data_layer/models/drug_model/drug_model.dart';
 import 'package:healtether_clinic_app/data_layer/models/prescription/prescription_report.dart';
+import 'package:healtether_clinic_app/data_layer/models/vitals_model.dart/vital.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart' as mt;
 import 'package:flutter_file_dialog/flutter_file_dialog.dart';
@@ -17,8 +19,9 @@ import 'package:flutter/services.dart' show rootBundle;
 class PrescriptionPdf with UiInfoMixin {
   generate(mt.BuildContext context, {required PrescriptionReport prescriptionReport}) async {
     final Directory? directory;
-    //final ByteData fontData = await rootBundle.load('assets/fonts/Outfit/static/Outfit-Regular.ttf');
-    //final ttf = pw.Font.ttf(fontData.buffer.asByteData());
+    Vital? vital = prescriptionReport.vitals;
+    final ByteData fontData = await rootBundle.load('assets/fonts/Outfit/OutfitRegular.ttf');
+    final ttf = Font.ttf(fontData.buffer.asByteData());
     var image;
     if ((prescriptionReport.clinic?.logo ?? '') == '') {
       image = MemoryImage(
@@ -219,7 +222,9 @@ class PrescriptionPdf with UiInfoMixin {
                             style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                           ),
                           Text(
-                              '${prescriptionReport.vitals?.bloodPressure?.systolic ?? ''}/${prescriptionReport.vitals?.bloodPressure?.diastolic ?? ''} mm Hg',
+                              (vital?.bloodPressure?.systolic ?? '') != '' && (vital?.bloodPressure?.diastolic ?? '') != ''
+                                  ? '${vital?.bloodPressure?.systolic}/${vital?.bloodPressure?.diastolic} mm Hg'
+                                  : '',
                               style: const TextStyle(fontSize: 12))
                         ],
                       ),
@@ -229,7 +234,7 @@ class PrescriptionPdf with UiInfoMixin {
                             'SpO2 levels: ',
                             style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                           ),
-                          Text('${prescriptionReport.vitals?.spo2 ?? ''} %', style: const TextStyle(fontSize: 12))
+                          Text((vital?.spo2 ?? '') != '' ? '${vital?.spo2} %' : '', style: const TextStyle(fontSize: 12))
                         ],
                       ),
                       Row(
@@ -238,7 +243,7 @@ class PrescriptionPdf with UiInfoMixin {
                             'Pulse Rate: ',
                             style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                           ),
-                          Text('${prescriptionReport.vitals?.pulseRate ?? ''} beats/min', style: const TextStyle(fontSize: 12))
+                          Text((vital?.pulseRate ?? '') != '' ? '${vital?.pulseRate} beats/min' : '', style: const TextStyle(fontSize: 12))
                         ],
                       ),
                       Row(
@@ -247,7 +252,8 @@ class PrescriptionPdf with UiInfoMixin {
                             'Respiratory Rate: ',
                             style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                           ),
-                          Text('${prescriptionReport.vitals?.respiratoryRate ?? ''} beats/min', style: const TextStyle(fontSize: 12))
+                          Text((vital?.respiratoryRate ?? '') != '' ? '${vital?.respiratoryRate} beats/min' : '',
+                              style: const TextStyle(fontSize: 12))
                         ],
                       ),
                       Row(
@@ -256,7 +262,7 @@ class PrescriptionPdf with UiInfoMixin {
                             'Temperature: ',
                             style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                           ),
-                          Text('${prescriptionReport.vitals?.temperature ?? ''} \u2109', style: const TextStyle(fontSize: 12))
+                          Text((vital?.temperature ?? '') != '' ? '${vital?.temperature} ˚C' : '', style: TextStyle(fontSize: 12, font: ttf))
                         ],
                       ),
                       Row(
@@ -265,7 +271,7 @@ class PrescriptionPdf with UiInfoMixin {
                             'RBS: ',
                             style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                           ),
-                          Text('${prescriptionReport.vitals?.rbs ?? ''} mg/dL', style: const TextStyle(fontSize: 12))
+                          Text((vital?.rbs ?? '') != '' ? '${vital?.rbs} mg/dL' : '', style: const TextStyle(fontSize: 12))
                         ],
                       ),
                       Row(
@@ -274,7 +280,7 @@ class PrescriptionPdf with UiInfoMixin {
                             'Height: ',
                             style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                           ),
-                          Text('${prescriptionReport.vitals?.height ?? ''} cm', style: const TextStyle(fontSize: 12))
+                          Text((vital?.height ?? '') != '' ? '${vital?.height} cm' : '', style: const TextStyle(fontSize: 12))
                         ],
                       ),
                       Row(
@@ -283,7 +289,7 @@ class PrescriptionPdf with UiInfoMixin {
                             'Weight: ',
                             style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                           ),
-                          Text('${prescriptionReport.vitals?.weight ?? ''} Kg', style: const TextStyle(fontSize: 12))
+                          Text((vital?.weight ?? '') != '' ? '${vital?.weight} Kg' : '', style: const TextStyle(fontSize: 12))
                         ],
                       ),
                     ])),
@@ -295,7 +301,7 @@ class PrescriptionPdf with UiInfoMixin {
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Row(
                         children: [
-                          SizedBox(width: 150, child: Text('Chief Complaints', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold))),
+                          SizedBox(width: 150, child: Text('Symptoms', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold))),
                           SizedBox(
                             width: 50,
                           ),
@@ -426,16 +432,22 @@ class PrescriptionPdf with UiInfoMixin {
                         height: 0,
                       ),
                       Text(prescriptionReport.prescriptions?.patientAdvice ?? '', style: TextStyle(fontSize: 12)),
-                      SizedBox(
-                        height: 15,
-                      ),
+                      SizedBox(height: 15),
+                      Text('Follow-up', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                      Divider(height: 0),
                       Row(
                         children: [
-                          Text('Follow up', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                          SizedBox(
-                            width: 8,
-                          ),
-                          Text(prescriptionReport.prescriptions?.followUpDate ?? '', style: TextStyle(fontSize: 12))
+                          Text('Date:', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                          SizedBox(width: 8),
+                          Text(prescriptionReport.prescriptions?.followUpDate?.split('T')[0] ?? '', style: TextStyle(fontSize: 12))
+                        ],
+                      ),
+                      SizedBox(height: 6),
+                      Row(
+                        children: [
+                          Text('Time:', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                          SizedBox(width: 8),
+                          Text(prescriptionReport.prescriptions?.followUpTimeSlot ?? '', style: TextStyle(fontSize: 12))
                         ],
                       ),
                     ])),

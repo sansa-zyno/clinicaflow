@@ -17,7 +17,7 @@ class DrugPrescriptionService {
     await fetchToken();
 
     final response = await HttpService.get(ApiEndPoint.getFrequencyForPrescription(clinicId: clinicId), token);
-    log(response.data.toString());
+    //log(response.data.toString());
 
     if (response.statusCode == 200) {
       Map<String, dynamic> jsonResponse = response.data;
@@ -75,7 +75,7 @@ class DrugPrescriptionService {
 
   Future<Map<String, dynamic>?> getSavedDrugPrescription({required String appointmentId}) async {
     await fetchToken();
-    final response = await HttpService.get(ApiEndPoint.getWholePrescriptionsAndVitals(appointmentId: appointmentId, clientId: clinicId), token);
+    final response = await HttpService.get(ApiEndPoint.getWholePrescriptions(appointmentId: appointmentId, clientId: clinicId), token);
     if (response.statusCode == 200) {
       if (response.data['prescriptions'] != null) {
         List<Drug>? drugs = (response.data['prescriptions']['drugPrescriptions'] as List?)?.map((e) => Drug.fromMap(e)).toList();

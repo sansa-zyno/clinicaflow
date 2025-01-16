@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:healtether_clinic_app/Screens/AppointmentScreen/widgets/custom_textfield.dart';
 import 'package:healtether_clinic_app/Screens/DigitalScreensAll/symptoms_diagnosis/create_digital_prescription_screens.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/drug_cubit/drug_prescription_cubit.dart';
+import 'package:healtether_clinic_app/business_logic/cubits/prescription/prescription_report_cubit.dart';
 import 'package:healtether_clinic_app/constants/app_text.dart';
 import 'package:healtether_clinic_app/data_layer/models/appointment_models/appointment_model.dart';
 import 'package:healtether_clinic_app/data_layer/models/appointment_slot/time_slot.dart';
@@ -68,17 +69,40 @@ class _DigitalPrecriptionScreenState extends State<DigitalPrecriptionScreen> wit
     selectedDrugs = widget.savedDrugPrescription?['drugs'] ?? [];
     diet.text = widget.savedDrugPrescription?['patientAdvice'] ?? '';
     otherInstructions.text = widget.savedDrugPrescription?['privateNotes'] ?? '';
-    followUpDate = widget.savedDrugPrescription?['followUpDate'] == null
-        ? {'None': null}
-        : {'Custom': DateTime.parse(widget.savedDrugPrescription?['followUpDate'])};
+    followUpDate = () {
+      if (widget.savedDrugPrescription?['followUpDate'] == null) {
+        return {'None': null};
+      } else {
+        if (DateTime.parse(widget.savedDrugPrescription?['followUpDate']).difference(DateTime.now()).inDays <= 3) {
+          return {'After 3 days': DateTime.parse(widget.savedDrugPrescription?['followUpDate'])};
+        } else if (DateTime.parse(widget.savedDrugPrescription?['followUpDate']).difference(DateTime.now()).inDays <= 7) {
+          return {'After a week': DateTime.parse(widget.savedDrugPrescription?['followUpDate'])};
+        } else if (DateTime.parse(widget.savedDrugPrescription?['followUpDate']).difference(DateTime.now()).inDays <= 14) {
+          return {'After 2 weeks': DateTime.parse(widget.savedDrugPrescription?['followUpDate'])};
+        } else if (DateTime.parse(widget.savedDrugPrescription?['followUpDate']).difference(DateTime.now()).inDays <= 30) {
+          return {'After a month': DateTime.parse(widget.savedDrugPrescription?['followUpDate'])};
+        } else {
+          return {'Custom': DateTime.parse(widget.savedDrugPrescription?['followUpDate'])};
+        }
+      }
+    }();
     String? start = widget.savedDrugPrescription?['followUpTimeSlot'].toString().split('-')[0];
     String? finish = widget.savedDrugPrescription?['followUpTimeSlot'].toString().split('-')[1];
-    /* if (start != null) {
-      timeSlot = timeSlot.copyWith(start: TimeOfDay.fromDateTime(DateFormat("h:mm a").parse(start.toString())));
-    } else {}
+
+    if (start != null) {
+      if (start.toLowerCase().contains('am') || start.toLowerCase().contains('pm')) {
+        timeSlot = timeSlot.copyWith(start: TimeOfDay.fromDateTime(DateFormat("h:mm a").parse(start.trimLeft())));
+      } else {
+        timeSlot = timeSlot.copyWith(start: TimeOfDay.fromDateTime(DateFormat("hh:mm").parse(start.trimLeft())));
+      }
+    }
     if (finish != null) {
-      timeSlot = timeSlot.copyWith(start: TimeOfDay.fromDateTime(DateFormat("h:mm a").parse(finish.toString())));
-    } else {}*/
+      if (finish.toLowerCase().contains('am') || finish.toLowerCase().contains('pm')) {
+        timeSlot = timeSlot.copyWith(finish: TimeOfDay.fromDateTime(DateFormat("h:mm a").parse(finish.trimLeft())));
+      } else {
+        timeSlot = timeSlot.copyWith(finish: TimeOfDay.fromDateTime(DateFormat("hh:mm").parse(finish.trimLeft())));
+      }
+    }
   }
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -133,6 +157,7 @@ class _DigitalPrecriptionScreenState extends State<DigitalPrecriptionScreen> wit
               hasNavigated = true;
               showSnackbar("Drug prescription saved successfully", context);
               context.read<DrugPrescriptionCubit>().getSavedDrugPrescription(appointmentId: widget.appointment.id!);
+              context.read<PrescriptionReportCubit>().getPrescriptionReport(appointmentId: widget.appointment.id!);
               context.pop();
             }
           },
@@ -175,7 +200,7 @@ class _DigitalPrecriptionScreenState extends State<DigitalPrecriptionScreen> wit
 
                 isTyping
                     ? buildTypingView() // view when the doctor is searching for drugs
-                    : selectedDrugs?.isNotEmpty == true
+                    : selectedDrugs.isNotEmpty == true
                         ? SliverToBoxAdapter(child: buildAddDrugsView()) // view when the doctor has saved atleast one drug for this patient
                         : buildNotTypingView(state)
                 // view when the doctor is not typing and has not saved any drug
@@ -208,26 +233,31 @@ class _DigitalPrecriptionScreenState extends State<DigitalPrecriptionScreen> wit
                     // dev.log(selectedDrugs.map((e) => e.toMap()).toList().toString());
                     hasNavigated = false;
                     context.read<DrugPrescriptionCubit>().postDrugPrescription(
-                          patientId: widget.appointment.patientId!,
-                          appointmentId: widget.appointment.id!,
-                          drugs: selectedDrugs.map((e) => e.toMap()).toList(),
-                          patientAdvice: diet.text,
-                          privateNotes: otherInstructions.text,
-                          followupDate: () {
-                            if (followUpDate.values.isNotEmpty) {
-                              //there can be only one value
-                              DateTime? date = followUpDate.values.elementAt(0);
-                              if (date != null) {
-                                return '${date.year.toString()}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
-                              } else {
-                                return '';
-                              }
+                        patientId: widget.appointment.patientId!,
+                        appointmentId: widget.appointment.id!,
+                        drugs: selectedDrugs.map((e) => e.toMap()).toList(),
+                        patientAdvice: diet.text,
+                        privateNotes: otherInstructions.text,
+                        followupDate: () {
+                          if (followUpDate.values.isNotEmpty) {
+                            //there can be only one value
+                            DateTime? date = followUpDate.values.elementAt(0);
+                            if (date != null) {
+                              return '${date.year.toString()}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
                             } else {
                               return '';
                             }
-                          }(),
-                          followupTimeSlot: "${timeSlot.start?.format(context) ?? ''} - ${timeSlot.finish?.format(context)}",
-                        );
+                          } else {
+                            return '';
+                          }
+                        }(),
+                        followupTimeSlot: () {
+                          if (timeSlot.start != null && timeSlot.finish != null) {
+                            return "${timeSlot.start!.format(context)} - ${timeSlot.finish!.format(context)}";
+                          } else {
+                            return '';
+                          }
+                        }());
                   }
                 });
           }
@@ -238,8 +268,8 @@ class _DigitalPrecriptionScreenState extends State<DigitalPrecriptionScreen> wit
     return BlocBuilder<DrugPrescriptionCubit, DrugPrescriptionState>(builder: (context, state) {
       return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         // add drugs
-        ...List<Widget>.generate(selectedDrugs?.length ?? 0, (index) {
-          final drug = selectedDrugs!.elementAt(index);
+        ...List<Widget>.generate(selectedDrugs.length, (index) {
+          final drug = selectedDrugs.elementAt(index);
 
           return Container(
               padding: const EdgeInsets.all(12),
@@ -565,7 +595,6 @@ class _DigitalPrecriptionScreenState extends State<DigitalPrecriptionScreen> wit
         isDismissible: false,
         isScrollControlled: true,
         builder: (context) {
-          String patientId = widget.appointment.patientId!;
           return StatefulBuilder(builder: (context, setState) {
             return ClipRRect(
               borderRadius: const BorderRadius.only(topRight: Radius.circular(16), topLeft: Radius.circular(16)),

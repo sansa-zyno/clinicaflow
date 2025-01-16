@@ -32,10 +32,10 @@ class VitalsCubit extends Cubit<VitalsState> {
   }
 
   //? FETCH VITAL
-  getSavedVitals({required String appointmentId}) async {
+  getSavedVitals({required String appointmentId, required String patientId}) async {
     emit(state.copyWith(state: VitalsStates.fetchingVitals));
     try {
-      Vital savedVital = await service.getVitals(appointmentId: appointmentId);
+      Vital savedVital = await service.getVitals(appointmentId: appointmentId, patientId: patientId);
       emit(state.copyWith(state: VitalsStates.vitalsFetched, savedVital: savedVital));
     } catch (error) {
       log('Failed to load saved vitals: $error');

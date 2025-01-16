@@ -18,8 +18,13 @@ class TimeSlot {
   });
 
   TimeSlot copyWith({TimeOfDay? start, TimeOfDay? finish, String? startStr, String? finishStr}) {
-    return TimeSlot(id,
-        start: start ?? this.start, finish: finish ?? this.finish, startStr: startStr ?? this.startStr, finishStr: finishStr ?? this.finishStr);
+    return TimeSlot(
+      id,
+      start: start ?? this.start,
+      finish: finish ?? this.finish,
+      startStr: startStr ?? this.startStr,
+      finishStr: finishStr ?? this.finishStr,
+    );
   }
 
   int? duration() {

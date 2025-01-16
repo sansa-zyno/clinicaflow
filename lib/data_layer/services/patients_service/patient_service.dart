@@ -107,16 +107,12 @@ class PatientService {
       token,
     );
     if (response.statusCode == 200) {
-      print(response.data);
       if (kDebugMode) {
         print('Delete Patient successful');
       }
     } else {
-      if (kDebugMode) {
-        print('Delete Patient request failed with status: ${response.statusCode}');
-      }
+      throw Exception('Failed to delete patient: ${response.statusCode}');
     }
-    throw Exception('Failed to delete patient: ${response.statusCode}');
   }
 
   /*Future<PatientModel?> getFullPatientRecord(String id) async {

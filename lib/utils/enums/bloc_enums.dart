@@ -44,6 +44,18 @@ enum AppointmentStates {
   fetchingAppointmentCount,
   appointmentCountFetched,
   fetchingAppointmentCountFailed,
+  //? ENDING CONSULTATION
+  endingConsultation,
+  consultationEnded,
+  endingConsultationFailed,
+  //? ADDING INVOICE
+  addingInvoice,
+  invoiceAdded,
+  addingInvoiceFailed,
+  //? GETTING INVOICE
+  fetchingInvoice,
+  invoiceFetched,
+  fetchingInvoiceFailed
 }
 
 enum PaymentStates {
@@ -52,6 +64,10 @@ enum PaymentStates {
   fetchingPayments,
   paymentsFetched,
   fetchingPaymentsFailed,
+  //? ADDING PAYMENT
+  addingPayment,
+  paymentAdded,
+  addingPaymentFailed,
 }
 
 enum PatientRecordsStates {
@@ -259,4 +275,18 @@ enum WhatsappMessagingStates {
   sendingMessage,
   sendingMessageDone,
   sendingMessageFailed
+}
+
+enum NotificationStates {
+  initial,
+  fetchingNotifications,
+  notificationsFetched,
+  fetchingNotificationsFailed,
+}
+
+enum PrescriptionReportStates {
+  initial,
+  fetchingReport,
+  reportFetched,
+  fetchingReportFailed,
 }

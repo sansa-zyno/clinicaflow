@@ -8,8 +8,8 @@ import 'package:healtether_clinic_app/data_layer/models/staff_model/staff_model.
 import 'package:healtether_clinic_app/constants/constants.dart';
 import 'package:healtether_clinic_app/utils/enums/bloc_enums.dart';
 import 'package:healtether_clinic_app/utils/extensions.dart/widget_extensions.dart';
-import 'package:healtether_clinic_app/utils/helper_functions/log.dart';
 import 'package:healtether_clinic_app/utils/mixins/app_bar_mixin.dart';
+import 'package:healtether_clinic_app/utils/snackbar.dart';
 import '../../AppointmentScreen/appointment_screen.dart';
 import '../add_member_screen.dart';
 
@@ -22,6 +22,7 @@ class ManageStaffScreen extends StatefulWidget {
 
 class _ManageStaffScreenState extends State<ManageStaffScreen> with AppBarMixin {
   String selectedDate = 'All';
+  List<Staff>? searchResult;
   @override
   void initState() {
     // TODO: implement initState
@@ -63,6 +64,19 @@ class _ManageStaffScreenState extends State<ManageStaffScreen> with AppBarMixin 
                               prefixIcon: const Icon(Icons.search, color: Color(0xff413D56)),
                               border: InputBorder.none,
                             ),
+                            onChanged: (query) {
+                              if (query.isEmpty) {
+                                searchResult = null;
+                              } else {
+                                searchResult = state.staffList?.where((e) {
+                                      return (e.firstName?.toLowerCase().trim().startsWith(query.toLowerCase()) ?? false) ||
+                                          (e.lastName?.toLowerCase().trim().startsWith(query.toLowerCase()) ?? false);
+                                    }).toList() ??
+                                    [];
+                              }
+
+                              setState(() {});
+                            },
                           ),
                         ),
                       ],
@@ -123,11 +137,14 @@ class _ManageStaffScreenState extends State<ManageStaffScreen> with AppBarMixin 
                   const SizedBox(
                     height: 10,
                   ),
-                  Expanded(
-                    child: InfoCard(
-                      selectedDate: selectedDate,
-                    ),
-                  ),
+                  searchResult?.isNotEmpty ?? true
+                      ? Expanded(
+                          child: InfoCard(
+                            selectedDate: selectedDate,
+                            searchResult: searchResult,
+                          ),
+                        )
+                      : const Expanded(child: Center(child: Text('No data found'))),
                   const SizedBox(height: 90),
                 ],
               ),
@@ -184,8 +201,9 @@ class _ManageStaffScreenState extends State<ManageStaffScreen> with AppBarMixin 
 
 class InfoCard extends StatefulWidget {
   final String selectedDate;
+  final List<Staff>? searchResult;
 
-  const InfoCard({Key? key, required this.selectedDate}) : super(key: key);
+  const InfoCard({Key? key, required this.selectedDate, required this.searchResult}) : super(key: key);
 
   @override
   State<InfoCard> createState() => _InfoCardState();
@@ -203,11 +221,10 @@ class _InfoCardState extends State<InfoCard> {
       builder: (context, state) {
         // List<staff_model.StaffModel> filteredStaff = [];
         List<Staff> filteredStaff = [];
-
         if (widget.selectedDate == 'All') {
-          filteredStaff = state.staffList ?? [];
+          filteredStaff = widget.searchResult != null ? widget.searchResult! : state.staffList ?? [];
         } else {
-          filteredStaff = state.staffList?.where((staff) {
+          filteredStaff = (widget.searchResult != null ? widget.searchResult! : state.staffList)?.where((staff) {
                 if (widget.selectedDate == 'Super Admin') {
                   return staff.isDoctor == true;
                 } else if (widget.selectedDate == 'Admins') {
@@ -220,7 +237,7 @@ class _InfoCardState extends State<InfoCard> {
               [];
         }
 
-        if (widget.selectedDate == 'Guests' && filteredStaff.isEmpty) {
+        if (filteredStaff.isEmpty) {
           return const Center(
             child: Text('No data found.'),
           );
@@ -357,8 +374,8 @@ class _InfoCardState extends State<InfoCard> {
                                           ),
                                           TextButton(
                                             onPressed: () {
-                                              log("About to delete staff: $staff");
                                               deleteStaff(staff);
+                                              context.pop();
                                             },
                                             style: ButtonStyle(
                                               backgroundColor: MaterialStateProperty.all<Color>(
@@ -397,11 +414,14 @@ class _InfoCardState extends State<InfoCard> {
   }
 
   void deleteStaff(Staff staff) {
-    log("DELETING STAFF: $staff");
-    context.read<StaffCubit>().deleteStaff(staff.staffId!);
-    // if (mounted) {
-    context.pop();
-    // }
+    context.read<StaffCubit>().deleteStaff(staff.sId!).then((value) {
+      if (context.read<StaffCubit>().state.state == StaffStates.staffDeleted) {
+        showSnackbar("Staff deleted successfully", context);
+        context.read<StaffCubit>().fetchStaffs();
+      } else {
+        showSnackbar("An error occurred", context);
+      }
+    });
   }
 }
 

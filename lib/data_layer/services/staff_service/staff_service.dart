@@ -74,22 +74,18 @@ class StaffServices {
 
   Future<List<Staff>> fetchStaffs() async {
     await fetchToken();
-    try {
-      final response = await HttpService.get(ApiEndPoint.getStaffs(clinicId: clinicId), token);
-      if (response.statusCode == 200) {
-        Map<String, dynamic> jsonResponse = response.data;
-        if (jsonResponse.containsKey('data')) {
-          List<dynamic> dataList = jsonResponse['data'];
-          List<Staff> staffList = dataList.map((json) => Staff.fromJson(json)).toList();
-          return staffList;
-        } else {
-          throw 'Key "data" not found in response';
-        }
+    final response = await HttpService.get(ApiEndPoint.getStaffs(clinicId: clinicId), token);
+    if (response.statusCode == 200) {
+      Map<String, dynamic> jsonResponse = response.data;
+      if (jsonResponse.containsKey('data')) {
+        List<dynamic> dataList = jsonResponse['data'];
+        List<Staff> staffList = dataList.map((json) => Staff.fromJson(json)).toList();
+        return staffList;
       } else {
-        throw 'Failed to load data: ${response.statusCode}';
+        throw 'Key "data" not found in response';
       }
-    } catch (e) {
-      throw 'Failed to load data: $e';
+    } else {
+      throw 'Failed to load data: ${response.statusCode}';
     }
   }
 
@@ -110,24 +106,31 @@ class StaffServices {
 
   Future<void> deleteStaff(String id) async {
     await fetchToken();
-    try {
-      final response = await HttpService.delete(
-        ApiEndPoint.deleteStaffById(id: id),
-        token,
-      );
-      if (response.statusCode == 200) {
-        if (kDebugMode) {
-          print('Delete Staff successful');
-        }
-      } else {
-        if (kDebugMode) {
-          print('Delete Staff request failed with status: ${response.statusCode}');
-        }
-      }
-    } catch (e) {
+
+    final response = await HttpService.delete(
+      ApiEndPoint.deleteStaffById(id: id),
+      token,
+    );
+    if (response.statusCode == 200) {
       if (kDebugMode) {
-        print('Delete Staff Error: $e');
+        print('Delete Staff successful');
       }
+    } else {
+      throw Exception('Failed to delete staff with status ${response.statusCode}');
+    }
+  }
+
+  Future<List<Map<String, dynamic>>?> fetchDoctors() async {
+    await fetchToken();
+    final response = await HttpService.get(ApiEndPoint.getDoctors(clinicId: clinicId), token);
+    if (response.statusCode == 200) {
+      if (response.data != null) {
+        return List<Map<String, dynamic>>.from(response.data);
+      } else {
+        return null;
+      }
+    } else {
+      throw Exception('Failed to load doctors with status ${response.statusCode}');
     }
   }
 }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -13,7 +12,9 @@ import 'package:healtether_clinic_app/data_layer/models/patient/patient_model_id
 import 'package:healtether_clinic_app/data_layer/models/patient_records_model/patient_model.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/patient_records_cubit/patient_records_cubit.dart';
 import 'package:healtether_clinic_app/constants/constants.dart';
+import 'package:healtether_clinic_app/utils/enums/bloc_enums.dart';
 import 'package:healtether_clinic_app/utils/extensions.dart/widget_extensions.dart';
+import 'package:healtether_clinic_app/utils/snackbar.dart';
 import 'package:healtether_clinic_app/widgets/section_text.dart';
 import 'package:healtether_clinic_app/widgets/text_list_tile.dart';
 import 'package:intl/intl.dart';
@@ -191,7 +192,7 @@ class _PatientRecordsScreenState extends State<PatientRecordsScreen> {
                                       actions: <Widget>[
                                         TextButton(
                                           onPressed: () {
-                                            Navigator.of(context).pop();
+                                            context.pop();
                                           },
                                           style: ButtonStyle(
                                             backgroundColor: MaterialStateProperty.all(const Color(0xff32856E)),
@@ -210,7 +211,7 @@ class _PatientRecordsScreenState extends State<PatientRecordsScreen> {
                                         TextButton(
                                           onPressed: () async {
                                             deletePatient(widget.patient);
-                                            Navigator.of(context).pop();
+                                            context.pop();
                                           },
                                           style: ButtonStyle(
                                             backgroundColor: MaterialStateProperty.all<Color>(
@@ -562,22 +563,13 @@ class _PatientRecordsScreenState extends State<PatientRecordsScreen> {
             style: robotoBold,
           ),
         ),
-        // const SizedBox(width: 8),
-        // Expanded(
-        //   child: Text(
-        //     subTitle,
-        //     style: robotoBold,
-        //     softWrap: true,
-        //     overflow: TextOverflow.clip,
-        //   ),
-        // ),
         const SizedBox(width: 10),
         const Icon(Icons.find_in_page_rounded),
       ],
     );
   }
 
-  String _getInitials(String name) {
+  /*String _getInitials(String name) {
     List<String> nameSplit = name.split(" ");
     String initials = "";
     int numWords = 2;
@@ -592,15 +584,18 @@ class _PatientRecordsScreenState extends State<PatientRecordsScreen> {
       }
     }
     return initials.toUpperCase();
-  }
+  }*/
 
   void deletePatient(PatientOverviewModel patientModel) {
-    print(patientModel.id);
-    print(patientModel.sId);
-    context.read<PatientRecordsCubit>().deletePatient(patientModel.id!);
-    // if (mounted) {
-    context.pop();
-    // }
+    context.read<PatientRecordsCubit>().deletePatient(patientModel.id!).then((value) {
+      if (context.read<PatientRecordsCubit>().state.state == PatientRecordsStates.patientDeleted) {
+        showSnackbar("Patient deleted successfully", context);
+        context.read<PatientRecordsCubit>().fetchPatients();
+        context.pop();
+      } else {
+        showSnackbar("An error occurred", context);
+      }
+    });
   }
 
   void showAddRecordsBottomSheet(BuildContext context) {

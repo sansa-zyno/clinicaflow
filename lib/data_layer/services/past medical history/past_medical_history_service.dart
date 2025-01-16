@@ -42,6 +42,7 @@ class PastMedicalHistoryService {
     await fetchToken();
     final response = await HttpService.get(ApiEndPoint.getPastMedicalHistory(patientId: patientId, clientId: clinicId), token);
     if (response.statusCode == 200) {
+      //log(response.data.toString());
       if (response.data == null) {
         return {
           "allergies": null,

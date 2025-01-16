@@ -1,4 +1,4 @@
-part of 'payments_bloc.dart';
+/*part of 'payments_bloc.dart';
 
 @immutable
 sealed class PaymentsState {}
@@ -18,6 +18,6 @@ final class PaymentManageState extends PaymentsState{
 final class PaymentScreenActionState extends PaymentsState{}
 
 
-final class PaymnetScreenVerifiedState extends PaymentScreenActionState{}
+final class PaymnetScreenVerifiedState extends PaymentScreenActionState{}*/
 
 

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:healtether_clinic_app/constants/api.dart';
 import 'package:healtether_clinic_app/data_layer/models/vitals_model.dart/vital.dart';
 import 'package:healtether_clinic_app/data_layer/services/http.service.dart';
@@ -31,12 +33,13 @@ class VitalsService {
     }
   }
 
-  Future<Vital> getVitals({required String appointmentId}) async {
+  Future<Vital> getVitals({required String appointmentId, required String patientId}) async {
     await fetchToken();
-    final response = await HttpService.get(ApiEndPoint.getWholePrescriptionsAndVitals(appointmentId: appointmentId, clientId: clinicId), token);
+    final response = await HttpService.get(ApiEndPoint.getVitalsAndPersonalHistory(appointmentId: appointmentId, patientId: patientId), token);
     if (response.statusCode == 200) {
-      if (response.data['vitals'] != null) {
-        Vital vital = Vital.fromMap(response.data['vitals']);
+      //log(response.data.toString());
+      if (response.data['data'] != null) {
+        Vital vital = Vital.fromMapWithPersonalHistory(response.data['data']);
         return vital;
       } else {
         return Vital();

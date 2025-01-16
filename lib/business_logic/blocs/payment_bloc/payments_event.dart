@@ -1,4 +1,4 @@
-part of 'payments_bloc.dart';
+/*part of 'payments_bloc.dart';
 
 @immutable
 sealed class PaymentsEvent {}
@@ -24,6 +24,6 @@ final class VerifyPaymentsItemsEvent extends PaymentsEvent{
 
   VerifyPaymentsItemsEvent({required this.Items});
 
-}
+}*/
 
 

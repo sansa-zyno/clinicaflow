@@ -29,7 +29,7 @@ enum AppRoutes {
   pastMedicalHistory,
   vitals,
   createDigitalPrescription,
-  paymentReceipt,
+  paymentReceiptInvoice,
   paymentReceiptScreen,
   appointmentDetailScreen,
   appointmentDetail,
@@ -55,5 +55,6 @@ enum AppRoutes {
   addMembersScreen,
   labInvestigations,
   drugPrescription,
-  prescriptionPreview
+  prescriptionPreview,
+  payInCashSuccess,
 }

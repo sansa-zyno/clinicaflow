@@ -14,14 +14,7 @@ class _FeedBackPageState extends State<FeedBackPage> {
   RadioButtonValue? _selectedValue;
   int _iconColor = 0;
 
-  final List<String> ratingTexts = [
-    'Rate Us',
-    'Very Dissatisfied',
-    'Dissatisfied',
-    'Neutral',
-    'Satisfied',
-    'Very Satisfied'
-  ];
+  final List<String> ratingTexts = ['Rate Us', 'Very Dissatisfied', 'Dissatisfied', 'Neutral', 'Satisfied', 'Very Satisfied'];
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +22,7 @@ class _FeedBackPageState extends State<FeedBackPage> {
       appBar: AppBar(
         title: Text(
           'Feedback',
-          style: GoogleFonts.montserrat(fontWeight: FontWeight.w500,fontSize:20),
+          style: GoogleFonts.montserrat(fontWeight: FontWeight.w500, fontSize: 20),
         ),
       ),
       body: Column(
@@ -46,18 +39,12 @@ class _FeedBackPageState extends State<FeedBackPage> {
                     ),
                     Text(
                       "We'd Love to Hear From You!",
-                      style: GoogleFonts.poppins(
-                          fontSize: 15,
-                          color: const Color(0xff29286E),
-                          fontWeight: FontWeight.w500),
+                      style: GoogleFonts.poppins(fontSize: 16, color: const Color(0xff29286E), fontWeight: FontWeight.w500),
                     ),
-                    const SizedBox(
-                      height: 8,
-                    ),
+                    const SizedBox(height: 8),
                     Text(
                       'How satisfied are you with our app?',
-                      style: GoogleFonts.poppins(
-                          fontSize: 15, fontWeight: FontWeight.w500,color:Color(0xff000000)),
+                      style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w500, color: Color(0xff000000)),
                     ),
                     const SizedBox(
                       height: 14,
@@ -68,7 +55,7 @@ class _FeedBackPageState extends State<FeedBackPage> {
                         Text(
                           ratingTexts[_iconColor],
                           style: GoogleFonts.montserrat(
-                            fontSize: 15,
+                            fontSize: 14,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -86,15 +73,12 @@ class _FeedBackPageState extends State<FeedBackPage> {
                           child: IconButton(
                             icon: Icon(
                               Icons.star_rate,
-                              color: _iconColor > index
-                                  ? Colors.blue
-                                  : const Color(0xffEEEEEE),
-                              size: 55,
+                              color: _iconColor > index ? Colors.blue : const Color(0xffEEEEEE),
+                              size: 40,
                             ),
                             onPressed: () {
                               setState(() {
-                                _iconColor =
-                                    _iconColor == index + 1 ? 0 : index + 1;
+                                _iconColor = _iconColor == index + 1 ? 0 : index + 1;
                               });
                             },
                           ),
@@ -107,7 +91,10 @@ class _FeedBackPageState extends State<FeedBackPage> {
                     Text(
                       'What do you like most about the app?',
                       style: GoogleFonts.poppins(
-                          fontSize: 14, fontWeight: FontWeight.w500,color:Color(0xff000000)),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xff000000),
+                      ),
                     ),
                     const SizedBox(
                       height: 5,
@@ -122,9 +109,11 @@ class _FeedBackPageState extends State<FeedBackPage> {
                         decoration: InputDecoration(
                           hintText: 'I liked ...',
                           hintStyle: GoogleFonts.poppins(
-                              color: Color(0xffA3A3A3), fontWeight: FontWeight.w400),
-                          border: const OutlineInputBorder(
-                              borderSide: BorderSide.none),
+                            color: Color(0xffA3A3A3),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                          ),
+                          border: const OutlineInputBorder(borderSide: BorderSide.none),
                         ),
                       ),
                     ),
@@ -133,8 +122,7 @@ class _FeedBackPageState extends State<FeedBackPage> {
                     ),
                     Text(
                       'What areas do you think we can improve?',
-                      style: GoogleFonts.poppins(
-                          fontSize: 14, fontWeight: FontWeight.w500),
+                      style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w500),
                     ),
                     const SizedBox(
                       height: 7,
@@ -149,9 +137,11 @@ class _FeedBackPageState extends State<FeedBackPage> {
                         decoration: InputDecoration(
                           hintText: 'Type your answer here.',
                           hintStyle: GoogleFonts.poppins(
-                              color: Color(0xffA3A3A3), fontWeight: FontWeight.w400),
-                          border: const OutlineInputBorder(
-                              borderSide: BorderSide.none),
+                            color: Color(0xffA3A3A3),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                          ),
+                          border: const OutlineInputBorder(borderSide: BorderSide.none),
                         ),
                       ),
                     ),
@@ -160,8 +150,7 @@ class _FeedBackPageState extends State<FeedBackPage> {
                     ),
                     Text(
                       'Would you recommend our app to others?',
-                      style: GoogleFonts.poppins(
-                          fontSize: 14, fontWeight: FontWeight.w500),
+                      style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w500),
                     ),
                     const SizedBox(
                       height: 2,
@@ -182,8 +171,7 @@ class _FeedBackPageState extends State<FeedBackPage> {
                             ),
                             Text(
                               'Yes, definitely!',
-                              style: GoogleFonts.poppins(
-                                  fontSize: 15, fontWeight: FontWeight.w500),
+                              style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w500),
                             ),
                           ],
                         ),
@@ -201,8 +189,7 @@ class _FeedBackPageState extends State<FeedBackPage> {
                             ),
                             Text(
                               'Maybe.',
-                              style: GoogleFonts.poppins(
-                                  fontSize: 15, fontWeight: FontWeight.w500),
+                              style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w500),
                             ),
                           ],
                         ),
@@ -220,8 +207,7 @@ class _FeedBackPageState extends State<FeedBackPage> {
                             ),
                             Text(
                               'Not at the moment.',
-                              style: GoogleFonts.poppins(
-                                  fontSize: 15, fontWeight: FontWeight.w500),
+                              style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w500),
                             ),
                           ],
                         ),
@@ -235,7 +221,7 @@ class _FeedBackPageState extends State<FeedBackPage> {
                       child: Text(
                         'Thank you for your time!',
                         style: GoogleFonts.montserrat(
-                          fontSize: 16,
+                          fontSize: 14,
                           fontWeight: FontWeight.w500,
                           color: const Color(0xff009394),
                         ),
@@ -274,8 +260,7 @@ class _FeedBackPageState extends State<FeedBackPage> {
                               ),
                               children: [
                                 TextSpan(
-                                  text:
-                                      "If you have any immediate concerns or\nquestions, "
+                                  text: "If you have any immediate concerns or\nquestions, "
                                       "please don't hesitate to contact\nour support team ",
                                   style: GoogleFonts.montserrat(
                                     fontSize: 14,
@@ -305,27 +290,25 @@ class _FeedBackPageState extends State<FeedBackPage> {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: GestureDetector(
-              onTap: () {
-                // Handle form submission
-              },
-              child: Center(
-                child: Container(
-                  height: 55,
-                  width: 240,
-                  decoration: BoxDecoration(
-                    color: const Color(0xff32856E),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Center(
-                    child: Text(
-                      'Submit',
-                      style: GoogleFonts.montserrat(
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
-                      ),
+          GestureDetector(
+            onTap: () {
+              // Handle form submission
+            },
+            child: Center(
+              child: Container(
+                height: 55,
+                width: double.infinity,
+                margin: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xff32856E),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Center(
+                  child: Text(
+                    'Submit',
+                    style: GoogleFonts.montserrat(
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white,
                     ),
                   ),
                 ),

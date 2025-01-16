@@ -34,7 +34,7 @@ class PatientOverviewModel {
     firstName = json['firstName'];
     lastName = json['lastName'];
     mobile = json['mobile'];
-    age = json['age'] as int;
+    age = json['age'] as int?;
     gender = json['gender'];
     if (json['appointments'] != null) {
       appointments = <Appointments>[];

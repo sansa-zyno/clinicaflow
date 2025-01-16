@@ -8,6 +8,9 @@ class AppointmentState {
   String? id;
   Appointment? appointmentDetails;
   Map? patientsHelped;
+  Future<Map?> Function()? showBottomsSheet;
+  String? error;
+  Invoice? invoiceDetails;
 
   AppointmentState({
     required this.state,
@@ -16,22 +19,31 @@ class AppointmentState {
     this.id,
     this.appointmentDetails,
     this.patientsHelped,
+    this.showBottomsSheet,
+    this.error,
+    this.invoiceDetails,
   });
 
-  AppointmentState copyWith({
-    AppointmentStates? state,
-    List<Appointment>? appointments,
-    int? totalCount,
-    String? id,
-    Appointment? appointmentDetails,
-    Map? patientsHelped,
-  }) {
+  AppointmentState copyWith(
+      {AppointmentStates? state,
+      List<Appointment>? appointments,
+      int? totalCount,
+      String? id,
+      Appointment? appointmentDetails,
+      Map? patientsHelped,
+      Future<Map?> Function()? showBottomsSheet,
+      String? error,
+      Invoice? invoiceDetails}) {
     return AppointmentState(
-        state: state ?? this.state,
-        appointments: appointments ?? this.appointments,
-        totalCount: totalCount ?? this.totalCount,
-        id: id,
-        appointmentDetails: appointmentDetails ?? this.appointmentDetails,
-        patientsHelped: patientsHelped ?? this.patientsHelped);
+      state: state ?? this.state,
+      appointments: appointments ?? this.appointments,
+      totalCount: totalCount ?? this.totalCount,
+      id: id,
+      appointmentDetails: appointmentDetails ?? this.appointmentDetails,
+      patientsHelped: patientsHelped ?? this.patientsHelped,
+      showBottomsSheet: showBottomsSheet ?? this.showBottomsSheet,
+      error: error ?? this.error,
+      invoiceDetails: invoiceDetails ?? this.invoiceDetails,
+    );
   }
 }

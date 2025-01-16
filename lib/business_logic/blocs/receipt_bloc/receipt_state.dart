@@ -1,4 +1,4 @@
-part of 'receipt_bloc.dart';
+/*part of 'receipt_bloc.dart';
 
 @immutable
 sealed class ReceiptState {}
@@ -12,4 +12,4 @@ final class ReceiptLoadedState extends ReceiptState{
   ReceiptLoadedState({required this.payments});
 }
 final class PaymentDoneState extends ReceiptState{}
-final class PaymentSuccessfullState extends PaymentDoneState{}
+final class PaymentSuccessfullState extends PaymentDoneState{}*/

@@ -1,4 +1,4 @@
-part of 'receipt_bloc.dart';
+/*part of 'receipt_bloc.dart';
 
 @immutable
 sealed class ReceiptEvent {}
@@ -10,4 +10,4 @@ final class InitialLoadEvent extends ReceiptEvent{
 
 }
 
-final class InitializePaymentEvent extends ReceiptEvent{}
+final class InitializePaymentEvent extends ReceiptEvent{}*/

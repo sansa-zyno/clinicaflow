@@ -1,11 +1,14 @@
+import 'dart:developer';
 import 'package:animated_notch_bottom_bar/animated_notch_bottom_bar/animated_notch_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:healtether_clinic_app/business_logic/cubits/appointment_cubit/appointment_cubit.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/home_page_bottom_nav_cubit/home_page_bottom_nav_cubit.dart';
 import 'package:healtether_clinic_app/business_logic/blocs/login_bloc/login_bloc.dart';
-import 'package:healtether_clinic_app/utils/helper_functions/log.dart';
+import 'package:healtether_clinic_app/business_logic/cubits/notification/notification_cubit.dart';
 import 'package:healtether_clinic_app/utils/enums/route_enums.dart';
+import 'package:healtether_clinic_app/widgets/appointment_filter.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class HomePageView extends StatefulWidget {
@@ -22,11 +25,21 @@ class _HomePageViewState extends State<HomePageView> {
   final NotchBottomBarController _notchBottomBarController = NotchBottomBarController();
 
   void navigationTapped(int page) {
-    context.read<HomePageBottomNavCubit>().onPageChanged(page);
-
-    log("Current page: $page");
-    widget.shell.goBranch(page);
+    // context.read<HomePageBottomNavCubit>().onPageChanged(page);
+    if (page == 3) {
+      context.read<NotificationCubit>().fetchNotifications();
+    }
+    //log("Current page: $page");
     _notchBottomBarController.index = page;
+    widget.shell.goBranch(page);
+  }
+
+  Future<Map?> showBottomsSheettt() async {
+    Map? result = await showModalBottomSheet<Map>(
+      context: context,
+      builder: (context) => const AppointmentFilter(),
+    );
+    return result;
   }
 
   @override
@@ -37,6 +50,7 @@ class _HomePageViewState extends State<HomePageView> {
 
   @override
   Widget build(BuildContext context) {
+    context.read<AppointmentCubit>().setBottomsSheettt(showBottomsSheettt);
     return MultiBlocListener(
       listeners: [
         //? listen for logout event
@@ -55,7 +69,7 @@ class _HomePageViewState extends State<HomePageView> {
         //? listen for home page bottom nav changes
         BlocListener<HomePageBottomNavCubit, int>(
           listener: (context, state) {
-            print("NEW PAGE: $state");
+            //print("NEW PAGE: $state");
             navigationTapped(state);
           },
         )
@@ -170,7 +184,9 @@ class _HomePageViewState extends State<HomePageView> {
               itemLabel: 'Notifications',
             ),
           ],
-          onTap: navigationTapped,
+          onTap: (val) {
+            context.read<HomePageBottomNavCubit>().onPageChanged(val);
+          },
           kBottomRadius: 0,
           kIconSize: 20,
         ),

@@ -50,7 +50,7 @@ class LabTestService {
   Future<List<LabTest>?> getSavedLabTests({required String appointmentId}) async {
     await fetchToken();
     final response = await HttpService.get(
-        ApiEndPoint.getWholePrescriptionsAndVitals(
+        ApiEndPoint.getWholePrescriptions(
           appointmentId: appointmentId,
           clientId: clinicId,
         ),

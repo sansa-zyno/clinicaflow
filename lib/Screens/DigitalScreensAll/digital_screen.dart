@@ -7,16 +7,19 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/drug_cubit/drug_prescription_cubit.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/lab_test_cubit/lab_test_cubit.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/past_medical_history_cubit/past_medical_history_cubit.dart';
+import 'package:healtether_clinic_app/business_logic/cubits/prescription/prescription_report_cubit.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/symptoms_and_diagnosis_cubit/symptoms_and_diagnosis_cubit.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/vitals_cubit/vitals_cubit.dart';
 import 'package:healtether_clinic_app/constants/app_colors.dart';
 import 'package:healtether_clinic_app/constants/app_text.dart';
 import 'package:healtether_clinic_app/data_layer/models/appointment_models/appointment_model.dart';
-import 'package:healtether_clinic_app/data_layer/models/prescription/prescription_report.dart';
-import 'package:healtether_clinic_app/data_layer/services/prescription/prescription_service.dart';
+import 'package:healtether_clinic_app/data_layer/services/appointment_service/appointment_service.dart';
 import 'package:healtether_clinic_app/utils/enums/bloc_enums.dart';
 import 'package:healtether_clinic_app/utils/enums/route_enums.dart';
+import 'package:healtether_clinic_app/utils/snackbar.dart';
 import 'package:healtether_clinic_app/widgets/components/vitals_and_past_history_end_drawer.dart';
+
+import '../../business_logic/cubits/appointment_cubit/appointment_cubit.dart';
 
 class DigitalScreen extends StatefulWidget {
   const DigitalScreen({super.key, required this.appointment});
@@ -27,23 +30,18 @@ class DigitalScreen extends StatefulWidget {
 }
 
 class _DigitalScreenState extends State<DigitalScreen> {
-  PrescriptionReport? prescriptionReport;
-
-  getPrescriptionReport() async {
-    prescriptionReport = await PrescriptionService().getPrescriptionReport(appointmentId: widget.appointment.id!);
-    log(prescriptionReport.toString());
-  }
-
+  bool makingReceipt = false;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getPrescriptionReport();
+    context.read<PrescriptionReportCubit>().getPrescriptionReport(appointmentId: widget.appointment.id!);
+    /////
     context.read<SymptomsAndDiagnosisCubit>().getSavedSymptomsAndDiagnosis(appointmentId: widget.appointment.id!);
     context.read<LabTestCubit>().getSavedLabTests(appointmentId: widget.appointment.id!);
     context.read<DrugPrescriptionCubit>().getSavedDrugPrescription(appointmentId: widget.appointment.id!);
     context.read<PastMedicalHistoryCubit>().getPastMedicalHistory(patientId: widget.appointment.patientId!);
-    context.read<VitalsCubit>().getSavedVitals(appointmentId: widget.appointment.id!);
+    context.read<VitalsCubit>().getSavedVitals(appointmentId: widget.appointment.id!, patientId: widget.appointment.patientId!);
   }
 
   Widget _buildMenuItem({
@@ -230,8 +228,21 @@ class _DigitalScreenState extends State<DigitalScreen> {
             const Spacer(),
             Row(children: [
               GestureDetector(
-                onTap: () {
-                  context.pushNamed(AppRoutes.paymentReceiptScreen.name);
+                onTap: () async {
+                  try {
+                    makingReceipt = true;
+                    setState(() {});
+                    AppointmentServices appointmentServices = AppointmentServices();
+                    String invoiceId = await appointmentServices.makeReceipt(appointmentId: widget.appointment.id!);
+                    await context.read<AppointmentCubit>().getInvoiceById(invoiceId: invoiceId);
+                    makingReceipt = false;
+                    setState(() {});
+                    if (context.read<AppointmentCubit>().state.state == AppointmentStates.invoiceFetched) {
+                      context.pushNamed(AppRoutes.paymentReceiptScreen.name, extra: invoiceId);
+                    }
+                  } catch (e) {
+                    showSnackbar(e.toString(), context);
+                  }
                 },
                 child: Container(
                   width: 150,
@@ -240,52 +251,57 @@ class _DigitalScreenState extends State<DigitalScreen> {
                     color: AppColors.whiteSmoke,
                     borderRadius: BorderRadius.circular(4),
                   ),
-                  child: const Center(
-                    child: Text(
-                      'Make Receipt',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 15,
-                        fontFamily: 'Urbanist',
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const Spacer(),
-              GestureDetector(
-                onTap: () {
-                  //await Future.delayed(const Duration(seconds: 1));
-                  if (prescriptionReport != null) {
-                    log('hello');
-                    context.pushNamed(AppRoutes.prescriptionPreview.name, extra: {
-                      'prescriptionReport': prescriptionReport,
-                    });
-                  }
-                },
-                child: Container(
-                  width: 150,
-                  height: 58,
-                  decoration: BoxDecoration(
-                    color: AppColors.greenColor,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
                   child: Center(
-                    child: Text(
-                      'Preview Rx',
-                      style: GoogleFonts.urbanist(
-                        textStyle: const TextStyle(
-                          color: Colors.white,
+                    child: Opacity(
+                      opacity: makingReceipt ? 0.5 : 1.0,
+                      child: const Text(
+                        'Make Receipt',
+                        style: TextStyle(
+                          color: Colors.black,
                           fontSize: 15,
-                          fontWeight: FontWeight.w600,
                           fontFamily: 'Urbanist',
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
                   ),
                 ),
               ),
+              const Spacer(),
+              BlocBuilder<PrescriptionReportCubit, PrescriptionReportState>(builder: (context, state) {
+                return GestureDetector(
+                  onTap: () {
+                    //await Future.delayed(const Duration(seconds: 1));
+                    if (state.prescriptionReport != null) {
+                      log('hello');
+                      context.pushNamed(AppRoutes.prescriptionPreview.name, extra: {
+                        'prescriptionReport': state.prescriptionReport,
+                      });
+                    }
+                  },
+                  child: Container(
+                    width: 150,
+                    height: 58,
+                    decoration: BoxDecoration(
+                      color: AppColors.greenColor,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Preview Rx',
+                        style: GoogleFonts.urbanist(
+                          textStyle: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'Urbanist',
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }),
             ]),
           ],
         ),

@@ -1,29 +1,23 @@
 // ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:healtether_clinic_app/business_logic/cubits/appointment_cubit/appointment_cubit.dart';
 import 'package:healtether_clinic_app/data_layer/models/appointment_models/appointment_model.dart';
 import 'package:healtether_clinic_app/data_layer/services/vitals_service/vitals_service.dart';
+import 'package:healtether_clinic_app/utils/enums/bloc_enums.dart';
 import 'package:healtether_clinic_app/utils/enums/route_enums.dart';
 import 'package:intl/intl.dart';
 import '../../../data_layer/services/past medical history/past_medical_history_service.dart';
 // import 'package:provider/provider.dart';
 
-class InfoCard extends StatefulWidget {
+class InfoCard extends StatelessWidget {
   final List<Appointment> appointments;
   const InfoCard({required this.appointments, Key? key}) : super(key: key);
-
-  @override
-  InfoCardState createState() => InfoCardState();
-}
-
-class InfoCardState extends State<InfoCard> {
-  @override
-  void initState() {
-    super.initState();
-  }
 
   String formatDate(String dateString) {
     try {
@@ -42,9 +36,9 @@ class InfoCardState extends State<InfoCard> {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.all(8.0),
-      itemCount: widget.appointments.length,
+      itemCount: appointments.length,
       itemBuilder: (BuildContext context, int index) {
-        Appointment appointment = widget.appointments[index];
+        Appointment appointment = appointments[index];
         return Slidable(
           key: const ValueKey(0),
           endActionPane: ActionPane(
@@ -89,103 +83,111 @@ class InfoCardState extends State<InfoCard> {
                     ),
                   ),
                   const SizedBox(width: 6),
-                  FutureBuilder(
-                      future: PastMedicalHistoryService().getPastMedicalHistory(patientId: appointment.patientId!),
-                      builder: (context, snapshot) {
-                        return InkWell(
-                          onTap: () {
-                            if (snapshot.data != null) {
-                              context.pushNamed(AppRoutes.pastMedicalHistory.name, extra: {
-                                'appointment': appointment,
-                                'pastHistory': snapshot.data!['pastHistory'],
-                                'familyHistory': snapshot.data!['familyHistory'],
-                                'pastProcedureHistory': snapshot.data!['pastProcedureHistory'],
-                                'allergies': snapshot.data!['allergies'],
-                                'medication': snapshot.data!['medication'],
-                              });
-                            }
-                          },
-                          child: Opacity(
-                            opacity: snapshot.data == null ? 0.5 : 1,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    color: const Color(0xffF5F5F5),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(10.0),
-                                    child: SvgPicture.asset(
-                                      'assets/homeimages/Component 15.svg',
-                                      height: 22,
-                                      width: 22,
-                                      color: const Color(0xff413D56),
+                  BlocBuilder<AppointmentCubit, AppointmentState>(buildWhen: (previous, current) {
+                    return current.state == AppointmentStates.fetchingAppointmentById;
+                  }, builder: (context, state) {
+                    return FutureBuilder(
+                        future: PastMedicalHistoryService().getPastMedicalHistory(patientId: appointment.patientId!),
+                        builder: (context, snapshot) {
+                          return InkWell(
+                            onTap: () {
+                              if (snapshot.data != null) {
+                                context.pushNamed(AppRoutes.pastMedicalHistory.name, extra: {
+                                  'appointment': appointment,
+                                  'pastHistory': snapshot.data!['pastHistory'],
+                                  'familyHistory': snapshot.data!['familyHistory'],
+                                  'pastProcedureHistory': snapshot.data!['pastProcedureHistory'],
+                                  'allergies': snapshot.data!['allergies'],
+                                  'medication': snapshot.data!['medication'],
+                                });
+                              }
+                            },
+                            child: Opacity(
+                              opacity: snapshot.data == null ? 0.5 : 1,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: const Color(0xffF5F5F5),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: SvgPicture.asset(
+                                        'assets/homeimages/Component 15.svg',
+                                        height: 22,
+                                        width: 22,
+                                        color: const Color(0xff413D56),
+                                      ),
                                     ),
                                   ),
-                                ),
-                                const SizedBox(height: 4),
-                                const Text(
-                                  'Past Medical',
-                                  style: TextStyle(fontSize: 11),
-                                ),
-                                const Text(
-                                  'History',
-                                  style: TextStyle(fontSize: 11),
-                                ),
-                              ],
+                                  const SizedBox(height: 4),
+                                  const Text(
+                                    'Past Medical',
+                                    style: TextStyle(fontSize: 11),
+                                  ),
+                                  const Text(
+                                    'History',
+                                    style: TextStyle(fontSize: 11),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        );
-                      }),
+                          );
+                        });
+                  }),
                   const SizedBox(width: 6),
-                  FutureBuilder(
-                      future: VitalsService().getVitals(appointmentId: appointment.id!),
-                      builder: (context, snapshot) {
-                        return InkWell(
-                          onTap: () {
-                            if (snapshot.data != null) {
-                              context.pushNamed(AppRoutes.vitals.name, extra: {
-                                'appointment': appointment,
-                                'vitals': snapshot.data,
-                              });
-                            }
-                          },
-                          child: Opacity(
-                            opacity: snapshot.data == null ? 0.5 : 1,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    color: const Color(0xffF5F5F5),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(10.0),
-                                    child: SvgPicture.asset(
-                                      'assets/homeimages/Vector (15).svg',
-                                      height: 20,
-                                      width: 20,
-                                      color: const Color(0xff413D56),
+                  BlocBuilder<AppointmentCubit, AppointmentState>(buildWhen: (previous, current) {
+                    return current.state == AppointmentStates.fetchingAppointmentById;
+                  }, builder: (context, state) {
+                    return FutureBuilder(
+                        future: VitalsService().getVitals(appointmentId: appointment.id!, patientId: appointment.patientId!),
+                        builder: (context, snapshot) {
+                          return InkWell(
+                            onTap: () {
+                              if (snapshot.data != null) {
+                                context.pushNamed(AppRoutes.vitals.name, extra: {
+                                  'appointment': appointment,
+                                  'vitals': snapshot.data,
+                                });
+                              }
+                            },
+                            child: Opacity(
+                              opacity: snapshot.data == null ? 0.5 : 1,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: const Color(0xffF5F5F5),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: SvgPicture.asset(
+                                        'assets/homeimages/Vector (15).svg',
+                                        height: 20,
+                                        width: 20,
+                                        color: const Color(0xff413D56),
+                                      ),
                                     ),
                                   ),
-                                ),
-                                const SizedBox(height: 4),
-                                const Text(
-                                  'Vitals &',
-                                  style: TextStyle(fontSize: 11),
-                                ),
-                                const Text(
-                                  'Examination',
-                                  style: TextStyle(fontSize: 11),
-                                ),
-                              ],
+                                  const SizedBox(height: 4),
+                                  const Text(
+                                    'Vitals &',
+                                    style: TextStyle(fontSize: 11),
+                                  ),
+                                  const Text(
+                                    'Examination',
+                                    style: TextStyle(fontSize: 11),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        );
-                      }),
+                          );
+                        });
+                  }),
                   const SizedBox(width: 6),
                   InkWell(
                     onTap: () {

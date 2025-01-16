@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:healtether_clinic_app/Screens/AppointmentScreen/widgets/custom_textfield.dart';
 import 'package:healtether_clinic_app/Screens/DigitalScreensAll/symptoms_diagnosis/create_digital_prescription_screens.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/lab_test_cubit/lab_test_cubit.dart';
+import 'package:healtether_clinic_app/business_logic/cubits/prescription/prescription_report_cubit.dart';
 import 'package:healtether_clinic_app/constants/app_constants.dart';
 import 'package:healtether_clinic_app/data_layer/models/appointment_models/appointment_model.dart';
 import 'package:healtether_clinic_app/data_layer/models/lab_tests/lab_tests.dart';
@@ -198,6 +199,7 @@ class _LabInvestigationsScreenState extends State<LabInvestigationsScreen> {
               hasNavigated = true;
               showSnackbar("Lab tests saved successfully", context);
               context.read<LabTestCubit>().getSavedLabTests(appointmentId: widget.appointment.id!);
+              context.read<PrescriptionReportCubit>().getPrescriptionReport(appointmentId: widget.appointment.id!);
               context.pop();
             }
           },

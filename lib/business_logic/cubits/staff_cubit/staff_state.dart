@@ -7,11 +7,13 @@ class StaffState {
   final StaffStates state;
   final String? errorMessage;
   final String? createStaffResponse;
+  final List<Map<String, dynamic>>? doctors;
   StaffState({
     required this.state,
     this.errorMessage,
     this.createStaffResponse,
     this.staffList,
+    this.doctors,
   });
 
   StaffState copyWith({
@@ -19,12 +21,13 @@ class StaffState {
     String? errorMessage,
     String? createStaffResponse,
     List<Staff>? staffList,
+    List<Map<String, dynamic>>? doctors,
   }) {
     return StaffState(
-      state: state ?? this.state,
-      errorMessage: errorMessage?.isEmpty == true ? null : errorMessage ?? this.errorMessage,
-      createStaffResponse: createStaffResponse ?? this.createStaffResponse,
-      staffList: staffList ?? this.staffList,
-    );
+        state: state ?? this.state,
+        errorMessage: errorMessage?.isEmpty == true ? null : errorMessage ?? this.errorMessage,
+        createStaffResponse: createStaffResponse ?? this.createStaffResponse,
+        staffList: staffList ?? this.staffList,
+        doctors: doctors ?? this.doctors);
   }
 }

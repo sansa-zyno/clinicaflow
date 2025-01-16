@@ -38,9 +38,10 @@ class HistoryItem {
 
   factory HistoryItem.fromMap(Map<String, dynamic> map) {
     return HistoryItem(
-        id: map['_id'] != null ? map['_id'] : null,
-        name: map['name'] != null ? map['name'] : null,
-        year: map['duration'] != null ? map['duration']['value'].toString() : '');
+      id: map['_id'],
+      name: map['name'],
+      year: map['duration']?['value']?.toString() ?? '',
+    );
   }
 
   factory HistoryItem.empty() {

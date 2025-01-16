@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:healtether_clinic_app/business_logic/cubits/appointment_cubit/appointment_cubit.dart';
+import 'package:healtether_clinic_app/business_logic/cubits/prescription/prescription_report_cubit.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/vitals_cubit/vitals_cubit.dart';
 import 'package:healtether_clinic_app/data_layer/models/appointment_models/appointment_model.dart';
 import 'package:healtether_clinic_app/data_layer/models/vitals_model.dart/vital.dart';
@@ -43,8 +45,8 @@ class VitalsScreenState extends State<VitalsScreen> {
   ];
   List<LayerLink> personalHistoryLayerLinks = [LayerLink(), LayerLink()];
 
-  late Vital vital;
   late Set<PersonalHistory> personalHistories;
+  late Vital vital;
 
   @override
   void initState() {
@@ -53,29 +55,39 @@ class VitalsScreenState extends State<VitalsScreen> {
     if (widget.vitals != null && widget.vitals!.id != null) {
       vital = widget.vitals!;
       if (vital.personalHistories == null) {
-        personalHistories = {PersonalHistory(activity: 'x'), PersonalHistory(activity: 'y')};
+        personalHistories = {
+          PersonalHistory(activity: 'x'),
+          PersonalHistory(activity: 'y'),
+        };
         vital = vital.copyWith(personalHistories: personalHistories);
-        log(vital.personalHistories!.map((e) => e.toMap()).toString());
       } else {
-        personalHistories = widget.vitals!.personalHistories!;
-        log(vital.personalHistories!.map((e) => e.toMap()).toString());
+        personalHistories = vital.personalHistories!;
+        if (personalHistories.isNotEmpty) {
+          personalHistoryControllers = personalHistories.map((e) => TextEditingController(text: e.activity)).toList();
+          personalHistoryLayerLinks = personalHistories.map((e) => LayerLink()).toList();
+        } else {
+          personalHistories = {
+            PersonalHistory(activity: 'x'),
+            PersonalHistory(activity: 'y'),
+          };
+          vital = vital.copyWith(personalHistories: personalHistories);
+        }
       }
-      _bp1.text = widget.vitals!.bloodPressure?.systolic?.toString() ?? '0';
-      _bp2.text = widget.vitals!.bloodPressure?.diastolic?.toString() ?? '0';
-      _spo2.text = widget.vitals!.spo2?.toString() ?? "0";
-      _pulseRate.text = widget.vitals!.pulseRate?.toString() ?? '0';
-      _respRate.text = widget.vitals!.respiratoryRate?.toString() ?? '0';
-      _temp.text = widget.vitals!.temperature?.toString() ?? '0';
-      _rbs.text = widget.vitals!.rbs?.toString() ?? '0';
-      _height.text = widget.vitals!.height?.toString() ?? '0';
-      _weight.text = widget.vitals!.weight?.toString() ?? '0';
+      _bp1.text = vital.bloodPressure?.systolic?.toString() ?? '0';
+      _bp2.text = vital.bloodPressure?.diastolic?.toString() ?? '0';
+      _spo2.text = vital.spo2?.toString() ?? "0";
+      _pulseRate.text = vital.pulseRate?.toString() ?? '0';
+      _respRate.text = vital.respiratoryRate?.toString() ?? '0';
+      _temp.text = vital.temperature?.toString() ?? '0';
+      _rbs.text = vital.rbs?.toString() ?? '0';
+      _height.text = vital.height?.toString() ?? '0';
+      _weight.text = vital.weight?.toString() ?? '0';
     } else {
-      personalHistories = {PersonalHistory(activity: 'x'), PersonalHistory(activity: 'y')};
-      vital = Vital(
-        bloodPressure: BloodPressure(),
-        personalHistories: personalHistories,
-      );
-      log(vital.personalHistories!.map((e) => e.toMap()).toString());
+      personalHistories = {
+        PersonalHistory(activity: 'x'),
+        PersonalHistory(activity: 'y'),
+      };
+      vital = Vital(bloodPressure: BloodPressure(), personalHistories: personalHistories);
     }
   }
 
@@ -101,9 +113,11 @@ class VitalsScreenState extends State<VitalsScreen> {
       if (vital.personalHistories!.contains(newHistory)) {
         log("UPDATE HYSTORY");
         personalHistories = vital.personalHistories!.map((history) => history.activity == newHistory.activity ? newHistory : history).toSet();
+        vital = vital.copyWith(personalHistories: personalHistories);
       } else {
         log("ADD NEW HISTORY");
         personalHistories.add(newHistory);
+        vital = vital.copyWith(personalHistories: personalHistories);
       }
     });
   }
@@ -133,7 +147,11 @@ class VitalsScreenState extends State<VitalsScreen> {
             log(state.state.toString());
             hasNavigated = true;
             showSnackbar("Vitals saved successfully", context);
-            context.read<VitalsCubit>().getSavedVitals(appointmentId: widget.appointment.id!);
+            context.read<VitalsCubit>().getSavedVitals(appointmentId: widget.appointment.id!, patientId: widget.appointment.patientId!);
+            context.read<PrescriptionReportCubit>().getPrescriptionReport(appointmentId: widget.appointment.id!);
+            //to update home screen
+            context.read<AppointmentCubit>().getAppointmentById(id: widget.appointment.id!);
+
             context.pop();
           }
         },
@@ -353,7 +371,6 @@ class VitalsScreenState extends State<VitalsScreen> {
                               personalHistoryControllers.add(TextEditingController());
                               personalHistoryLayerLinks.add(LayerLink());
                               personalHistories.add(PersonalHistory(activity: ''));
-                              vital = vital.copyWith(personalHistories: personalHistories);
                             } else {}
                             setState(() {});
                           },
@@ -397,8 +414,8 @@ class VitalsScreenState extends State<VitalsScreen> {
                                 controller: personalHistoryControllers[index],
                                 hintText: 'Lifestyle choices',
                                 onChanged: (value) {
-                                  PersonalHistory history = personalHistories.elementAt(index).copyWith(activity: value);
                                   List<PersonalHistory> newList = personalHistories.toList();
+                                  PersonalHistory history = personalHistories.elementAt(index).copyWith(activity: value);
                                   newList[index] = history;
                                   personalHistories = newList.toSet();
                                   vital = vital.copyWith(personalHistories: personalHistories);

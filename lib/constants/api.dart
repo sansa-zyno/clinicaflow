@@ -10,16 +10,17 @@ class ApiEndPoint {
   static const String authLogin = '/authlogin';
   static String getStaffs({required String clinicId}) => '/staff/getstaffs?clientId=$clinicId';
   static String getPatients({required String clinicId}) => "/patient/getpatients?clientId=$clinicId";
-  static String getPayments({required String clinicId}) => "/payment/getpayments?clientId=$clinicId";
+  static String getPayments({required String clinicId}) => "/payment/getpayments?clientId=$clinicId&page=1&size=10&direction=asc";
   static String getAppointments({required String clinicId, required String status}) =>
       '/appointment/getappointments?clinicId=$clinicId&status=$status';
-  //static String getDoctors({required String clinicId}) => '/staff/getdoctorsbyclinic?clinicId=$clinicId';
+  static String getDoctors({required String clinicId}) => '/staff/getdoctorsbyclinic?clinicId=$clinicId';
   static String getDoctorsWithTimeSlots({required String clinicId}) => '/staff/getdoctorswithtime?clinicId=$clinicId';
   static String getFrequencyForPrescription({required String clinicId}) => '/frequency/getfrequenttextforfrescription?clinicId=$clinicId';
   static String getAppointmentCount({required String clinicId, required String date}) =>
       '/appointment/getappointmentcount?clinicId=$clinicId&date=$date';
-  static String getPatientId({required String clinicId}) => '/clinic/getpatientid?id=$clinicId';
-  static String getStaffId({required String clinicId}) => '/clinic/getstaffid?id=$clinicId';
+  static String getPatientId({required String clinicId}) => '/clinic/getclinicpatientid?id=$clinicId';
+  static String getStaffId({required String clinicId}) => '/clinic/getclinicstaffid?id=$clinicId';
+  static String getNotifications({required String clinicId}) => '/notification/getnotification?page=1&size=10&direction=desc&clinicId=$clinicId';
 
   static String getClinicDetails({required String id}) => '/clinic/getclient?id=$id';
   static String getPrescriptionReport({required String appointmentId, required String clinicId}) =>
@@ -46,10 +47,15 @@ class ApiEndPoint {
   static String postDrugs({required String patientId, required String clientId, required String appointmentId}) =>
       '/appointment/write-prescription/upsertdrugprescriptions?patientId=$patientId&clientId=$clientId&appointmentId=$appointmentId';
 
-  static String getWholePrescriptionsAndVitals({required String appointmentId, required String clientId}) =>
+  static String getWholePrescriptions({required String appointmentId, required String clientId}) =>
       '/appointment/write-prescription/getwholeprescription?appointment=$appointmentId&clientId=$clientId';
   static String getPastMedicalHistory({required String patientId, required String clientId}) =>
       '/appointment/write-prescription/getwholemedicalhistories?patientId=$patientId&clientId=$clientId';
+  static String getVitalsAndPersonalHistory({required String appointmentId, required String patientId}) =>
+      '/appointment/write-prescription/getvitalsversonalHistory?appointmentId=$appointmentId&patientId=$patientId';
+  static String getInvoiceById({required String invoiceId}) => '/payment/getinvoicebyid?id=$invoiceId';
+  static String addInvoiceDetails({required String invoiceId, required String clinicId}) =>
+      '/payment/addinvoiceformobile?id=$invoiceId&clientId=$clinicId';
 
   static const String createStaff = '/staff/upsert';
   static const String postPatient = '/patient/addpatient';
@@ -61,6 +67,9 @@ class ApiEndPoint {
   static const String reSchedule = '/appointment/reschedule';
   static const String cancell = '/appointment/cancelled';
   static const String followUp = '/appointment/followup';
+  static const String endConsultation = '/appointment/endconsultation';
+  static const String makeReceipt = '/appointment/write-prescription/makereciept';
+  static const String setCashPayment = '/payment/setcashpayment';
 
   static const String postMedicationDdx = "https://43.204.120.239:8000/ddx/medications";
   static const String createSymptoms = "https://43.204.120.239:8000/ddx/predict";
@@ -69,6 +78,10 @@ class ApiEndPoint {
   //Messaging
   static const String msgBaseUrl = 'https://api-chats-tst-clinic.healtether.com/api';
   static const String sendWhatsappMsg = 'whatsappchat/addmessage';
+  /*static String getWhatsappMsg({required String mobile, required String clinicId}) =>
+      '/whatsappchat/getmessage?mobile=$mobile&clinicId=$clinicId&pg=1&pgSize=1';*/
+  //static const String sendAppointmentSummary = '/message/sendappointmentsummary';
+  // static const String sendPaymentLink = '/message/sendpaymentlink';
 }
 //id:65be5ecf4d5cb412fc374d60
 //clientId/clinicId:662ca0a41a2431e16c41ebaa

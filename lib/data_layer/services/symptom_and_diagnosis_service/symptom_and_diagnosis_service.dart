@@ -88,7 +88,7 @@ class SymptomAndDiagnosisService {
 
   Future<Map<String, List<Symptom>?>> getSavedSymptomsAndDiagnosis({required String appointmentId}) async {
     await fetchToken();
-    final response = await HttpService.get(ApiEndPoint.getWholePrescriptionsAndVitals(appointmentId: appointmentId, clientId: clinicId), token);
+    final response = await HttpService.get(ApiEndPoint.getWholePrescriptions(appointmentId: appointmentId, clientId: clinicId), token);
     if (response.statusCode == 200) {
       if (response.data['prescriptions'] != null) {
         List<Symptom>? symptoms = (response.data['prescriptions']['symptoms'] as List?)?.map((e) => Symptom.fromMap(e, 'Sx')).toList();

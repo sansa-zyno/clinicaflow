@@ -1,9 +1,9 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:healtether_clinic_app/Screens/AppointmentScreen/widgets/option_container.dart';
 import 'package:healtether_clinic_app/Screens/HomeScreen/drawer_menu.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/appointment_cubit/appointment_cubit.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/home_page_bottom_nav_cubit/home_page_bottom_nav_cubit.dart';
@@ -12,12 +12,14 @@ import 'package:healtether_clinic_app/data_layer/models/appointment_models/appoi
 import 'package:healtether_clinic_app/constants/constants.dart';
 import 'package:healtether_clinic_app/data_layer/models/patient_records_model/patient_model.dart';
 import 'package:healtether_clinic_app/data_layer/models/user_model/user_model.dart';
+import 'package:healtether_clinic_app/data_layer/services/appointment_service/appointment_service.dart';
 import 'package:healtether_clinic_app/data_layer/services/past%20medical%20history/past_medical_history_service.dart';
 import 'package:healtether_clinic_app/data_layer/services/vitals_service/vitals_service.dart';
 import 'package:healtether_clinic_app/utils/enums/bloc_enums.dart';
 import 'package:healtether_clinic_app/utils/enums/route_enums.dart';
 import 'package:healtether_clinic_app/utils/extensions.dart/string_extensions.dart';
 import 'package:healtether_clinic_app/utils/extensions.dart/widget_extensions.dart';
+import 'package:healtether_clinic_app/utils/snackbar.dart';
 import 'package:healtether_clinic_app/widgets/text_list_tile.dart';
 import 'package:intl/intl.dart';
 import 'package:percent_indicator/percent_indicator.dart';
@@ -617,27 +619,33 @@ class _HomeScreenState extends State<HomeScreen> {
       } else {
         List<PatientOverviewModel> result = state.patients
                 ?.where((e) =>
-                    e.id!.toLowerCase() == query.toLowerCase() ||
-                    e.firstName!.toLowerCase().trim().startsWith(query.toLowerCase()) ||
-                    e.lastName!.toLowerCase().trim().startsWith(query.toLowerCase()) ||
-                    e.mobile == query)
+                    (e.patientId?.toLowerCase().startsWith(query.toLowerCase()) ?? false) ||
+                    (e.firstName?.toLowerCase().trim().startsWith(query.toLowerCase()) ?? false) ||
+                    (e.lastName?.toLowerCase().trim().startsWith(query.toLowerCase()) ?? false) ||
+                    (e.mobile?.startsWith(query) ?? false))
                 .toList() ??
             [];
-        return Column(
-            children: List<Widget>.generate(result.length, (index) {
-          PatientOverviewModel patient = result.elementAt(index);
+        return result.isNotEmpty
+            ? Column(
+                children: List<Widget>.generate(result.length, (index) {
+                PatientOverviewModel patient = result.elementAt(index);
 
-          return TextListTile(
-            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 8),
-            text: patient.fullName,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            onTap: () {
-              context.pushNamed(AppRoutes.patientRecordsScreen.name, extra: patient);
-              _removeOverlay();
-            },
-          ).pOnly(bottom: 8);
-        }));
+                return TextListTile(
+                  padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 8),
+                  text: patient.fullName,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  onTap: () {
+                    context.pushNamed(AppRoutes.patientRecordsScreen.name, extra: patient);
+                    _removeOverlay();
+                  },
+                ).pOnly(bottom: 8);
+              }))
+            : Container(
+                padding: const EdgeInsets.only(right: 60),
+                height: 325,
+                child: const Center(child: Text('No data found')),
+              );
       }
     });
   }
@@ -790,6 +798,8 @@ class AppointmentCard extends StatefulWidget {
 }
 
 class _AppointmentCardState extends State<AppointmentCard> {
+  String id = '-1';
+  bool makingReceipt = false;
   @override
   void initState() {
     // TODO: implement initState
@@ -855,52 +865,60 @@ class _AppointmentCardState extends State<AppointmentCard> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               mainAxisSize: MainAxisSize.min,
               children: [
-                FutureBuilder(
-                    future: PastMedicalHistoryService().getPastMedicalHistory(patientId: widget.response.patientId!),
-                    builder: (context, snapshot) {
-                      return InkWell(
-                        onTap: () {
-                          if (snapshot.data != null) {
-                            context.pushNamed(AppRoutes.pastMedicalHistory.name, extra: {
-                              'appointment': widget.response,
-                              'pastHistory': snapshot.data!['pastHistory'],
-                              'familyHistory': snapshot.data!['familyHistory'],
-                              'pastProcedureHistory': snapshot.data!['pastProcedureHistory'],
-                              'allergies': snapshot.data!['allergies'],
-                              'medication': snapshot.data!['medication'],
-                            });
-                          }
-                        },
-                        child: Opacity(
-                          opacity: snapshot.data == null ? 0.5 : 1,
-                          child: getOptionWidget(
-                            imgPath: 'assets/homeimages/Component 15.svg',
-                            title: 'Past Medical\n History',
+                BlocBuilder<AppointmentCubit, AppointmentState>(buildWhen: (previous, current) {
+                  return current.state == AppointmentStates.fetchingAppointmentById;
+                }, builder: (context, state) {
+                  return FutureBuilder(
+                      future: PastMedicalHistoryService().getPastMedicalHistory(patientId: widget.response.patientId!),
+                      builder: (context, snapshot) {
+                        return InkWell(
+                          onTap: () {
+                            if (snapshot.data != null) {
+                              context.pushNamed(AppRoutes.pastMedicalHistory.name, extra: {
+                                'appointment': widget.response,
+                                'pastHistory': snapshot.data!['pastHistory'],
+                                'familyHistory': snapshot.data!['familyHistory'],
+                                'pastProcedureHistory': snapshot.data!['pastProcedureHistory'],
+                                'allergies': snapshot.data!['allergies'],
+                                'medication': snapshot.data!['medication'],
+                              });
+                            }
+                          },
+                          child: Opacity(
+                            opacity: snapshot.data == null ? 0.5 : 1,
+                            child: getOptionWidget(
+                              imgPath: 'assets/homeimages/Component 15.svg',
+                              title: 'Past Medical\n History',
+                            ),
                           ),
-                        ),
-                      );
-                    }),
-                FutureBuilder(
-                    future: VitalsService().getVitals(appointmentId: widget.response.id!),
-                    builder: (context, snapshot) {
-                      return InkWell(
-                        onTap: () {
-                          if (snapshot.data != null) {
-                            context.pushNamed(AppRoutes.vitals.name, extra: {
-                              'appointment': widget.response,
-                              'vitals': snapshot.data,
-                            });
-                          }
-                        },
-                        child: Opacity(
-                          opacity: snapshot.data == null ? 0.5 : 1,
-                          child: getOptionWidget(
-                            imgPath: 'assets/homeimages/Vector (15).svg',
-                            title: 'Vitals & \nExamination',
+                        );
+                      });
+                }),
+                BlocBuilder<AppointmentCubit, AppointmentState>(buildWhen: (previous, current) {
+                  return current.state == AppointmentStates.fetchingAppointmentById;
+                }, builder: (context, state) {
+                  return FutureBuilder(
+                      future: VitalsService().getVitals(appointmentId: widget.response.id!, patientId: widget.response.patientId!),
+                      builder: (context, snapshot) {
+                        return InkWell(
+                          onTap: () {
+                            if (snapshot.data != null) {
+                              context.pushNamed(AppRoutes.vitals.name, extra: {
+                                'appointment': widget.response,
+                                'vitals': snapshot.data,
+                              });
+                            }
+                          },
+                          child: Opacity(
+                            opacity: snapshot.data == null ? 0.5 : 1,
+                            child: getOptionWidget(
+                              imgPath: 'assets/homeimages/Vector (15).svg',
+                              title: 'Vitals & \nExamination',
+                            ),
                           ),
-                        ),
-                      );
-                    }),
+                        );
+                      });
+                }),
                 InkWell(
                   onTap: () {
                     context.pushNamed(AppRoutes.writePrescription.name, extra: widget.response);
@@ -911,12 +929,28 @@ class _AppointmentCardState extends State<AppointmentCard> {
                   ),
                 ),
                 InkWell(
-                  onTap: () {
-                    context.pushNamed(AppRoutes.paymentReceiptScreen.name);
+                  onTap: () async {
+                    try {
+                      makingReceipt = true;
+                      setState(() {});
+                      AppointmentServices appointmentServices = AppointmentServices();
+                      String invoiceId = await appointmentServices.makeReceipt(appointmentId: widget.response.id!);
+                      await context.read<AppointmentCubit>().getInvoiceById(invoiceId: invoiceId);
+                      makingReceipt = false;
+                      setState(() {});
+                      if (context.read<AppointmentCubit>().state.state == AppointmentStates.invoiceFetched) {
+                        context.pushNamed(AppRoutes.paymentReceiptScreen.name, extra: invoiceId);
+                      }
+                    } catch (e) {
+                      showSnackbar(e.toString(), context);
+                    }
                   },
-                  child: getOptionWidget(
-                    imgPath: 'assets/homeimages/Vector (17).svg',
-                    title: 'Make\nreceipt',
+                  child: Opacity(
+                    opacity: makingReceipt ? 0.5 : 1,
+                    child: getOptionWidget(
+                      imgPath: 'assets/homeimages/Vector (17).svg',
+                      title: 'Make\nreceipt',
+                    ),
                   ),
                 ),
               ],

@@ -4,8 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:healtether_clinic_app/Screens/AppointmentScreen/widgets/custom_textfield.dart';
 import 'package:healtether_clinic_app/Screens/DigitalScreensAll/symptoms_diagnosis/create_digital_prescription_screens.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/allergy_cubit/allergy_cubit.dart';
+import 'package:healtether_clinic_app/business_logic/cubits/appointment_cubit/appointment_cubit.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/drug_cubit/drug_prescription_cubit.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/past_medical_history_cubit/past_medical_history_cubit.dart';
+import 'package:healtether_clinic_app/business_logic/cubits/prescription/prescription_report_cubit.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/vitals_cubit/vitals_cubit.dart';
 import 'package:healtether_clinic_app/data_layer/models/allergies/allergies.dart';
 import 'package:healtether_clinic_app/data_layer/models/appointment_models/appointment_model.dart';
@@ -110,8 +112,11 @@ class _PastMedicalHistoryScreenState extends State<PastMedicalHistoryScreen> wit
             if (state.state == PastMedicalHistoryStates.pastMedicalHistoryPosted && !hasNavigated) {
               dev.log(state.state.toString());
               hasNavigated = true;
-              //context.read<LabTestCubit>().getSavedLabTests(appointmentId: widget.appointment.id!);
               showSnackMessage(context, 'Past Medical History saved successfully.');
+              context.read<PastMedicalHistoryCubit>().getPastMedicalHistory(patientId: widget.appointment.patientId!);
+              context.read<PrescriptionReportCubit>().getPrescriptionReport(appointmentId: widget.appointment.id!);
+              //to update home screen
+              context.read<AppointmentCubit>().getAppointmentById(id: widget.appointment.id!);
               context.pushReplacementNamed(AppRoutes.vitals.name, extra: {
                 'appointment': widget.appointment,
                 'vitals': context.read<VitalsCubit>().state.savedVital,
@@ -398,6 +403,11 @@ class _HistoryItemWidgetState extends State<HistoryItemWidget> {
                     height: 52,
                     hintText: widget.hintText1,
                     controller: controller,
+                    onTap: () {
+                      if (_overlayEntry != null) {
+                        _removeOverlay();
+                      }
+                    },
                     onChanged: (value) {
                       item = item.copyWith(name: value);
                       widget.items[index] = item;

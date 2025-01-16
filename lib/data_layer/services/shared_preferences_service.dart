@@ -46,18 +46,6 @@ class SharedPrefService {
     return prefs!.getBool("isFirstTimeOnPrescriptionScreen");
   }
 
-  /* static Future<void> setUserName(String name) async {
-    await prefs!.setString('userName', name);
-  }
-
-  static Future<String?> getUserName() async {
-    return prefs!.getString('userName');
-  }
-
-  static Future<void> deleteUserName() async {
-    await prefs!.remove("userName");
-  }*/
-
   static Future<void> setUser(String userDetails) async {
     await prefs!.setString('user', userDetails);
   }
@@ -68,5 +56,14 @@ class SharedPrefService {
 
   static Future<void> deleteUser() async {
     await prefs!.remove("user");
+  }
+
+  static Future<bool> setString(String key, String val) async {
+    prefs!.setString(key, val);
+    return true;
+  }
+
+  static Future<String?> getString(String key) async {
+    return prefs!.getString(key);
   }
 }

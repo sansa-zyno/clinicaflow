@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:healtether_clinic_app/Screens/AppointmentScreen/appointment_screen.dart';
-import 'package:healtether_clinic_app/business_logic/cubits/home_page_bottom_nav_cubit/home_page_bottom_nav_cubit.dart';
 import 'package:healtether_clinic_app/constants/constants.dart';
 import 'package:go_router/go_router.dart';
 import 'package:healtether_clinic_app/utils/enums/route_enums.dart';
@@ -20,7 +17,6 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<HomePageBottomNavCubit>().onPageChanged(2);
   }
 
   @override
@@ -205,7 +201,7 @@ class _InfoCardState extends State<InfoCard> {
   }
 }
 
-class BottomBarChat extends StatefulWidget {
+/*class BottomBarChat extends StatefulWidget {
   const BottomBarChat({super.key});
 
   @override
@@ -317,4 +313,4 @@ class _BottomBarChatState extends State<BottomBarChat> {
       ),
     );
   }
-}
+}*/

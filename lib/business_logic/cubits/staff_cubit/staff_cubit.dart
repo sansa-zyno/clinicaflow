@@ -47,7 +47,6 @@ class StaffCubit extends Cubit<StaffState> {
   Future<void> fetchStaffs() async {
     emit(state.copyWith(state: StaffStates.fetchingStaff));
     List<Staff>? staff;
-
     try {
       staff = await service.fetchStaffs();
       // emit success response
@@ -61,17 +60,26 @@ class StaffCubit extends Cubit<StaffState> {
 
   //? DELETE STAFF
   Future<void> deleteStaff(String id) async {
+    emit(state.copyWith(state: StaffStates.deletingStaff));
     try {
       await service.deleteStaff(id);
-
       // delete staff from state
-      final newStaffList = state.staffList == null ? null : [...?state.staffList];
-      newStaffList?.removeWhere((staff) => staff.staffId == id);
-
-      emit(state.copyWith(staffList: newStaffList));
+      //final newStaffList = state.staffList == null ? null : [...?state.staffList];
+      //newStaffList?.removeWhere((staff) => staff.staffId == id);
+      //emit(state.copyWith(staffList: newStaffList));
+      emit(state.copyWith(state: StaffStates.staffDeleted));
     } catch (error) {
       log('Failed to delete staff: $error');
-      throw Exception('Failed to delete staff');
+      emit(state.copyWith(state: StaffStates.deletingStaffFailed));
+    }
+  }
+
+  fetchDoctors() async {
+    try {
+      List<Map<String, dynamic>>? doctors = await service.fetchDoctors();
+      emit(state.copyWith(doctors: doctors));
+    } catch (error) {
+      log('Failed load doctors: $error');
     }
   }
 }

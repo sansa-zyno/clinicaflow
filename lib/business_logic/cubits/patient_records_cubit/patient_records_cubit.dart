@@ -52,8 +52,7 @@ class PatientRecordsCubit extends Cubit<PatientRecordsState> {
 
       emit(state.copyWith(state: PatientRecordsStates.patientsFetched, patients: patients, totalCount: totalCount));
     } catch (error) {
-      print('Failed to load patients: $error');
-
+      log('Failed to load patients: $error');
       emit(state.copyWith(state: PatientRecordsStates.fetchingPatientsFailed));
     }
   }
@@ -62,14 +61,13 @@ class PatientRecordsCubit extends Cubit<PatientRecordsState> {
     try {
       emit(state.copyWith(state: PatientRecordsStates.deletingPatient));
       await service.deletePatient(id);
-      final List<PatientOverviewModel> newPatients = state.patients != null ? [...state.patients!] : [];
-      newPatients.removeWhere((patient) => patient.sId == id);
-
-      emit(state.copyWith(patients: newPatients, state: PatientRecordsStates.patientDeleted));
+      //final List<PatientOverviewModel> newPatients = state.patients != null ? [...state.patients!] : [];
+      //newPatients.removeWhere((patient) => patient.sId == id);
+      // emit(state.copyWith(patients: newPatients, state: PatientRecordsStates.patientDeleted));
+      emit(state.copyWith(state: PatientRecordsStates.patientDeleted));
     } catch (error) {
+      log('Failed to delete patient: $error');
       emit(state.copyWith(state: PatientRecordsStates.deletingPatientFailed));
-      print('Failed to delete patient: $error');
-      // throw Exception('Failed to delete patient');
     }
   }
 }

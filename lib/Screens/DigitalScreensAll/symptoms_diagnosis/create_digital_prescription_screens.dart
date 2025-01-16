@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:healtether_clinic_app/Screens/AppointmentScreen/widgets/custom_textfield.dart';
 import 'package:healtether_clinic_app/Screens/DigitalScreensAll/symptoms_diagnosis/privacy_notes_sheet.dart';
+import 'package:healtether_clinic_app/business_logic/cubits/prescription/prescription_report_cubit.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/symptoms_and_diagnosis_cubit/symptoms_and_diagnosis_cubit.dart';
 import 'package:healtether_clinic_app/constants/app_constants.dart';
 import 'package:healtether_clinic_app/data_layer/models/appointment_models/appointment_model.dart';
@@ -139,6 +140,7 @@ class _CreateDigitalPrescriptionScreensState extends State<CreateDigitalPrescrip
           hasNavigated = true;
           showSnackbar("Symptoms and Diagnosis saved successfully", context);
           context.read<SymptomsAndDiagnosisCubit>().getSavedSymptomsAndDiagnosis(appointmentId: widget.appointment.id!);
+          context.read<PrescriptionReportCubit>().getPrescriptionReport(appointmentId: widget.appointment.id!);
           context.pop();
         }
       },

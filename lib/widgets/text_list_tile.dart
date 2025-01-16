@@ -31,7 +31,7 @@ class TextListTile extends StatelessWidget {
       onTap: onTap,
       child: Container(
         height: height,
-        width: MediaQuery.of(context).size.width - 32,
+        width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
           color: backgroundColor ?? AppColors.whiteSmoke,
           borderRadius: BorderRadius.circular(3),

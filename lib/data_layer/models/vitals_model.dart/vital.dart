@@ -4,6 +4,7 @@ import 'dart:convert';
 
 class Vital {
   final String? id;
+  final String? appointment;
   final int? spo2;
   final int? temperature;
   final int? height;
@@ -16,6 +17,7 @@ class Vital {
 
   Vital({
     this.id,
+    this.appointment,
     this.spo2,
     this.temperature,
     this.height,
@@ -29,7 +31,7 @@ class Vital {
 
   @override
   String toString() {
-    return 'Vital( id: $id,  spo2: $spo2 temperature: $temperature height: $height weight: $weight pulseRate: $pulseRate rbs: $rbs respiratoryRate: $respiratoryRate,bloodPressure: $bloodPressure,personalHistory: $personalHistories)';
+    return 'Vital( id: $id,appointment: $appointment  spo2: $spo2 temperature: $temperature height: $height weight: $weight pulseRate: $pulseRate rbs: $rbs respiratoryRate: $respiratoryRate,bloodPressure: $bloodPressure,personalHistory: $personalHistories)';
   }
 
   Vital copyWith({
@@ -72,18 +74,35 @@ class Vital {
     "appointment": "6741f65e40e7b037fce50d3f"
   },*/
 
+  factory Vital.fromMapWithPersonalHistory(Map<String, dynamic> map) {
+    final vital = Vital(
+        id: map['vitals']?['_id'] != null ? map['vitals']['_id'] as String : null,
+        appointment: map['vitals']?['appointment'] != null ? map['vitals']['appointment'] as String : null,
+        spo2: map['vitals']?['spo2'] != null ? map['vitals']['spo2'] as int : null,
+        temperature: map['vitals']?['temperature'] != null ? map['vitals']['temperature'] as int : null,
+        height: map['vitals']?['height'] != null ? map['vitals']['height'] as int : null,
+        weight: map['vitals']?['weight'] != null ? map['vitals']['weight'] as int : null,
+        pulseRate: map['vitals']?['pulseRate'] != null ? map['vitals']['pulseRate'] as int : null,
+        rbs: map['vitals']?['rbs'] != null ? map['vitals']['rbs'] as int : null,
+        respiratoryRate: map['vitals']?['respiratoryRate'] != null ? map['vitals']['respiratoryRate'] as int : null,
+        bloodPressure: map['vitals']?['bloodPressure'] != null ? BloodPressure.fromMap(map['vitals']['bloodPressure'] as Map<String, dynamic>) : null,
+        personalHistories: map['personalHistory'] != null ? (map['personalHistory'] as List).map((e) => PersonalHistory.fromMap(e)).toSet() : null);
+    return vital;
+  }
+
   factory Vital.fromMap(Map<String, dynamic> map) {
     final vital = Vital(
-      id: map['_id'] != null ? map['_id'] as String : null,
-      spo2: map['spo2'] != null ? map['spo2'] as int : null,
-      temperature: map['temperature'] != null ? map['temperature'] as int : null,
-      height: map['height'] != null ? map['height'] as int : null,
-      weight: map['weight'] != null ? map['weight'] as int : null,
-      pulseRate: map['pulseRate'] != null ? map['pulseRate'] as int : null,
-      rbs: map['rbs'] != null ? map['rbs'] as int : null,
-      respiratoryRate: map['respiratoryRate'] != null ? map['respiratoryRate'] as int : null,
-      bloodPressure: map['bloodPressure'] != null ? BloodPressure.fromMap(map['bloodPressure'] as Map<String, dynamic>) : null,
-    );
+        id: map['_id'] != null ? map['_id'] as String : null,
+        appointment: map['appointment'] != null ? map['appointment'] as String : null,
+        spo2: map['spo2'] != null ? map['spo2'] as int : null,
+        temperature: map['temperature'] != null ? map['temperature'] as int : null,
+        height: map['height'] != null ? map['height'] as int : null,
+        weight: map['weight'] != null ? map['weight'] as int : null,
+        pulseRate: map['pulseRate'] != null ? map['pulseRate'] as int : null,
+        rbs: map['rbs'] != null ? map['rbs'] as int : null,
+        respiratoryRate: map['respiratoryRate'] != null ? map['respiratoryRate'] as int : null,
+        bloodPressure: map['bloodPressure'] != null ? BloodPressure.fromMap(map['bloodPressure'] as Map<String, dynamic>) : null,
+        personalHistories: map['personalHistory'] != null ? (map['personalHistory'] as List).map((e) => PersonalHistory.fromMap(e)).toSet() : null);
     return vital;
   }
 
@@ -175,6 +194,10 @@ class PersonalHistory {
       "nature": nature ?? "",
       'notes': privateNote ?? "",
     };
+  }
+
+  factory PersonalHistory.fromMap(Map<String, dynamic> map) {
+    return PersonalHistory(activity: map['activity'] ?? '', nature: map['nature'] ?? '', privateNote: map['notes'] ?? '');
   }
 
   PersonalHistory clear() {

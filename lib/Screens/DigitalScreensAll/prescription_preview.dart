@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -7,6 +5,7 @@ import 'package:healtether_clinic_app/constants/api.dart';
 import 'package:healtether_clinic_app/constants/constants.dart';
 import 'package:healtether_clinic_app/data_layer/models/drug_model/drug_model.dart';
 import 'package:healtether_clinic_app/data_layer/models/prescription/prescription_report.dart';
+import 'package:healtether_clinic_app/data_layer/models/vitals_model.dart/vital.dart';
 import 'package:healtether_clinic_app/utils/enums/route_enums.dart';
 import 'package:healtether_clinic_app/utils/extensions.dart/widget_extensions.dart';
 import 'package:healtether_clinic_app/utils/prescription_pdf.dart';
@@ -31,11 +30,11 @@ class _PrescriptionPreviewState extends State<PrescriptionPreview> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    log('hi');
   }
 
   @override
   Widget build(BuildContext context) {
+    Vital? vital = widget.prescriptionReport.vitals;
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -226,7 +225,9 @@ class _PrescriptionPreviewState extends State<PrescriptionPreview> {
                           style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                         ),
                         Text(
-                            '${widget.prescriptionReport.vitals?.bloodPressure?.systolic ?? ''}/${widget.prescriptionReport.vitals?.bloodPressure?.diastolic ?? ''} mm Hg',
+                            (vital?.bloodPressure?.systolic ?? '') != '' && (vital?.bloodPressure?.diastolic ?? '') != ''
+                                ? '${vital?.bloodPressure?.systolic}/${vital?.bloodPressure?.diastolic} mm Hg'
+                                : '',
                             style: const TextStyle(fontSize: 12))
                       ],
                     ),
@@ -236,7 +237,7 @@ class _PrescriptionPreviewState extends State<PrescriptionPreview> {
                           'SpO2 levels: ',
                           style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                         ),
-                        Text('${widget.prescriptionReport.vitals?.spo2 ?? ''} %', style: const TextStyle(fontSize: 12))
+                        Text((vital?.spo2 ?? '') != '' ? '${vital?.spo2} %' : '', style: const TextStyle(fontSize: 12))
                       ],
                     ),
                     Row(
@@ -245,7 +246,7 @@ class _PrescriptionPreviewState extends State<PrescriptionPreview> {
                           'Pulse Rate: ',
                           style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                         ),
-                        Text('${widget.prescriptionReport.vitals?.pulseRate ?? ''} beats/min', style: const TextStyle(fontSize: 12))
+                        Text((vital?.pulseRate ?? '') != '' ? '${vital?.pulseRate} beats/min' : '', style: const TextStyle(fontSize: 12))
                       ],
                     ),
                     Row(
@@ -254,7 +255,7 @@ class _PrescriptionPreviewState extends State<PrescriptionPreview> {
                           'Respiratory Rate: ',
                           style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                         ),
-                        Text('${widget.prescriptionReport.vitals?.respiratoryRate ?? ''} beats/min', style: const TextStyle(fontSize: 12))
+                        Text((vital?.respiratoryRate ?? '') != '' ? '${vital?.respiratoryRate} beats/min' : '', style: const TextStyle(fontSize: 12))
                       ],
                     ),
                     Row(
@@ -263,7 +264,7 @@ class _PrescriptionPreviewState extends State<PrescriptionPreview> {
                           'Temperature: ',
                           style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                         ),
-                        Text('${widget.prescriptionReport.vitals?.temperature ?? ''} \u2109', style: const TextStyle(fontSize: 12))
+                        Text((vital?.temperature ?? '') != '' ? '${vital?.temperature} \u2103' : '', style: const TextStyle(fontSize: 12))
                       ],
                     ),
                     Row(
@@ -272,7 +273,7 @@ class _PrescriptionPreviewState extends State<PrescriptionPreview> {
                           'RBS: ',
                           style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                         ),
-                        Text('${widget.prescriptionReport.vitals?.rbs ?? ''} mg/dL', style: const TextStyle(fontSize: 12))
+                        Text((vital?.rbs ?? '') != '' ? '${vital?.rbs} mg/dL' : '', style: const TextStyle(fontSize: 12))
                       ],
                     ),
                     Row(
@@ -281,7 +282,7 @@ class _PrescriptionPreviewState extends State<PrescriptionPreview> {
                           'Height: ',
                           style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                         ),
-                        Text('${widget.prescriptionReport.vitals?.height ?? ''} cm', style: const TextStyle(fontSize: 12))
+                        Text((vital?.height ?? '') != '' ? '${vital?.height} cm' : '', style: const TextStyle(fontSize: 12))
                       ],
                     ),
                     Row(
@@ -290,13 +291,13 @@ class _PrescriptionPreviewState extends State<PrescriptionPreview> {
                           'Weight: ',
                           style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                         ),
-                        Text('${widget.prescriptionReport.vitals?.weight ?? ''} Kg', style: const TextStyle(fontSize: 12))
+                        Text((vital?.weight ?? '') != '' ? '${vital?.weight} Kg' : '', style: const TextStyle(fontSize: 12))
                       ],
                     ),
                     const SizedBox(height: 15),
                     const Row(
                       children: [
-                        SizedBox(width: 150, child: Text('Chief Complaints', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700))),
+                        SizedBox(width: 150, child: Text('Symptoms', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700))),
                         SizedBox(
                           width: 50,
                         ),
@@ -324,7 +325,7 @@ class _PrescriptionPreviewState extends State<PrescriptionPreview> {
                           );
                         }),
                     const SizedBox(height: 15),
-                    Text('Diagnosis', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
+                    const Text('Diagnosis', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
                     const Divider(height: 0),
                     ListView.builder(
                         shrinkWrap: true,
@@ -402,11 +403,21 @@ class _PrescriptionPreviewState extends State<PrescriptionPreview> {
                     const Divider(height: 0),
                     Text(widget.prescriptionReport.prescriptions?.patientAdvice ?? '', style: TextStyle(fontSize: 12)),
                     const SizedBox(height: 15),
+                    const Text('Follow-up', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
+                    const Divider(height: 0),
                     Row(
                       children: [
-                        Text('Follow up', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
+                        const Text('Date:', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
                         const SizedBox(width: 8),
-                        Text(widget.prescriptionReport.prescriptions?.followUpDate ?? '', style: TextStyle(fontSize: 12))
+                        Text(widget.prescriptionReport.prescriptions?.followUpDate?.split('T')[0] ?? '', style: TextStyle(fontSize: 12))
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        const Text('Time:', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
+                        const SizedBox(width: 8),
+                        Text(widget.prescriptionReport.prescriptions?.followUpTimeSlot ?? '', style: TextStyle(fontSize: 12))
                       ],
                     ),
                   ],

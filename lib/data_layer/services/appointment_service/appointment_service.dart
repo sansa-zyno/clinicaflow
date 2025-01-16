@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:healtether_clinic_app/constants/api.dart';
 import 'package:healtether_clinic_app/data_layer/models/appointment_models/appointment_model.dart';
+import 'package:healtether_clinic_app/data_layer/models/invoice/invoice.dart' hide Appointment;
 import 'package:healtether_clinic_app/data_layer/services/http.service.dart';
 import 'package:healtether_clinic_app/data_layer/services/shared_preferences_service.dart';
 
@@ -68,20 +69,6 @@ class AppointmentServices {
         "clinicPatientId": clinicPatientId
       }
     };
-    /*log(mobile);
-    log(name);
-    log(gender);
-    log(age);
-    log(birthDate);
-    log(appointmentDate);
-    log(timeSlot);
-    log(reason);
-    log(virtualConsultation);
-    log(patientId);
-    log(doctorId);
-    log(doctorName);
-    log(clinicPatientId);*/
-
     final response = await HttpService.post(
       ApiEndPoint.createAppointment,
       token,
@@ -97,68 +84,9 @@ class AppointmentServices {
     }
   }
 
-  /*Future<List<Map<String, dynamic>>> fetchTimeSlots(String id) async {
-    await fetchToken();
-    final response =
-        await HttpService.get(ApiEndPoint.getTimeSlotsById(id: id), token);
-    if (response.statusCode == 200) {
-      final List<dynamic> data = response.data;
-      List<Map<String, dynamic>> timeSlotsList = [];
-      data.forEach((timeSlot) {
-        final startTime = timeSlot['startTime'] ?? {};
-        final endTime = timeSlot['endTime'] ?? {};
-        timeSlotsList.add({
-          'startTime': {
-            'hours': startTime['hours'] ?? 0,
-            'min': startTime['min'] ?? 0,
-            'tt': startTime['tt'] ?? '',
-          },
-          'endTime': {
-            'hours': endTime['hours'] ?? 0,
-            'min': endTime['min'] ?? 0,
-            'tt': endTime['tt'] ?? '',
-          }
-        });
-      });
-      log('time slots >>>>>>>' + timeSlotsList.toString());
-      return timeSlotsList;
-    } else {
-      throw Exception('Failed to load time slots');
-    }
-  }*/
-
-  /*Future<List<Map<String, String>>> fetchDoctors() async {
-    await fetchToken();
-    final response = await HttpService.get(ApiEndPoint.getDoctors(clinicId: clinicId), token);
-
-    if (response.statusCode == 200) {
-      final data = response.data;
-      log(data.toString());
-      List<Map<String, String>> doctorsList = [];
-      if (data.isNotEmpty) {
-        data.forEach((doctor) {
-          final firstName = doctor['firstName'] ?? '';
-          final lastName = doctor['lastName'] ?? '';
-          final specialization = doctor['specialization'] ?? '';
-          final id = doctor['_id'] ?? ''; // Retrieve doctor's ID
-          doctorsList.add({
-            'id': id,
-            'firstName': firstName,
-            'lastName': lastName,
-            'specialization': specialization,
-          });
-        });
-      }
-      return doctorsList;
-    } else {
-      throw Exception('Failed to load doctors');
-    }
-  }*/
-
   Future<List<Map<String, dynamic>>> fetchDoctorsWithTimeSlots() async {
     await fetchToken();
     final response = await HttpService.get(ApiEndPoint.getDoctorsWithTimeSlots(clinicId: clinicId), token);
-
     if (response.statusCode == 200) {
       final data = response.data;
       List<Map<String, dynamic>> doctorsList = List<Map<String, dynamic>>.from(data);
@@ -249,6 +177,71 @@ class AppointmentServices {
     } catch (e) {
       log('Exception during get appointment count: $e');
       throw 'Failed to get appointment count: $e';
+    }
+  }
+
+  Future<bool?> endConsulation({required String appointmentId}) async {
+    await fetchToken();
+    final response = await HttpService.post(ApiEndPoint.endConsultation, token, {
+      "data": {
+        "id": appointmentId,
+        "clientId": clinicId,
+      }
+    });
+    if (response.statusCode == 200) {
+      // log(response.data.toString());
+      return response.data['ended']['yes']; //could be true or false
+    } else {
+      throw Exception('Failed to end consultaion');
+    }
+  }
+
+  Future<String> makeReceipt({required String appointmentId}) async {
+    await fetchToken();
+    final response = await HttpService.post(ApiEndPoint.makeReceipt, token, {
+      "data": {
+        "clinicId": clinicId,
+        "appointmentId": appointmentId,
+      }
+    });
+    if (response.statusCode == 200) {
+      if (response.data['isValid']) {
+        log(response.data['invoiceId']);
+        return response.data['invoiceId'];
+      } else {
+        throw Exception('Failed to make receipt');
+      }
+    } else {
+      throw Exception('Failed to make receipt');
+    }
+  }
+
+  Future<Invoice> getInvoiceById({required String invoiceId}) async {
+    await fetchToken();
+    final response = await HttpService.get(ApiEndPoint.getInvoiceById(invoiceId: invoiceId), token);
+    if (response.statusCode == 200) {
+      return Invoice.fromJson(response.data);
+    } else {
+      throw Exception('Failed to get invoice');
+    }
+  }
+
+  Future<bool> addInvoiceDetails({
+    required String invoiceId,
+    required List<Map<String, dynamic>> treatments,
+    required int discount,
+  }) async {
+    await fetchToken();
+    final response = await HttpService.post(ApiEndPoint.addInvoiceDetails(invoiceId: invoiceId, clinicId: clinicId), token, {
+      "data": {
+        "treatments": treatments,
+        "discount": discount,
+      }
+    });
+    if (response.statusCode == 200) {
+      return response.data;
+    } else {
+      throw Exception('Failed to add invoice details');
     }
   }
 }

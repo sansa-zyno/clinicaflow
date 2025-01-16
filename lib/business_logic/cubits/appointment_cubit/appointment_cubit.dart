@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:healtether_clinic_app/data_layer/models/appointment_models/appointment_model.dart';
+import 'package:healtether_clinic_app/data_layer/models/invoice/invoice.dart' hide Appointment;
 import 'package:healtether_clinic_app/data_layer/services/appointment_service/appointment_service.dart';
 import 'package:healtether_clinic_app/utils/enums/bloc_enums.dart';
 import 'package:healtether_clinic_app/utils/helper_functions/log.dart';
@@ -116,6 +117,48 @@ class AppointmentCubit extends Cubit<AppointmentState> {
       emit(state.copyWith(
         state: AppointmentStates.fetchingAppointmentCountFailed,
       ));
+    }
+  }
+
+  Future endConsultation({required String appointmentId}) async {
+    emit(state.copyWith(state: AppointmentStates.endingConsultation));
+    try {
+      bool? res = await service.endConsulation(appointmentId: appointmentId);
+      emit(state.copyWith(state: AppointmentStates.consultationEnded));
+    } catch (error) {
+      log('Failed to end consultation: $error');
+      emit(state.copyWith(state: AppointmentStates.endingConsultationFailed));
+    }
+  }
+
+  setBottomsSheettt(Future<Map?> Function()? showBottomsSheet) {
+    emit(state.copyWith(showBottomsSheet: showBottomsSheet));
+  }
+
+  Future getInvoiceById({required String invoiceId}) async {
+    emit(state.copyWith(state: AppointmentStates.fetchingInvoice));
+    try {
+      Invoice invoiceDetails = await service.getInvoiceById(invoiceId: invoiceId);
+      emit(state.copyWith(state: AppointmentStates.invoiceFetched, invoiceDetails: invoiceDetails));
+    } catch (error) {
+      log('Failed to get invoice: $error');
+      emit(state.copyWith(state: AppointmentStates.fetchingInvoiceFailed));
+      rethrow;
+    }
+  }
+
+  addInvoice({
+    required String invoiceId,
+    required List<Map<String, dynamic>> treatments,
+    required int discount,
+  }) async {
+    emit(state.copyWith(state: AppointmentStates.addingInvoice));
+    try {
+      bool res = await service.addInvoiceDetails(invoiceId: invoiceId, treatments: treatments, discount: discount);
+      emit(state.copyWith(state: AppointmentStates.invoiceAdded));
+    } catch (error) {
+      log('Failed to add invoice: $error');
+      emit(state.copyWith(state: AppointmentStates.addingInvoiceFailed, error: error.toString()));
     }
   }
 }

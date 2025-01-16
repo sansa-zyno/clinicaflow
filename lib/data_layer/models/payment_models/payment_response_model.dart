@@ -34,9 +34,7 @@ class GetPayment {
       paymentStatus: json['paymentStatus'] ?? false,
       doctorName: json['doctorName'] ?? '',
       patientId: json['patientId'] ?? '',
-      invoiceDetail: (json['invoicedetail'] as List)
-          .map((i) => InvoiceDetail.fromJson(i))
-          .toList(),
+      invoiceDetail: (json['invoicedetail'] as List).map((i) => InvoiceDetail.fromJson(i)).toList(),
     );
   }
 }

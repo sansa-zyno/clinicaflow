@@ -7,7 +7,6 @@ import 'package:healtether_clinic_app/Screens/ChatScreen/chat_screen.dart';
 import 'package:healtether_clinic_app/Screens/DigitalScreensAll/drug_prescription/digital_precription_screen.dart';
 import 'package:healtether_clinic_app/Screens/DigitalScreensAll/lab_investigations/lab_investigations_screen.dart';
 import 'package:healtether_clinic_app/Screens/DigitalScreensAll/prescription_preview.dart';
-import 'package:healtether_clinic_app/Screens/DigitalScreensAll/vitals_screen/other_vitals_screen.dart';
 import 'package:healtether_clinic_app/Screens/DigitalScreensAll/vitals_screen/personal_historyScreen.dart';
 import 'package:healtether_clinic_app/Screens/DigitalScreensAll/vitals_screen/vitals_screen.dart';
 import 'package:healtether_clinic_app/Screens/DigitalScreensAll/digital_screen.dart';
@@ -38,14 +37,14 @@ import 'package:healtether_clinic_app/Screens/loginpage/login_page.dart';
 import 'package:healtether_clinic_app/Screens/loginpage/welcome.dart';
 import 'package:healtether_clinic_app/Screens/Members/patients_records/patient_record_screen.dart';
 import 'package:healtether_clinic_app/Screens/Members/patients_records/patients_records.dart';
+import 'package:healtether_clinic_app/Screens/payment_records/payInCash_success_screen.dart';
 import 'package:healtether_clinic_app/Screens/payment_records/payment_records.dart';
 import 'package:healtether_clinic_app/Screens/payment_records/payments_receipt_screen.dart';
-import 'package:healtether_clinic_app/Screens/payments/payment_receipt/payments_receipt_screen.dart';
+import 'package:healtether_clinic_app/Screens/payment_records/payments_receipt_invoice_screen.dart';
 import 'package:healtether_clinic_app/data_layer/models/appointment_models/appointment_model.dart';
-import 'package:healtether_clinic_app/data_layer/models/drug_model/drug_model.dart';
 import 'package:healtether_clinic_app/data_layer/models/history_item/history_item.dart';
+import 'package:healtether_clinic_app/data_layer/models/invoice/invoice.dart' hide Appointment;
 import 'package:healtether_clinic_app/data_layer/models/lab_tests/lab_tests.dart';
-import 'package:healtether_clinic_app/data_layer/models/patient/patient_model_id.dart';
 // import 'package:healtether_clinic_app/data_layer/models/patient/patient_model.dart';
 import 'package:healtether_clinic_app/data_layer/models/patient_records_model/patient_model.dart';
 import 'package:healtether_clinic_app/data_layer/models/prescription/prescription_report.dart';
@@ -385,16 +384,27 @@ class AppRouterConfig {
                       path: "payments-reciept-screen",
                       parentNavigatorKey: _rootNavigatorKey,
                       builder: (context, state) {
-                        return const PaymentsReceiptScreen();
+                        final String invoiceId = state.extra as String;
+                        return PaymentsReceiptScreen(invoiceId: invoiceId);
                       }),
 
-                  //? PAYMENT RECEIPT
+                  //? PAYMENT INVOICE
                   GoRoute(
-                      name: AppRoutes.paymentReceipt.name,
-                      path: "payments-reciept",
+                      name: AppRoutes.paymentReceiptInvoice.name,
+                      path: "payments-reciept-invoice",
                       parentNavigatorKey: _rootNavigatorKey,
                       builder: (context, state) {
-                        return const PaymentsReceipt();
+                        return const PaymentsReceiptInvoice();
+                      }),
+
+                  //? PAYINCASH SUCCESS
+                  GoRoute(
+                      name: AppRoutes.payInCashSuccess.name,
+                      path: "pay-in-cash-success",
+                      parentNavigatorKey: _rootNavigatorKey,
+                      builder: (context, state) {
+                        final Invoice invoiceDetails = state.extra as Invoice;
+                        return PayInCashSuccessScreen(invoiceDetails: invoiceDetails);
                       }),
 
                   //? PRESCRIPTION PREVIEW

@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:healtether_clinic_app/Screens/AppointmentScreen/widgets/info_card_screen.dart';
-import 'package:healtether_clinic_app/widgets/schedule_date.dart';
+import 'package:healtether_clinic_app/data_layer/models/appointment_models/appointment_model.dart';
 import 'package:healtether_clinic_app/business_logic/cubits/appointment_cubit/appointment_cubit.dart';
-import 'package:healtether_clinic_app/business_logic/cubits/home_page_bottom_nav_cubit/home_page_bottom_nav_cubit.dart';
 import 'package:healtether_clinic_app/constants/constants.dart';
 import 'package:healtether_clinic_app/utils/enums/bloc_enums.dart';
+
+import '../../business_logic/cubits/staff_cubit/staff_cubit.dart';
 
 class AppointmentScreen extends StatefulWidget {
   const AppointmentScreen({super.key});
@@ -17,12 +18,14 @@ class AppointmentScreen extends StatefulWidget {
 
 class AppointmentScreenState extends State<AppointmentScreen> {
   String selectedDate = 'Upcoming';
+  TextEditingController searchController = TextEditingController();
+  List<Appointment>? searchResult;
 
   @override
   void initState() {
     super.initState();
-    context.read<HomePageBottomNavCubit>().onPageChanged(1);
     context.read<AppointmentCubit>().fetchAppointments(status: selectedDate);
+    context.read<StaffCubit>().fetchDoctors(); //Used in appointment filter
   }
 
   @override
@@ -38,166 +41,244 @@ class AppointmentScreenState extends State<AppointmentScreen> {
           style: GoogleFonts.urbanist(fontWeight: FontWeight.w500, fontSize: 20),
         ),
       ),
-      body: BlocBuilder<AppointmentCubit, AppointmentState>(builder: (context, state) {
-        return SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 6.0, right: 3),
-                  child: Container(
-                    color: const Color(0xffF5F5F5),
-                    child: Padding(
-                      padding: const EdgeInsets.all(4),
+      body: BlocListener<AppointmentCubit, AppointmentState>(
+        listener: (context, state) {
+          if (searchController.text.isNotEmpty) {
+            searchResult = state.appointments
+                    ?.where((e) =>
+                        (e.clinicPatientId?.toLowerCase().trim().startsWith(searchController.text.toLowerCase()) ?? false) ||
+                        (e.name?.toLowerCase().trim().startsWith(searchController.text.toLowerCase()) ?? false) ||
+                        (e.mobile?.startsWith(searchController.text) ?? false))
+                    .toList() ??
+                [];
+          }
+        },
+        child: BlocBuilder<AppointmentCubit, AppointmentState>(builder: (context, state) {
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 6.0, right: 3),
+                    child: Container(
+                      color: const Color(0xffF5F5F5),
+                      child: Padding(
+                        padding: const EdgeInsets.all(4),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            SizedBox(
+                              width: width * 0.93,
+                              child: TextField(
+                                controller: searchController,
+                                decoration: InputDecoration(
+                                  hintText: 'Quick Search',
+                                  hintStyle: GoogleFonts.roboto(
+                                    color: const Color(0xff413D56),
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                  suffixIcon: InkWell(
+                                      onTap: () async {
+                                        Map? result = await context.read<AppointmentCubit>().state.showBottomsSheet!();
+                                        if (result != null) {
+                                          if (result['selectedDate'] == '' && result['selectedDoctor'] != '') {
+                                            searchResult = state.appointments
+                                                    ?.where((e) =>
+                                                        e.doctorName
+                                                            ?.toLowerCase()
+                                                            .trim()
+                                                            .startsWith(result['selectedDoctor'].toString().toLowerCase()) ??
+                                                        false)
+                                                    .toList() ??
+                                                [];
+                                          } else if (result['selectedDate'] != '' && result['selectedDoctor'] == '') {
+                                            searchResult = state.appointments
+                                                    ?.where(
+                                                        (e) => e.appointmentDate?.substring(0, 10).trim().contains(result['selectedDate']) ?? false)
+                                                    .toList() ??
+                                                [];
+                                          } else if (result['selectedDate'] == '' && result['selectedDoctor'] == '') {
+                                            searchResult = state.appointments;
+                                          } else {
+                                            searchResult = state.appointments
+                                                    ?.where(
+                                                        (e) => e.appointmentDate?.substring(0, 10).trim().contains(result['selectedDate']) ?? false)
+                                                    .where((e) =>
+                                                        e.doctorName
+                                                            ?.toLowerCase()
+                                                            .trim()
+                                                            .startsWith(result['selectedDoctor'].toString().toLowerCase()) ??
+                                                        false)
+                                                    .toList() ??
+                                                [];
+                                          }
+
+                                          setState(() {});
+                                        }
+                                      },
+                                      child: const Icon(
+                                        Icons.tune_outlined,
+                                        color: Color(0xff413D56),
+                                      )),
+                                  prefixIcon: const Icon(Icons.search, color: Color(0xff413D56)),
+                                  border: InputBorder.none,
+                                ),
+                                onChanged: (query) {
+                                  if (query.isEmpty) {
+                                    searchResult = null;
+                                  } else {
+                                    searchResult = state.appointments
+                                            ?.where((e) =>
+                                                (e.clinicPatientId?.toLowerCase().trim().startsWith(query.toLowerCase()) ?? false) ||
+                                                (e.name?.toLowerCase().trim().startsWith(query.toLowerCase()) ?? false) ||
+                                                (e.mobile?.startsWith(query) ?? false))
+                                            .toList() ??
+                                        [];
+                                  }
+
+                                  setState(() {});
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: SizedBox(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          SizedBox(
-                            width: width * 0.93,
-                            child: TextField(
-                              decoration: InputDecoration(
-                                hintText: 'Quick Search',
-                                hintStyle: GoogleFonts.roboto(
-                                  color: const Color(0xff413D56),
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                                suffixIcon: ScheduleSearchBox(),
-                                prefixIcon: const Icon(Icons.search, color: Color(0xff413D56)),
-                                border: InputBorder.none,
-                              ),
-                            ),
+                          DateCards(
+                            isSelected: selectedDate == 'Upcoming',
+                            onTap: () {
+                              setState(() {
+                                searchResult = null;
+                                selectedDate = 'Upcoming';
+                              });
+                              context.read<AppointmentCubit>().fetchAppointments(status: selectedDate);
+                            },
+                            text: 'Upcoming',
+                          ),
+                          DateCards(
+                            isSelected: selectedDate == 'Cancelled',
+                            onTap: () {
+                              setState(() {
+                                searchResult = null;
+                                selectedDate = 'Cancelled';
+                              });
+                              context.read<AppointmentCubit>().fetchAppointments(status: selectedDate);
+                            },
+                            text: 'Cancelled',
+                          ),
+                          DateCards(
+                            isSelected: selectedDate == 'Completed',
+                            onTap: () {
+                              setState(() {
+                                searchResult = null;
+                                selectedDate = 'Completed';
+                              });
+                              context.read<AppointmentCubit>().fetchAppointments(status: selectedDate);
+                            },
+                            text: 'Completed',
+                          ),
+                          DateCards(
+                            isSelected: selectedDate == 'No show',
+                            onTap: () {
+                              setState(() {
+                                searchResult = null;
+                                selectedDate = 'No show';
+                              });
+                              context.read<AppointmentCubit>().fetchAppointments(status: selectedDate);
+                            },
+                            text: 'No show',
+                          ),
+                          DateCards(
+                            isSelected: selectedDate == 'Rescheduled',
+                            onTap: () {
+                              setState(() {
+                                searchResult = null;
+                                selectedDate = 'Rescheduled';
+                              });
+                              context.read<AppointmentCubit>().fetchAppointments(status: selectedDate);
+                            },
+                            text: 'Rescheduled',
+                          ),
+                          DateCards(
+                            isSelected: selectedDate == 'All',
+                            onTap: () {
+                              setState(() {
+                                searchResult = null;
+                                selectedDate = 'All';
+                              });
+                              context.read<AppointmentCubit>().fetchAppointments(status: selectedDate);
+                            },
+                            text: 'All',
                           ),
                         ],
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(
-                  height: 16,
-                ),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: SizedBox(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  const SizedBox(
+                    height: 12,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Column(
                       children: [
-                        DateCards(
-                          isSelected: selectedDate == 'Upcoming',
-                          onTap: () {
-                            setState(() {
-                              selectedDate = 'Upcoming';
-                            });
-                            context.read<AppointmentCubit>().fetchAppointments(status: selectedDate);
-                          },
-                          text: 'Upcoming',
-                        ),
-                        DateCards(
-                          isSelected: selectedDate == 'Cancelled',
-                          onTap: () {
-                            setState(() {
-                              selectedDate = 'Cancelled';
-                            });
-                            context.read<AppointmentCubit>().fetchAppointments(status: selectedDate);
-                          },
-                          text: 'Cancelled',
-                        ),
-                        DateCards(
-                          isSelected: selectedDate == 'Completed',
-                          onTap: () {
-                            setState(() {
-                              selectedDate = 'Completed';
-                            });
-                            context.read<AppointmentCubit>().fetchAppointments(status: selectedDate);
-                          },
-                          text: 'Completed',
-                        ),
-                        DateCards(
-                          isSelected: selectedDate == 'No show',
-                          onTap: () {
-                            setState(() {
-                              selectedDate = 'No show';
-                            });
-                            context.read<AppointmentCubit>().fetchAppointments(status: selectedDate);
-                          },
-                          text: 'No show',
-                        ),
-                        DateCards(
-                          isSelected: selectedDate == 'Rescheduled',
-                          onTap: () {
-                            setState(() {
-                              selectedDate = 'Rescheduled';
-                            });
-                            context.read<AppointmentCubit>().fetchAppointments(status: selectedDate);
-                          },
-                          text: 'Rescheduled',
-                        ),
-                        DateCards(
-                          isSelected: selectedDate == 'All',
-                          onTap: () {
-                            setState(() {
-                              selectedDate = 'All';
-                            });
-                            context.read<AppointmentCubit>().fetchAppointments(status: selectedDate);
-                          },
-                          text: 'All',
-                        ),
+                        if (searchResult?.isNotEmpty ?? true)
+                          Row(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'All ${searchResult != null ? searchResult!.length : state.totalCount} appointments are listed',
+                                      style: GoogleFonts.roboto(
+                                        textStyle: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                          color: Color(0xff868686),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        if (state.state == AppointmentStates.fetchingAppointments)
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height / 2,
+                            child: const Center(child: CircularProgressIndicator()),
+                          ),
+                        if ((state.appointments?.isEmpty ?? true) || (searchResult?.isEmpty ?? false))
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height / 2,
+                            child: const Center(child: Text('No appointments found.')),
+                          ),
+                        if ((state.appointments?.isNotEmpty ?? false) || (searchResult?.isNotEmpty ?? true))
+                          InfoCard(
+                            appointments: searchResult != null ? searchResult! : state.appointments!,
+                          )
                       ],
                     ),
                   ),
-                ),
-                const SizedBox(
-                  height: 12,
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'All ${state.totalCount} appointments are listed',
-                                  style: GoogleFonts.roboto(
-                                    textStyle: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                      color: Color(0xff868686),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      if (state.state == AppointmentStates.fetchingAppointments)
-                        SizedBox(
-                          height: MediaQuery.of(context).size.height / 2,
-                          child: const Center(child: CircularProgressIndicator()),
-                        ),
-                      if (state.appointments?.isEmpty == true)
-                        SizedBox(
-                          height: MediaQuery.of(context).size.height / 2,
-                          child: const Center(child: Text('No appointments found.')),
-                        ),
-                      if (state.appointments?.isNotEmpty == true)
-                        InfoCard(
-                          appointments: state.appointments!,
-                        )
-                    ],
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        );
-      }),
+          );
+        }),
+      ),
     );
   }
 }
