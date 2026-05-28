@@ -1,6 +1,5 @@
-package com.example.healtether_clinic_app
+package com.healtether.www
 
 import io.flutter.embedding.android.FlutterActivity
 
-class MainActivity: FlutterActivity() {
-}
+class MainActivity : FlutterActivity()

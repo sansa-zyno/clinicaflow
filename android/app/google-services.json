@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "973100933748",
+    "project_id": "healtether-9b6df",
+    "storage_bucket": "healtether-9b6df.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:973100933748:android:38058fe81f613bb01be721",
+        "android_client_info": {
+          "package_name": "com.healtether.www"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBGE53nolXmCIWtRYPlvb_6v0_kF6K8bI4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
